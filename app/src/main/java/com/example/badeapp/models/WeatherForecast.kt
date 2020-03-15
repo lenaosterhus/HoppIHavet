@@ -8,7 +8,7 @@ object WeatherForecast {
     data class Container(val product: Product?, val created: String?, val meta: Meta?)
 
     // ----- TOP LEVEL -----
-// Container for data - classy = class i JSON
+    // Container for data - classy = class i JSON
     data class Product(
         @Expose @SerializedName("time")     val time: List<Time>?,
         @Expose @SerializedName("class")    val classy: String?
@@ -21,8 +21,8 @@ object WeatherForecast {
     )
 
     // ----- -----
-// Hoveddelen av Product:
-// datatype = "forcast", from & to = tidspunkt ISO, location = værdata
+    // Hoveddelen av Product:
+    // datatype = "forcast", from & to = tidspunkt ISO, location = værdata
     data class Time(
         @Expose @SerializedName("datatype")    val datatype: String?,
         @Expose @SerializedName("from")        val from: String?,
@@ -121,7 +121,7 @@ object WeatherForecast {
 
 
     // ----- FORELOPIG IRRELEVANT -----
-// id = Irrelevant, unit = Celcius?
+    // id = Irrelevant, unit = Celcius?
     data class DewpointTemperature(
         @Expose @SerializedName("value")    val value: String?,
         @Expose @SerializedName("id")       val id: String?,
@@ -151,22 +151,12 @@ object WeatherForecast {
         @Expose @SerializedName("id")       val id: String?
     )
 
-    data class MaxTemperature(
-        @Expose @SerializedName("id")       val id: String?,
-        @Expose @SerializedName("unit")     val unit: String?,
-        @Expose @SerializedName("value")    val value: String?
-    )
 
     data class MediumClouds(
         @Expose @SerializedName("percent")  val percent: String?,
         @Expose @SerializedName("id")       val id: String?
     )
 
-    data class MinTemperature(
-        @Expose @SerializedName("value")    val value: String?,
-        @Expose @SerializedName("unit")     val unit: String?,
-        @Expose @SerializedName("id")       val id: String?
-    )
 
     data class Precipitation(
         @Expose @SerializedName("unit")     val unit: String?,
@@ -185,11 +175,6 @@ object WeatherForecast {
     data class Symbol(
         @Expose @SerializedName("id")       val id: String?,
         @Expose @SerializedName("number")   val number: String?
-    )
-
-    data class SymbolProbability(
-        @Expose @SerializedName("unit")     val unit: String?,
-        @Expose @SerializedName("value")    val value: String?
     )
 
     data class TemperatureProbability(
@@ -245,8 +230,6 @@ object WeatherForecast {
         @Expose @SerializedName("very_good") val veryGood: Int?,
         @Expose @SerializedName("good")      val good: Int?,
         @Expose @SerializedName("mediocre")  val mediocre: Int?
-
-
     )
 
     data class Uv (
