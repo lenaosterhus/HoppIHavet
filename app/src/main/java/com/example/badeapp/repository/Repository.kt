@@ -3,7 +3,7 @@ package com.example.badeapp.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.badeapp.api.MyRetrofitBuilder
-import com.example.badeapp.models.WeatherForcast
+import com.example.badeapp.models.WeatherForecast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -14,11 +14,11 @@ object Repository {
 
     var job: CompletableJob? = null
 
-    fun getData(): LiveData<WeatherForcast.Container> {
+    fun getData(): LiveData<WeatherForecast.Container> {
         Log.d(TAG, "getData: starting...")
         job = Job()
 
-        return object: LiveData<WeatherForcast.Container>() {
+        return object: LiveData<WeatherForecast.Container>() {
             override fun onActive() {
                 super.onActive()
                 job?.let { theJob ->

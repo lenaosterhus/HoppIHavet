@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.example.badeapp.models.WeatherForcast
+import com.example.badeapp.models.WeatherForecast
 import com.example.badeapp.repository.Repository
 
 class MainViewModel: ViewModel() {
@@ -13,7 +13,7 @@ class MainViewModel: ViewModel() {
     private val TAG = "DEBUG - MainViewModel"
     private val _test: MutableLiveData<String> = MutableLiveData()
 
-    val data: LiveData<WeatherForcast.Container> = Transformations
+    val data: LiveData<WeatherForecast.Container> = Transformations
         .switchMap(_test) {
             Repository.getData()
         }

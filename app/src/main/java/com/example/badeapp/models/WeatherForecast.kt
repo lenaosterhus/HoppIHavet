@@ -3,7 +3,7 @@ package com.example.badeapp.models
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-object WeatherForcast {
+object WeatherForecast {
     // created = når data ble hentet ISO
     data class Container(val product: Product?, val created: String?, val meta: Meta?)
 
