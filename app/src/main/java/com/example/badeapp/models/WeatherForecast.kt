@@ -13,8 +13,7 @@ object WeatherForecast {
         @Expose @SerializedName("time")     val time: List<Time>?,
         @Expose @SerializedName("class")    val classy: String?
     )
-
-
+    
     // Container for metadata
     data class Meta(
         @Expose  @SerializedName("model")    val model: Model?
@@ -151,12 +150,10 @@ object WeatherForecast {
         @Expose @SerializedName("id")       val id: String?
     )
 
-
     data class MediumClouds(
         @Expose @SerializedName("percent")  val percent: String?,
         @Expose @SerializedName("id")       val id: String?
     )
-
 
     data class Precipitation(
         @Expose @SerializedName("unit")     val unit: String?,
@@ -204,7 +201,6 @@ object WeatherForecast {
         @Expose @SerializedName("id") val id : String?
     )
 
-
     data class Weather (
         @Expose @SerializedName("name")   val name : String?,
         @Expose @SerializedName("number") val number : Int, //0-99
@@ -237,9 +233,9 @@ object WeatherForecast {
         @Expose @SerializedName("uvi_partly_cloudy")  val uviPartlyCloudy: UnitValue,
         @Expose @SerializedName("uvi_cloudy")  val uviCloudy: UnitValue,
         @Expose @SerializedName("uvi_forecast")  val uviForecast: UnitValue,
-        @Expose @SerializedName("ozon")  val ozon: UnitValue,
-        @Expose @SerializedName("snowcover")  val snowcover: UnitValue,
-        @Expose @SerializedName("cloudcover")  val cloudcover: UnitValue,
+        @Expose @SerializedName("ozon")  val ozone: UnitValue,
+        @Expose @SerializedName("snowcover")  val snowCover: UnitValue,
+        @Expose @SerializedName("cloudcover")  val cloudCover: UnitValue,
         @Expose @SerializedName("albedo")  val albedo: UnitValue,
         @Expose @SerializedName("solar_zenith")  val solar_zenith: UnitValue
         )
