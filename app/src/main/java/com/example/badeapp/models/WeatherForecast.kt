@@ -29,9 +29,14 @@ data class WeatherForecast (
     data class Time(
         @Expose @SerializedName("datatype")    val datatype: String?,
         @Expose @SerializedName("from")        val from: String?,
-        @Expose  @SerializedName("location")   val location: Location?,
-        @Expose  @SerializedName("to")         val to: String?
-    )
+        @Expose  @SerializedName("to")         val to: String?,
+        @Expose  @SerializedName("location")   val location: Location?
+    ) {
+        // For logcat
+        override fun toString(): String {
+            return "\nTime(from=$from, to=$to, location=$location)"
+        }
+    }
 
     // metadata for sporringen.
     // nextrun = VIKTIG
@@ -65,7 +70,12 @@ data class WeatherForecast (
         @Expose @SerializedName("latitude")        val latitude: String?,
         @Expose @SerializedName("windProbability") val windProbability: WindProbability?,
         @Expose @SerializedName("lowClouds")       val lowClouds: LowClouds?
-    )
+    ) {
+        // For logcat
+        override fun toString(): String {
+            return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed)"
+        }
+    }
     // id er optional
     data class Temperature(
         @Expose @SerializedName("unit")  val unit: String?,
