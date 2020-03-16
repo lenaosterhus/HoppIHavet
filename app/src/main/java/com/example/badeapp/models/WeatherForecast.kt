@@ -3,12 +3,15 @@ package com.example.badeapp.models
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-object WeatherForecast {
-    // created = når data ble hentet ISO
-    data class Container(val product: Product?, val created: String?, val meta: Meta?)
+// // created = når data ble hentet ISO
+data class WeatherForecast (
+    @Expose @SerializedName("product")  val product: Product?,
+    @Expose @SerializedName("created")  val created: String?,
+    @Expose @SerializedName("meta")     val meta: Meta?
+) {
 
     // ----- TOP LEVEL -----
-// Container for data - classy = class i JSON
+    // Container for data - classy = class i JSON
     data class Product(
         @Expose @SerializedName("time")     val time: List<Time>?,
         @Expose @SerializedName("class")    val classy: String?
@@ -21,8 +24,8 @@ object WeatherForecast {
     )
 
     // ----- -----
-// Hoveddelen av Product:
-// datatype = "forcast", from & to = tidspunkt ISO, location = værdata
+    // Hoveddelen av Product:
+    // datatype = "forcast", from & to = tidspunkt ISO, location = værdata
     data class Time(
         @Expose @SerializedName("datatype")    val datatype: String?,
         @Expose @SerializedName("from")        val from: String?,
@@ -31,8 +34,8 @@ object WeatherForecast {
     )
 
     // metadata for sporringen.
-// nextrun = VIKTIG
-// termin = Siste hele klokkeslett
+    // nextrun = VIKTIG
+    // termin = Siste hele klokkeslett
     data class Model(
         @Expose @SerializedName("nextrun")   val nextrun: String?,
         @Expose @SerializedName("name")      val name: String?,
@@ -71,7 +74,7 @@ object WeatherForecast {
     )
 
     // Element denoting the wind speed by name, at 10 m above ground, in meters per second or the Beaufort scale.
-// Oppgis enten i baufort (0-12 egen skala med navn og virkning på sjo) eller mps
+    // Oppgis enten i baufort (0-12 egen skala med navn og virkning på sjo) eller mps
     data class WindSpeed(
         @Expose @SerializedName("beaufort") val beaufort: String?,
         @Expose @SerializedName("mps")      val mps: String?,
@@ -88,7 +91,7 @@ object WeatherForecast {
 
 
     // ----- FORELOPIG IRRELEVANT -----
-// id = Irrelevant, unit = Celcius?
+    // id = Irrelevant, unit = Celcius?
     data class DewpointTemperature(
         @Expose @SerializedName("value")    val value: String?,
         @Expose @SerializedName("id")       val id: String?,

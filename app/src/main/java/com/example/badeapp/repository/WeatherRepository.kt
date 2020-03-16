@@ -2,29 +2,32 @@ package com.example.badeapp.repository
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import com.example.badeapp.api.MyRetrofitBuilder
+import com.example.badeapp.api.WeatherRetrofitBuilder
 import com.example.badeapp.models.WeatherForecast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 
-object Repository {
+object WeatherRepository {
 
-    private val TAG = "DEBUG - Repository"
+    private val TAG = "DEBUG - WeatherRepo"
 
-    var job: CompletableJob? = null
+    var job: CompletableJob? = null // For coroutines
 
-    fun getData(): LiveData<WeatherForecast.Container> {
+    fun getData(lat: String, lon: String): LiveData<WeatherForecast> {
         Log.d(TAG, "getData: starting...")
+
         job = Job()
 
-        return object: LiveData<WeatherForecast.Container>() {
+        return object: LiveData<WeatherForecast>() {
+            // When getData() is called, onActive is activated and LiveData is returned
             override fun onActive() {
                 super.onActive()
                 job?.let { theJob ->
+                    // CoroutineScope (IO + theJob) --> Creates a unique coroutine on a background thread
                     CoroutineScope(IO + theJob).launch {
-                        // MÅ ENDRES!
-                        val data = MyRetrofitBuilder.apiService.getData("59.9193", "10.7522")
+                        val data = WeatherRetrofitBuilder.apiService.getData(lat, lon)
+                        // LiveData value must be set on the main thread
                         withContext(Main) {
                             value = data
                             theJob.complete()
@@ -35,6 +38,8 @@ object Repository {
         }
     }
 
+    // Used if activity is destroyed
+    // Cancels everything in the CoroutineScope using the job
     fun cancelJobs() {
         job?.cancel()
     }

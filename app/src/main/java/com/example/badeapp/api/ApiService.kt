@@ -8,6 +8,7 @@ import retrofit2.http.Query
 interface ApiService {
 
     // https://in2000-apiproxy.ifi.uio.no/weatherapi/locationforecast/1.9/?lat=60.10&lon=9.58
+    // Suspend fun --> called in coroutine
 
     //@Headers("User-Agent: ") @TODO add user agent
     @Headers("Content-Type:application/x-www-form-urlencoded")
@@ -15,7 +16,7 @@ interface ApiService {
     suspend fun getData(
         @Query("lat") lat: String,
         @Query("lon") lon: String
-    ) : WeatherForecast.Container
+    ) : WeatherForecast
 
     @Headers("Content-Type:application/x-www-form-urlencoded")
     @GET(".json")
@@ -23,5 +24,5 @@ interface ApiService {
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("msl") msl: String
-    ) : WeatherForecast.Container
+    ) : WeatherForecast
 }

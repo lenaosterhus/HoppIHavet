@@ -17,13 +17,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.data.observe(this, Observer {
+
+        // Observing changes to viewModel.data
+        viewModel.weatherData.observe(this, Observer {
             Log.d(TAG, "onCreate observer: ${it}")
         })
 
-        viewModel.setData()
+        viewModel.setData("59.9016", "10.665422")
     }
 
+    // All jobs are canceled if activity is destroyed
     override fun onDestroy() {
         super.onDestroy()
         viewModel.cancelJobs()
