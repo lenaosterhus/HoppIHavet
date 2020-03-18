@@ -3,9 +3,12 @@ package com.example.badeapp.models
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-object WeatherForecast {
-    // created = når data ble hentet ISO
-    data class Container(val product: Product?, val created: String?, val meta: Meta?)
+// // created = når data ble hentet ISO
+data class WeatherForecast (
+    @Expose @SerializedName("product")  val product: Product?,
+    @Expose @SerializedName("created")  val created: String?,
+    @Expose @SerializedName("meta")     val meta: Meta?
+) {
 
     // ----- TOP LEVEL -----
     // Container for data - classy = class i JSON
@@ -25,9 +28,14 @@ object WeatherForecast {
     data class Time(
         @Expose @SerializedName("datatype")    val datatype: String?,
         @Expose @SerializedName("from")        val from: String?,
-        @Expose  @SerializedName("location")   val location: Location?,
-        @Expose  @SerializedName("to")         val to: String?
-    )
+        @Expose  @SerializedName("to")         val to: String?,
+        @Expose  @SerializedName("location")   val location: Location?
+    ) {
+        // For logcat
+        override fun toString(): String {
+            return "\nTime(from=$from, to=$to, location=$location)"
+        }
+    }
 
     // metadata for sporringen.
     // nextrun = VIKTIG
@@ -92,8 +100,12 @@ object WeatherForecast {
         @Expose @SerializedName("symbolProbability") val symbolProbability: UnitValue?
 
 
-        )
-
+        ) {
+        // For logcat
+        override fun toString(): String {
+            return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed)"
+        }
+    }
 
     // id er optional
     data class Temperature(
@@ -101,6 +113,12 @@ object WeatherForecast {
         @Expose @SerializedName("id")    val id: String?,
         @Expose @SerializedName("value") val value: String?
     )
+1 conflicting file
+WeatherForecast.kt
+...ple/badeapp/models/WeatherForecast.kt
+app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
+1 conflict
+
 
     // Element denoting the wind speed by name, at 10 m above ground, in meters per second or the Beaufort scale.
     // Oppgis enten i baufort (0-12 egen skala med navn og virkning på sjo) eller mps
@@ -113,6 +131,30 @@ object WeatherForecast {
 
     // id = Irrelevant, gis i enten percent eller eights
     data class Cloudiness(
+1 conflicting file
+WeatherForecast.kt
+1 conflicting file
+1 conflicting file
+WeatherForecast.kt
+...ple/badeapp/models/WeatherForecast.kt
+app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
+1 conflict
+
+1 conflicting file
+WeatherForecast.kt
+...ple/badeapp/models/WeatherForecast.kt
+app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
+1 conflict
+
+WeatherForecast.kt
+...ple/badeapp/models/WeatherForecast.kt
+app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
+1 conflict
+
+...ple/badeapp/models/WeatherForecast.kt
+app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
+1 conflict
+
         @Expose @SerializedName("id")       val id: String?,
         @Expose @SerializedName("percent")  val percent: String?,
         @Expose @SerializedName("eights")   val eights: Int?
