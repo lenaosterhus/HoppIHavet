@@ -20,7 +20,10 @@ class MainActivity : AppCompatActivity() {
 
         // Observing changes to viewModel.data
         viewModel.weatherData.observe(this, Observer {
-            Log.d(TAG, "onCreate observer: ${it}")
+            Log.d(TAG, "onCreate WEATHER observer: ${it}")
+        })
+        viewModel.oceanData.observe(this, Observer {
+            Log.d(TAG, "onCreate OCEAN observer: ${it}")
         })
 
         viewModel.setData("59.9016", "10.665422")

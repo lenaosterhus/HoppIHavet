@@ -1,5 +1,6 @@
 package com.example.badeapp.api
 
+import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.models.WeatherForecast
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -25,4 +26,12 @@ interface ApiService {
         @Query("lon") lon: String,
         @Query("msl") msl: String
     ) : WeatherForecast
+
+    // https://in2000-apiproxy.ifi.uio.no/weatherapi/oceanforecast/0.9/.json?lat=59.9016&lon=10.665422
+
+    @GET(".json")
+    suspend fun getOceanData(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String
+    ) : OceanForecast
 }
