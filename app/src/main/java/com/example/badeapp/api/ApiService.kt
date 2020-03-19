@@ -14,14 +14,14 @@ interface ApiService {
     //@Headers("User-Agent: ") @TODO add user agent
     @Headers("Content-Type:application/x-www-form-urlencoded")
     @GET(".json")
-    suspend fun getData(
+    suspend fun getWeatherData(
         @Query("lat") lat: String,
         @Query("lon") lon: String
     ) : WeatherForecast
 
     @Headers("Content-Type:application/x-www-form-urlencoded")
     @GET(".json")
-    suspend fun getDataWithMsl(
+    suspend fun getWeatherDataWithMsl(
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("msl") msl: String
