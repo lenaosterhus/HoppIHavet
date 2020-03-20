@@ -125,6 +125,7 @@ data class WeatherForecast (
 
     // id = Irrelevant, gis i enten percent eller eights
     data class Cloudiness(
+
         @Expose @SerializedName("id")       val id: String?,
         @Expose @SerializedName("percent")  val percent: String?,
         @Expose @SerializedName("eights")   val eights: Int?
