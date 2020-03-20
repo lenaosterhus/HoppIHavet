@@ -28,7 +28,7 @@ object Repository {
                 job?.let { theJob ->
                     // CoroutineScope (IO + theJob) --> Creates a unique coroutine on a background thread
                     CoroutineScope(IO + theJob).launch {
-                        val data = WeatherRetrofitBuilder.apiService.getData(lat, lon)
+                        val data = WeatherRetrofitBuilder.apiService.getWeatherData(lat, lon)
                         // LiveData value must be set on the main thread
                         withContext(Main) {
                             value = data
@@ -56,6 +56,7 @@ object Repository {
                         }
                     }
                 }
+
             }
         }
     }
