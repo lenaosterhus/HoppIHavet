@@ -28,7 +28,7 @@ sealed class Badested(
     /**
      * We cant have multiple threads trying to update the weather data at once, we
      * therefor put the updating behind a mutex. Then only one thread can try to
-     * update the weather data. This makes it so we dont request a update for the same
+     * update the weather data. This makes it so we don't request a update for the same
      * Badested on different threads.
      */
     private val mutex = Mutex()
@@ -60,6 +60,10 @@ sealed class Badested(
             }
 
         }
+    }
+
+    override fun toString(): String {
+        return "Badested:${name} "
     }
 
 }
