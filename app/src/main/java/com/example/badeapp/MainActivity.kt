@@ -1,8 +1,8 @@
 package com.example.badeapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
@@ -19,16 +19,19 @@ class MainActivity : AppCompatActivity() {
 
         // Business-logic =
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.init(this)
 
-        // Observing changes to viewModel.data
-        viewModel.weatherData.observe(this, Observer { weatherForecast ->
-            Log.d(TAG, "onCreate WEATHER observer: ${weatherForecast}")
-        })
-        viewModel.oceanData.observe(this, Observer {
-            Log.d(TAG, "onCreate OCEAN observer: ${it}")
+        viewModel.finishedLoading.observe(this, Observer {
+            if (it) {
+                viewModel._locations.value?.forEach {
+                    Log.d(TAG, "$it")
+                    Log.d(TAG, "${it.oceanForecast.getCurrentSeaTemp()}")
+                    Log.d(TAG, "${it.weatherForecast.getCurrentAirTemp()}")
+                }
+            }
         })
 
-        viewModel.setData("59.9016", "10.665422")
+        viewModel.setData()
 
         // Liste over steder
         // Hent data for listen over steder

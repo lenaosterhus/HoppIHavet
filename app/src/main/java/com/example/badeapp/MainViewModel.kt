@@ -1,39 +1,66 @@
 package com.example.badeapp
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import com.example.badeapp.models.OceanForecast
-import com.example.badeapp.models.WeatherForecast
-import com.example.badeapp.repository.Repository
+import androidx.lifecycle.*
+import com.example.badeapp.repository.Badested
 
 class MainViewModel: ViewModel() {
 
     private val TAG = "DEBUG - MainViewModel"
-    // Trigger to initiate the request
-    private val _lat: MutableLiveData<String> = MutableLiveData()
-    private val _lon: MutableLiveData<String> = MutableLiveData()
+    val _locations = MutableLiveData<List<Badested>>()
+    lateinit var _repository: Repository
+    val finishedLoading = MutableLiveData<Boolean>().apply {
+        value = false
+    }
+    lateinit var owner: LifecycleOwner
 
-    // How they do it in Google samples :)
-    val weatherData: LiveData<WeatherForecast> = Transformations
-        // switchMap = observing the argument. When it changes the operator will trigger and execute action inside {}
-        .switchMap(_lon) {
-            Repository.getWeatherData(_lat.value!!, it)
-        }
-    val oceanData: LiveData<OceanForecast> = Transformations
-        .switchMap(_lon) {
-            Repository.getOceanData(_lat.value!!, it)
+    fun init(activity: MainActivity) {
+        Log.d(TAG, "init: initializing...")
+        _repository = Repository
+        owner = activity
+    }
+
+    fun setData() {
+        Log.d(TAG, "setData: ...")
+        _locations.value = Badested::class.nestedClasses.map {
+            it.objectInstance as Badested
         }
 
-    fun setData(lat: String, lon: String) {
-        // If the value has not changed --> don't do anything
-        if (_lat.value == lat && _lon.value == lon) {
-            return
+        var locationsSet = 0
+
+        _locations.value?.forEach { badested ->
+            Log.d(TAG, "setData: for $location")
+
+            val weatherData: LiveData<LocationForecastInfo> =
+                _repository.getWeatherData(location.lat, location.lon)
+            weatherData.observe(owner, Observer {
+                Log.d(TAG, "setData weather: Observing for $location")
+                it?.let {
+                    Log.d(TAG, "setData weather: Data existing for $location")
+                    badested.locationForecastInfo = it
+                    locationsSet++
+                    if (locationsSet == _locations.value!!.size * 2) {
+                        Log.d(TAG, "setData weather: finished loading")
+                        finishedLoading.value = true
+                    }
+                }
+            })
+
+            val oceanData: LiveData<OceanForecast> =
+                _repository.getOceanData(location.lat, location.lon)
+            oceanData.observe(owner, Observer {
+                Log.d(TAG, "setData ocean: Observing for $location")
+                it?.let {
+                    Log.d(TAG, "setData ocean: Data existing for $location")
+                    location.oceanForecast = it
+                    locationsSet++
+                    if (locationsSet == _locations.value!!.size * 2) {
+                        Log.d(TAG, "setData ocean: finished loading")
+                        finishedLoading.value = true
+                    }
+                }
+            })
         }
-        _lat.value = lat
-        _lon.value = lon
     }
 
 
