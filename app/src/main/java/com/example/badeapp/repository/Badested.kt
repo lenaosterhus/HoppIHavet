@@ -44,10 +44,10 @@ sealed class Badested(
      * This function does not consider things like how many other requests are
      * happening, or if the user is actually wanting the info.
      */
-    suspend fun updateLocationForecast() {
-        mutex.withLock {
-            if (locationForecastInfo.value?.isOutdated() == true) {
-                CoroutineScope(IO).launch {
+    fun updateLocationForecast() {
+        if (locationForecastInfo.value?.isOutdated() == true) {
+            CoroutineScope(IO).launch {
+                mutex.withLock {
                     val newData = LocationForcastAPI.request(lat, lon)
                     //@TODO("Handle potential errors with the new data"
                     // what if new data has less info then the old?
@@ -58,13 +58,14 @@ sealed class Badested(
                     }
                 }
             }
-
         }
     }
+
 
     override fun toString(): String {
         return "Badested:${name} "
     }
+
 
 }
 

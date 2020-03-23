@@ -41,14 +41,16 @@ object RequestManager {
 
         if (response.isSuccessful) return response.body()?.summarise()
 
-
-
         if (response.code() == 203) {
             TODO("Throttle MI request til de mere essensielle, da denne slutter snart")
         }
 
         if (response.code() == 429) {
             TODO("Throttle all MI requests, ellers blir vi bannet!")
+        }
+
+        if (response.code() == 404) {
+            TODO("Error Report error")
         }
 
         if (response.code() == 403) {
