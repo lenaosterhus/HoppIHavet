@@ -3,13 +3,20 @@ package com.example.badeapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.repository.Badested
 import kotlinx.android.synthetic.main.rv_element.view.*
 
-class RecyclerAdapter(private val interaction: Interaction? = null) :
+
+class RecyclerAdapter(
+    val lifecycleOwner: LifecycleOwner,
+    private val interaction: Interaction? = null
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Badested>() {
@@ -42,7 +49,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ElementView -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -61,8 +68,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
 
-        //lateinit var locationInfoObserver: Observer<LocationForecastInfo>
-
+        private lateinit var locationInfoObserver: Observer<LocationForecastInfo?>
 
         fun bind(item: Badested) = with(itemView) {
             itemView.setOnClickListener {
@@ -72,6 +78,11 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
             itemView.TextView_location_name.text = item.name
             itemView.TextView_water_temp.text = "Missing" //@TODO mye som må orndes
             itemView.TextView_air_temp.text = item.locationForecastInfo.value?.luftTempC.toString()
+
+            item.locationForecastInfo.removeObserver(locationInfoObserver)
+            locationInfoObserver =
+                Observer { t -> itemView.TextView_air_temp.text = t?.luftTempC.toString() }
+            item.locationForecastInfo.observe(this, locationInfoObserver)
 
         }
     }
