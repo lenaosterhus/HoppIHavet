@@ -1,6 +1,6 @@
 package com.example.badeapp.models
 
-data class OceanForecastInfo(val vannTempC: Double?, val symbol: Int?) {
+data class OceanForecastInfo(val vannTempC: Double?) {
 
     fun isOutdated(): Boolean {
         return minUnitlOutdated() == 0.0
@@ -8,7 +8,7 @@ data class OceanForecastInfo(val vannTempC: Double?, val symbol: Int?) {
 
     fun minUnitlOutdated(): Double {
         //@TODO make it return time until next potential update.
-        return 0.1
+        return 0.0
     }
 
 }

@@ -28,6 +28,7 @@ class MainViewModel: ViewModel() {
         badesteder.value?.forEach { badested ->
             Log.d(TAG, "setData: for $badested")
             badested.updateLocationForecast()
+            badested.updateOceanForecast()
         }
     }
 

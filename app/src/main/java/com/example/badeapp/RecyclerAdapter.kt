@@ -9,12 +9,13 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.models.LocationForecastInfo
+import com.example.badeapp.models.OceanForecastInfo
 import com.example.badeapp.repository.Badested
 import kotlinx.android.synthetic.main.rv_element.view.*
 
 
 class RecyclerAdapter(
-    val lifecycleOwner: LifecycleOwner,
+    private val lifecycleOwner: LifecycleOwner,
     private val interaction: Interaction? = null
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -42,7 +43,8 @@ class RecyclerAdapter(
                 parent,
                 false
             ),
-            interaction
+            interaction,
+            lifecycleOwner
         )
     }
 
@@ -65,10 +67,12 @@ class RecyclerAdapter(
     class ElementView
     constructor(
         itemView: View,
-        private val interaction: Interaction?
+        private val interaction: Interaction?,
+        private val lifecycleOwner: LifecycleOwner
     ) : RecyclerView.ViewHolder(itemView) {
 
         private lateinit var locationInfoObserver: Observer<LocationForecastInfo?>
+        private lateinit var oceanInfoObserver: Observer<OceanForecastInfo?>
 
         fun bind(item: Badested) = with(itemView) {
             itemView.setOnClickListener {
@@ -79,10 +83,21 @@ class RecyclerAdapter(
             itemView.TextView_water_temp.text = "Missing" //@TODO mye som må orndes
             itemView.TextView_air_temp.text = item.locationForecastInfo.value?.luftTempC.toString()
 
-            item.locationForecastInfo.removeObserver(locationInfoObserver)
+            if (::locationInfoObserver.isInitialized) {
+                item.locationForecastInfo.removeObserver(locationInfoObserver)
+            }
             locationInfoObserver =
                 Observer { t -> itemView.TextView_air_temp.text = t?.luftTempC.toString() }
-            item.locationForecastInfo.observe(this, locationInfoObserver)
+            item.locationForecastInfo.observe(lifecycleOwner, locationInfoObserver)
+
+            if (::oceanInfoObserver.isInitialized) {
+                item.oceanForecastInfo.removeObserver(oceanInfoObserver)
+            }
+            oceanInfoObserver =
+                Observer { t -> itemView.TextView_water_temp.text = t?.vannTempC.toString() }
+            item.oceanForecastInfo.observe(lifecycleOwner, oceanInfoObserver)
+
+
 
         }
     }

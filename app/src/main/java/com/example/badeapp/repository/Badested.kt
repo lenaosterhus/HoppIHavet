@@ -1,5 +1,6 @@
 package com.example.badeapp.repository
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
@@ -10,7 +11,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import com.example.badeapp.api.LocationForecast.RequestManager as LocationForcastAPI
+import com.example.badeapp.api.LocationForecast.RequestManager as LocationForecastAPI
+import com.example.badeapp.api.OceanForecast.RequestManager as OceanForecastAPI
 
 
 sealed class Badested(
@@ -45,10 +47,15 @@ sealed class Badested(
      * happening, or if the user is actually wanting the info.
      */
     fun updateLocationForecast() {
-        if (locationForecastInfo.value?.isOutdated() == true) {
+        Log.d("RESPONSE", "STARTED update for $name")
+        if (locationForecastInfo.value?.isOutdated() != false) {
+            Log.d("RESPONSE", "$name fst")
             CoroutineScope(IO).launch {
                 mutex.withLock {
-                    val newData = LocationForcastAPI.request(lat, lon)
+
+                    Log.d("RESPONSE", name)
+
+                    val newData = LocationForecastAPI.request(lat, lon)
                     //@TODO("Handle potential errors with the new data"
                     // what if new data has less info then the old?
                     if (newData != null) {
@@ -58,9 +65,32 @@ sealed class Badested(
                     }
                 }
             }
+        } else {
+            Log.d("RESPONSE", "$name  error")
         }
     }
 
+
+    fun updateOceanForecast() {
+        if (oceanForecastInfo.value?.isOutdated() != false) {
+            CoroutineScope(IO).launch {
+                //TODO separer mutex
+                mutex.withLock {
+
+                    Log.d("RESPONSE", name)
+
+                    val newData = OceanForecastAPI.request(lat, lon)
+                    //@TODO("Handle potential errors with the new data"
+                    // what if new data has less info then the old?
+                    if (newData != null) {
+                        withContext(Main) {
+                            oceanForecastInfo.value = newData
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     override fun toString(): String {
         return "Badested:${name} "

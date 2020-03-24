@@ -27,7 +27,7 @@ object RequestManager {
             .addConverterFactory(GsonConverterFactory.create())
     }
 
-    private val apiService: ApiService by lazy {
+    internal val apiService: ApiService by lazy {
         Log.d(TAG, "building apiService")
         retrofitBuilder
             .build()
@@ -37,7 +37,10 @@ object RequestManager {
 
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
+        Log.d("RESPONSE", "Running request for a badested.")
         val response = apiService.getData(lat, long)
+
+        Log.d("RESPONSE", response.toString())
 
         if (response.isSuccessful) return response.body()?.summarise()
 
@@ -56,7 +59,7 @@ object RequestManager {
         if (response.code() == 403) {
             Log.d("ERROR", "We are banned from MI!")
         }
-
+        assert(false)
         return null
     }
 
