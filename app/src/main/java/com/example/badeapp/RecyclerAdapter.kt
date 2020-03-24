@@ -74,29 +74,30 @@ class RecyclerAdapter(
         private lateinit var locationInfoObserver: Observer<LocationForecastInfo?>
         private lateinit var oceanInfoObserver: Observer<OceanForecastInfo?>
 
-        fun bind(item: Badested) = with(itemView) {
+        fun bind(badested: Badested) = with(itemView) {
             itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, item)
+                interaction?.onItemSelected(adapterPosition, badested)
             }
 
-            itemView.TextView_location_name.text = item.name
+            itemView.TextView_location_name.text = badested.name
             itemView.TextView_water_temp.text = "Missing" //@TODO mye som må orndes
-            itemView.TextView_air_temp.text = item.locationForecastInfo.value?.luftTempC.toString()
+            itemView.TextView_air_temp.text =
+                badested.locationForecastInfo.value?.luftTempC.toString()
 
+            //Update/change observer for locationforecast
             if (::locationInfoObserver.isInitialized) {
-                item.locationForecastInfo.removeObserver(locationInfoObserver)
+                badested.locationForecastInfo.removeObserver(locationInfoObserver)
             }
             locationInfoObserver =
                 Observer { t -> itemView.TextView_air_temp.text = t?.luftTempC.toString() }
-            item.locationForecastInfo.observe(lifecycleOwner, locationInfoObserver)
+            badested.locationForecastInfo.observe(lifecycleOwner, locationInfoObserver)
 
             if (::oceanInfoObserver.isInitialized) {
-                item.oceanForecastInfo.removeObserver(oceanInfoObserver)
+                badested.oceanForecastInfo.removeObserver(oceanInfoObserver)
             }
             oceanInfoObserver =
                 Observer { t -> itemView.TextView_water_temp.text = t?.vannTempC.toString() }
-            item.oceanForecastInfo.observe(lifecycleOwner, oceanInfoObserver)
-
+            badested.oceanForecastInfo.observe(lifecycleOwner, oceanInfoObserver)
 
 
         }

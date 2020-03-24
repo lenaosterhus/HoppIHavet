@@ -12,7 +12,6 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = "DEBUG - MainActivity"
 
-
     lateinit var viewModel: MainViewModel
     private lateinit var recyclerAdapter: RecyclerAdapter
 
@@ -27,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.setData()
         setDataToView()
-
 
     }
 

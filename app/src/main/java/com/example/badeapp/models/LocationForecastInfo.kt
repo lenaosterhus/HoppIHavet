@@ -8,7 +8,9 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?) {
     }
 
     fun minUnitlOutdated(): Double {
+        //TODO implement this feature, for å gjøre dette må du
         return 0.0
     }
+
 
 }

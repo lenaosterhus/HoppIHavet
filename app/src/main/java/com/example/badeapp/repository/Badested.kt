@@ -1,6 +1,5 @@
 package com.example.badeapp.repository
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
@@ -33,12 +32,15 @@ sealed class Badested(
      * update the weather data. This makes it so we don't request a update for the same
      * Badested on different threads.
      */
-    private val mutex = Mutex()
+    private val locationMutex = Mutex()
+    private val oceanMutex = Mutex()
 
     object Hovedoya : Badested("59.898397", "10.738595", "Hovedøya")
     object Sorenga : Badested("59.894894", "10.724028", "Sørenga")
     object Tjuvholmen : Badested("59.906102", "10.720453", "Tjuvholmen")
     object Paradisbukta : Badested("59.901614", "10.665422", "Paradisbukta")
+
+    //TODO utvid med flere badesteder.
 
 
     /**
@@ -47,44 +49,36 @@ sealed class Badested(
      * happening, or if the user is actually wanting the info.
      */
     fun updateLocationForecast() {
-        Log.d("RESPONSE", "STARTED update for $name")
         if (locationForecastInfo.value?.isOutdated() != false) {
-            Log.d("RESPONSE", "$name fst")
             CoroutineScope(IO).launch {
-                mutex.withLock {
-
-                    Log.d("RESPONSE", name)
-
-                    val newData = LocationForecastAPI.request(lat, lon)
-                    //@TODO("Handle potential errors with the new data"
-                    // what if new data has less info then the old?
-                    if (newData != null) {
-                        withContext(Main) {
-                            locationForecastInfo.value = newData
+                locationMutex.withLock {
+                    if (locationForecastInfo.value?.isOutdated() != false) {
+                        val newData = LocationForecastAPI.request(lat, lon)
+                        //@TODO("Handle potential errors with the new data"
+                        // what if new data has less info then the old?
+                        if (newData != null) {
+                            withContext(Main) {
+                                locationForecastInfo.value = newData
+                            }
                         }
                     }
                 }
             }
-        } else {
-            Log.d("RESPONSE", "$name  error")
         }
     }
-
 
     fun updateOceanForecast() {
         if (oceanForecastInfo.value?.isOutdated() != false) {
             CoroutineScope(IO).launch {
-                //TODO separer mutex
-                mutex.withLock {
-
-                    Log.d("RESPONSE", name)
-
-                    val newData = OceanForecastAPI.request(lat, lon)
-                    //@TODO("Handle potential errors with the new data"
-                    // what if new data has less info then the old?
-                    if (newData != null) {
-                        withContext(Main) {
-                            oceanForecastInfo.value = newData
+                oceanMutex.withLock {
+                    if (oceanForecastInfo.value?.isOutdated() != false) {
+                        val newData = OceanForecastAPI.request(lat, lon)
+                        //@TODO("Handle potential errors with the new data"
+                        // what if new data has less info then the old?
+                        if (newData != null) {
+                            withContext(Main) {
+                                oceanForecastInfo.value = newData
+                            }
                         }
                     }
                 }
