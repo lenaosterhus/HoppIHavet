@@ -27,7 +27,7 @@ object RequestManager {
             .addConverterFactory(GsonConverterFactory.create())
     }
 
-    private val apiService: ApiService by lazy {
+    internal val apiService: ApiService by lazy {
         Log.d(TAG, "building apiService")
         retrofitBuilder
             .build()
@@ -37,11 +37,12 @@ object RequestManager {
 
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
+        Log.d("RESPONSE", "Running request for a badested.")
         val response = apiService.getData(lat, long)
 
+        Log.d("RESPONSE", response.toString())
+
         if (response.isSuccessful) return response.body()?.summarise()
-
-
 
         if (response.code() == 203) {
             TODO("Throttle MI request til de mere essensielle, da denne slutter snart")
@@ -51,10 +52,14 @@ object RequestManager {
             TODO("Throttle all MI requests, ellers blir vi bannet!")
         }
 
+        if (response.code() == 404) {
+            TODO("Error Report error")
+        }
+
         if (response.code() == 403) {
             Log.d("ERROR", "We are banned from MI!")
         }
-
+        assert(false)
         return null
     }
 

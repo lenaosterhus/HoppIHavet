@@ -1,5 +1,6 @@
 package com.example.badeapp.api.OceanForecast
 
+import com.example.badeapp.models.OceanForecastInfo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -10,6 +11,12 @@ internal data class ResponseFormat(
     @Expose @SerializedName("mox:nextIssueTime") val nextIssueTime: NextIssueTime?,
     @Expose @SerializedName("mox:forecast") val forecast: List<Forecast>? // Objektene har ikke navn...?
 ) {
+
+    fun summarize(): OceanForecastInfo {
+        //@TODO ikke bare ta første ellement
+        val vannTempC = forecast?.get(0)?.forecast?.seaTemperature?.content?.toDouble()
+        return OceanForecastInfo(vannTempC)
+    }
 
     data class Point(
         @Expose @SerializedName("gml:pos") val pos: String? // Eks: 10.6654 59.9016 -2147483648
