@@ -99,11 +99,10 @@ data class WeatherForecast (
         @Expose @SerializedName("forest-fire")       val forestFire: UnitValue?,
         @Expose @SerializedName("symbolProbability") val symbolProbability: UnitValue?
 
-
         ) {
         // For logcat
         override fun toString(): String {
-            return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed)"
+            return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed, precipitation=$precipitation)"
         }
     }
 
@@ -113,11 +112,6 @@ data class WeatherForecast (
         @Expose @SerializedName("id")    val id: String?,
         @Expose @SerializedName("value") val value: String?
     )
-1 conflicting file
-WeatherForecast.kt
-...ple/badeapp/models/WeatherForecast.kt
-app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
-1 conflict
 
 
     // Element denoting the wind speed by name, at 10 m above ground, in meters per second or the Beaufort scale.
@@ -131,29 +125,6 @@ app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
 
     // id = Irrelevant, gis i enten percent eller eights
     data class Cloudiness(
-1 conflicting file
-WeatherForecast.kt
-1 conflicting file
-1 conflicting file
-WeatherForecast.kt
-...ple/badeapp/models/WeatherForecast.kt
-app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
-1 conflict
-
-1 conflicting file
-WeatherForecast.kt
-...ple/badeapp/models/WeatherForecast.kt
-app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
-1 conflict
-
-WeatherForecast.kt
-...ple/badeapp/models/WeatherForecast.kt
-app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
-1 conflict
-
-...ple/badeapp/models/WeatherForecast.kt
-app/src/main/java/com/example/badeapp/models/WeatherForecast.kt
-1 conflict
 
         @Expose @SerializedName("id")       val id: String?,
         @Expose @SerializedName("percent")  val percent: String?,

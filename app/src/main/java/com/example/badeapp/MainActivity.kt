@@ -13,20 +13,26 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Business-logic =
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         // Observing changes to viewModel.data
-        viewModel.weatherData.observe(this, Observer {
-            Log.d(TAG, "onCreate WEATHER observer: ${it}")
+        viewModel.weatherData.observe(this, Observer { weatherForecast ->
+            Log.d(TAG, "onCreate WEATHER observer: ${weatherForecast}")
         })
         viewModel.oceanData.observe(this, Observer {
             Log.d(TAG, "onCreate OCEAN observer: ${it}")
         })
 
         viewModel.setData("59.9016", "10.665422")
+
+        // Liste over steder
+        // Hent data for listen over steder
+
     }
 
     // All jobs are canceled if activity is destroyed
