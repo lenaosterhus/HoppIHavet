@@ -8,6 +8,7 @@ package com.example.badeapp.api.LocationForecast
 
 
 import android.util.Log
+import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.LocationForecastInfo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RequestManager {
 
 
-    private val TAG = "DEBUG - MyRetroBuilder"
+    private val TAG = "DEBUG-LocationReqMngr"
     private val BASE_URL_WEATHER =
         "https://in2000-apiproxy.ifi.uio.no/weatherapi/locationforecast/1.9/"
 
@@ -27,7 +28,7 @@ object RequestManager {
             .addConverterFactory(GsonConverterFactory.create())
     }
 
-    internal val apiService: ApiService by lazy {
+    private val apiService: ApiService by lazy {
         Log.d(TAG, "building apiService")
         retrofitBuilder
             .build()
@@ -37,29 +38,12 @@ object RequestManager {
 
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
-        Log.d("RESPONSE", "Running request for a badested.")
-        val response = apiService.getData(lat, long)
-
-        Log.d("RESPONSE", response.toString())
-
-        if (response.isSuccessful) return response.body()?.summarise()
-
-        if (response.code() == 203) {
-            TODO("Throttle MI request til de mere essensielle, da denne slutter snart")
+        if (!MIThrottler.hasStopped()) {
+            val response = apiService.getWeatherData(lat, long)
+            MIThrottler.submitCode(response.code())
+            if (response.isSuccessful)
+                return response.body()?.summarise()
         }
-
-        if (response.code() == 429) {
-            TODO("Throttle all MI requests, ellers blir vi bannet!")
-        }
-
-        if (response.code() == 404) {
-            TODO("Error Report error")
-        }
-
-        if (response.code() == 403) {
-            Log.d("ERROR", "We are banned from MI!")
-        }
-        assert(false)
         return null
     }
 
