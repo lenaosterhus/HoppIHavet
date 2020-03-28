@@ -79,27 +79,26 @@ class RecyclerAdapter(
                 interaction?.onItemSelected(adapterPosition, badested)
             }
 
-            itemView.TextView_location_name.text = badested.name
-            itemView.TextView_water_temp.text = "Missing" //@TODO mye som må orndes
-            itemView.TextView_air_temp.text =
+            itemView.TextView_badested_name.text = badested.name
+            itemView.TextView_badested_water_temp.text = "Missing" //@TODO mye som må orndes
+            itemView.TextView_badested_air_temp.text =
                 badested.locationForecastInfo.value?.luftTempC.toString()
+            itemView.ImageView_badested_image.clipToOutline = true
 
             //Update/change observer for locationforecast
             if (::locationInfoObserver.isInitialized) {
                 badested.locationForecastInfo.removeObserver(locationInfoObserver)
             }
             locationInfoObserver =
-                Observer { t -> itemView.TextView_air_temp.text = t?.luftTempC.toString() }
+                Observer { t -> itemView.TextView_badested_air_temp.text = t?.luftTempC.toString() }
             badested.locationForecastInfo.observe(lifecycleOwner, locationInfoObserver)
 
             if (::oceanInfoObserver.isInitialized) {
                 badested.oceanForecastInfo.removeObserver(oceanInfoObserver)
             }
             oceanInfoObserver =
-                Observer { t -> itemView.TextView_water_temp.text = t?.vannTempC.toString() }
+                Observer { t -> itemView.TextView_badested_water_temp.text = t?.vannTempC.toString() }
             badested.oceanForecastInfo.observe(lifecycleOwner, oceanInfoObserver)
-
-
         }
     }
 
