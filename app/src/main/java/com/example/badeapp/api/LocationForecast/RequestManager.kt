@@ -38,7 +38,7 @@ object RequestManager {
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
         Log.d("RESPONSE", "Running request for a badested.")
-        val response = apiService.getData(lat, long)
+        val response = apiService.getWeatherData(lat, long)
 
         Log.d("RESPONSE", response.toString())
 
