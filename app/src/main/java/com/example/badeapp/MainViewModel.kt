@@ -11,25 +11,29 @@ class MainViewModel: ViewModel() {
     private val TAG = "DEBUG - MainViewModel"
     val badesteder = MutableLiveData<List<Badested>>()
 
-
     lateinit var owner: LifecycleOwner
 
     fun init(activity: MainActivity) {
         Log.d(TAG, "init: initializing...")
         owner = activity
-    }
 
-    fun setData() {
-        Log.d(TAG, "setData: ...")
-        badesteder.value = Badested::class.nestedClasses.map {
+        val badestedList: List<Badested> = Badested::class.nestedClasses.map {
             it.objectInstance as Badested
         }
 
-        badesteder.value?.forEach { badested ->
+        setData(badestedList)
+    }
+
+    private fun setData(badestedList: List<Badested>) {
+        Log.d(TAG, "setData: ...")
+
+        // Setter Location- og OceanForecast for alle badestedene
+        badestedList.forEach { badested ->
             Log.d(TAG, "setData: for $badested")
             badested.updateLocationForecast()
             badested.updateOceanForecast()
         }
+        badesteder.value = badestedList
     }
 
 }

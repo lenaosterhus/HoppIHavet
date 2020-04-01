@@ -23,12 +23,13 @@ class RecyclerAdapter(
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Badested>() {
 
         override fun areItemsTheSame(oldItem: Badested, newItem: Badested): Boolean {
-            return oldItem === newItem
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(oldItem: Badested, newItem: Badested): Boolean {
             // @TODO("Må kansje sjekke at kun verdiene vi er interessert i har endret seg")
-            return oldItem.locationForecastInfo.value == newItem.locationForecastInfo.value
+            return oldItem.locationForecastInfo.value == newItem.locationForecastInfo.value &&
+                    oldItem.oceanForecastInfo.value == newItem.oceanForecastInfo.value
         }
 
     }
@@ -80,7 +81,8 @@ class RecyclerAdapter(
             }
 
             itemView.TextView_badested_name.text = badested.name
-            itemView.TextView_badested_water_temp.text = "Missing" //@TODO mye som må orndes
+            itemView.TextView_badested_water_temp.text =
+                badested.oceanForecastInfo.value?.vannTempC.toString()
             itemView.TextView_badested_air_temp.text =
                 badested.locationForecastInfo.value?.luftTempC.toString()
             itemView.ImageView_badested_image.clipToOutline = true
