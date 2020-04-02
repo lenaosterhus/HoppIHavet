@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 import com.example.badeapp.api.LocationForecast.RequestManager as LocationForecastAPI
 import com.example.badeapp.api.OceanForecast.RequestManager as OceanForecastAPI
 
-
 sealed class Badested(
     val lat: String,
     val lon: String,
@@ -42,6 +41,8 @@ sealed class Badested(
 
     //TODO utvid med flere badesteder.
 
+    val isFinishedUpdatingLocationForecast = MutableLiveData<Boolean>()
+    val isFinishedUpdatingOceanForecast = MutableLiveData<Boolean>()
 
     /**
      * This function updates the weather data if there exists newer data.
@@ -50,6 +51,7 @@ sealed class Badested(
      */
     fun updateLocationForecast() {
         if (locationForecastInfo.value?.isOutdated() != false) {
+            isFinishedUpdatingLocationForecast.value = false
             CoroutineScope(IO).launch {
                 locationMutex.withLock {
                     if (locationForecastInfo.value?.isOutdated() != false) {
@@ -59,6 +61,7 @@ sealed class Badested(
                         if (newData != null) {
                             withContext(Main) {
                                 locationForecastInfo.value = newData
+                                isFinishedUpdatingLocationForecast.value = true
                             }
                         }
                     }
@@ -69,6 +72,7 @@ sealed class Badested(
 
     fun updateOceanForecast() {
         if (oceanForecastInfo.value?.isOutdated() != false) {
+            isFinishedUpdatingOceanForecast.value = false
             CoroutineScope(IO).launch {
                 oceanMutex.withLock {
                     if (oceanForecastInfo.value?.isOutdated() != false) {
@@ -78,6 +82,7 @@ sealed class Badested(
                         if (newData != null) {
                             withContext(Main) {
                                 oceanForecastInfo.value = newData
+                                isFinishedUpdatingOceanForecast.value = true
                             }
                         }
                     }
@@ -87,10 +92,8 @@ sealed class Badested(
     }
 
     override fun toString(): String {
-        return "Badested:${name} "
+        return "Badested: ${name}"
     }
-
-
 }
 
 

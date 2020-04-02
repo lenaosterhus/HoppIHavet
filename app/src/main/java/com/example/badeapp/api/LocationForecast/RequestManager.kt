@@ -21,14 +21,14 @@ object RequestManager {
 
     // lazy = only initialized once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {
-        Log.d(TAG, "building...")
+        Log.d(TAG, "building WEATHER...")
         Retrofit.Builder()
             .baseUrl(BASE_URL_WEATHER)
             .addConverterFactory(GsonConverterFactory.create())
     }
 
     internal val apiService: ApiService by lazy {
-        Log.d(TAG, "building apiService")
+        Log.d(TAG, "building WEATHER apiService")
         retrofitBuilder
             .build()
             .create(ApiService::class.java)
