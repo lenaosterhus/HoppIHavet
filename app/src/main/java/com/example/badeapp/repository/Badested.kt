@@ -1,5 +1,6 @@
 package com.example.badeapp.repository
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
@@ -71,11 +72,11 @@ sealed class Badested(
     }
 
     fun updateOceanForecast() {
-        if (oceanForecastInfo.value?.isOutdated() != false) {
+        if (oceanForecastInfo.value == null || oceanForecastInfo.value!!.isOutdated()) {
             isFinishedUpdatingOceanForecast.value = false
             CoroutineScope(IO).launch {
                 oceanMutex.withLock {
-                    if (oceanForecastInfo.value?.isOutdated() != false) {
+                    if (oceanForecastInfo.value?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
                         val newData = OceanForecastAPI.request(lat, lon)
                         //@TODO("Handle potential errors with the new data"
                         // what if new data has less info then the old?

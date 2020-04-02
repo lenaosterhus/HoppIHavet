@@ -3,6 +3,9 @@ package com.example.badeapp.api.OceanForecast
 import com.example.badeapp.models.OceanForecastInfo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 internal data class ResponseFormat(
@@ -15,7 +18,10 @@ internal data class ResponseFormat(
     fun summarize(): OceanForecastInfo {
         //@TODO ikke bare ta første ellement
         val vannTempC = forecast?.get(0)?.forecast?.seaTemperature?.content?.toDouble()
-        return OceanForecastInfo(vannTempC)
+
+        val nextIssue: String? = nextIssueTime?.timeInstant?.timePosition
+
+        return OceanForecastInfo(vannTempC, nextIssue)
     }
 
     data class Point(
@@ -31,6 +37,7 @@ internal data class ResponseFormat(
         @Expose @SerializedName("gml:TimeInstant") val timeInstant: TimeInstant
     )
 
+    // Format timePosition: "2020-04-02T14:00:00Z"
     data class TimeInstant(
         @Expose @SerializedName("gml:timePosition") val timePosition: String?
     )
