@@ -1,39 +1,57 @@
 package com.example.badeapp
 
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.example.badeapp.UI.MainActivity
 import com.example.badeapp.repository.Badested
 
 class MainViewModel: ViewModel() {
 
     private val TAG = "DEBUG - MainViewModel"
-    val badesteder = MutableLiveData<List<Badested>>()
 
-    lateinit var owner: LifecycleOwner
+    private val _badesteder = MutableLiveData<List<Badested>>()
 
-    fun init(activity: MainActivity) {
+    // Syntaks for å endre måten man kan få tak i badesteder
+    val badesteder: LiveData<List<Badested>>
+        get() = _badesteder
+
+    val countUpdated = MediatorLiveData<Int>()
+
+
+    fun init() {
         Log.d(TAG, "init: initializing...")
-        owner = activity
-
-        val badestedList: List<Badested> = Badested::class.nestedClasses.map {
+        _badesteder.value = Badested::class.nestedClasses.map {
             it.objectInstance as Badested
         }
-
-        setData(badestedList)
+        updateData()
     }
 
-    private fun setData(badestedList: List<Badested>) {
-        Log.d(TAG, "setData: ...")
+    fun updateData() {
+        Log.d(TAG, "updateData: ...")
+
+        countUpdated.value = 0
 
         // Setter Location- og OceanForecast for alle badestedene
-        badestedList.forEach { badested ->
+        _badesteder.value?.forEach { badested ->
             Log.d(TAG, "setData: for $badested")
+
+            // Observerer om LocationForecast er ferdig oppdatert for badestedet
+            countUpdated.addSource(badested.isFinishedUpdatingLocationForecast) { isFinished ->
+                if (isFinished) {
+                    countUpdated.value = countUpdated.value?.plus(1)
+                    Log.d(TAG, "isFinished WEATHER $badested")
+                }
+            }
+            // Observerer om OceanForecast er ferdig oppdatert for badestedet
+            countUpdated.addSource(badested.isFinishedUpdatingOceanForecast) { isFinished ->
+                if (isFinished) {
+                    Log.d(TAG, "isFinished OCEAN $badested")
+                    countUpdated.value = countUpdated.value?.plus(1)
+                }
+            }
+
             badested.updateLocationForecast()
             badested.updateOceanForecast()
         }
-        badesteder.value = badestedList
     }
-
 }

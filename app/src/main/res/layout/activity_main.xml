@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#37474F"
     android:backgroundTintMode="add"
-    tools:context=".MainActivity">
+    tools:context=".UI.MainActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"
