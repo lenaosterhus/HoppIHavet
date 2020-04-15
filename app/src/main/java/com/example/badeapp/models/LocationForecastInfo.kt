@@ -20,7 +20,8 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?) {
 
 
 
-    /* This function looks at the weather data to determine what little icon best summarises
+    /*
+    *  This function looks at the weather data to determine what little icon best summarises
     *  the weather.
     */
     fun getIcon(isDay:Boolean = true): Int {
