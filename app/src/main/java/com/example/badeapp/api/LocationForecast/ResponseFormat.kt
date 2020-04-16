@@ -1,11 +1,14 @@
 package com.example.badeapp.api.LocationForecast
 
 
+import android.util.Log
 import com.example.badeapp.models.LocationForecastInfo
+import com.example.badeapp.util.DATE_FORMAT
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.text.SimpleDateFormat
 import java.util.*
+
+private val TAG = "DEBUG - LFRFormat"
 
 // // created = når data ble hentet ISO
 internal data class ResponseFormat(
@@ -14,44 +17,56 @@ internal data class ResponseFormat(
     @Expose @SerializedName("meta") val meta: Meta?
 ) {
 
-
     fun summarise(): LocationForecastInfo {
 
         val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
-
+        
         val luftTempC: Double? = getCurrentAirTemp()
         val symbol: Int? = getCurrentSymbolNumber()
+        
         var nextIssue: String? = meta?.model?.nextrun
         if (nextIssue == null) {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
-            dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-            nextIssue = dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
+            nextIssue = DATE_FORMAT.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
         }
+        val timeList = getTodaysHourlyForecasts()
 
         return LocationForecastInfo(luftTempC, symbol, nextIssue!!)
     }
 
     /**
-     *  Returns the first time "dataclass" in the response. This
+     *  Returns a list of today's hourly forecasts
      */
-    private fun getCurrentTime(): Time? {
-        return product?.time?.get(0)
+    private fun getTodaysHourlyForecasts(): List<Time>? {
+        var returnedList = product?.time
+        Log.d(TAG, "Antall elementer i ufiltrert liste: ${returnedList?.size}")
+        returnedList = returnedList?.filter {
+            it.durationH() < 2
+        }
+            ?.filter { time ->
+            // Hvis from er samme dag som created --> ta med i listen
+            time.from[8] == created?.get(8) && time.from[9] == created[9]
+        }
+        Log.d(TAG, "Antall elementer i filtrert liste: ${returnedList?.size}")
+        return returnedList
     }
 
     /**
      * When viewing a location you expect a icon showing weather status (cloudy, sunny etc..)
      * MI assigns different symbols for every integer.
+     * @TODO: Flyttes til LocationForecastInfo
      */
     private fun getCurrentSymbolNumber(): Int? {
-        getCurrentTime()?.let {
+        product?.time?.get(0)?.let {
             return it.location?.symbol?.number?.toInt()
         }
         return null
     }
 
+    /**
+     * @TODO: Flyttes til LocationForecastInfo
+     */
     private fun getCurrentAirTemp(): Double? {
-        //@TODO find time that contians temperature (and not the first :S)
-        getCurrentTime()?.let {
+        product?.time?.get(0)?.let {
             return it.location?.temperature?.value?.toDouble()
         }
         return null
@@ -83,6 +98,24 @@ internal data class Time(
     // For logcat
     override fun toString(): String {
         return "\nTime(from=$from, to=$to, location=$location)"
+    }
+
+    // @TODO: Noen av datoene blir parset feil! Sjekk logging
+    fun durationH(): Long {
+        val forecastTo = DATE_FORMAT.parse(to)
+        val forecastFrom = DATE_FORMAT.parse(from)
+
+        if (forecastFrom == null || forecastTo == null) {
+            Log.e(TAG, "Feil i parsing av dato")
+            return Long.MAX_VALUE // @TODO sjekk at dette blir riktig senere også!
+        }
+        val diff = forecastTo.time - forecastFrom.time // millisek
+        val diffH = diff / (1000 * 60 * 60)
+//        Log.d(TAG, "durationH: diffH: $diffH")
+        if (diffH < 0 ) {
+            Log.e(TAG, "Tidsintervall mindre enn 0 - diff = $diffH\nTo:   $to - parsedTo: ${forecastTo}\nFrom: $from - parsedTo: ${forecastFrom}")
+        }
+        return diffH
     }
 }
 
