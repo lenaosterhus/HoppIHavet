@@ -1,13 +1,14 @@
 package com.example.badeapp.models
 
 import android.util.Log
+import com.example.badeapp.R
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.badeapp.R
 
 
 private val TAG = "DEBUG - LocationInfo"
 
+data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String?) {
 
     fun isOutdated(): Boolean {
         return minUntilOutdated() < 10L
@@ -161,8 +162,4 @@ private val TAG = "DEBUG - LocationInfo"
         return R.mipmap.wic_1_day //@TODO change to a missing image sprite
 
     }
-
-
-
-
 }
