@@ -4,8 +4,7 @@ import com.example.badeapp.models.OceanForecastInfo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 internal data class ResponseFormat(
@@ -16,12 +15,19 @@ internal data class ResponseFormat(
 ) {
 
     fun summarize(): OceanForecastInfo {
+
+        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
         //@TODO ikke bare ta første ellement
         val vannTempC = forecast?.get(0)?.forecast?.seaTemperature?.content?.toDouble()
 
-        val nextIssue: String? = nextIssueTime?.timeInstant?.timePosition
+        var nextIssue: String? = nextIssueTime?.timeInstant?.timePosition
+        if (nextIssue == null) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
+            dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+            nextIssue = dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
+        }
 
-        return OceanForecastInfo(vannTempC, nextIssue)
+        return OceanForecastInfo(vannTempC, nextIssue!!)
     }
 
     data class Point(

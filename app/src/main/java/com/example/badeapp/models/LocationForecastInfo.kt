@@ -6,11 +6,11 @@ import java.util.*
 
 private val TAG = "DEBUG - LocationInfo"
 
-data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String?) {
+data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String) {
 
     // Format timePosition: "2020-04-02T14:00:00Z"
     fun isOutdated(): Boolean {
-        return minUntilOutdated() < 0L
+        return minUntilOutdated() < 10L
     }
 
     fun minUntilOutdated(): Long {
@@ -18,21 +18,20 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
         dateFormat.timeZone = TimeZone.getTimeZone("GMT")
 //        Log.d(TAG, "nextIssue: $nextIssue")
 
-        nextIssue?.let {
-            val updateTime: Date? = dateFormat.parse(nextIssue)
-            val currentTime = Date()
+        val updateTime: Date? = dateFormat.parse(nextIssue)
+        val currentTime = Date()
 //            Log.d(TAG, "updateTime: $updateTime")
 //            Log.d(TAG, "currentTime: $currentTime")
 
-            updateTime?.let {
-                val diff = updateTime.time - currentTime.time // millisek
-                val diffMin = diff / (1000 * 60) // min
+        updateTime?.let {
+            val diff = updateTime.time - currentTime.time // millisek
+            val diffMin = diff / (1000 * 60) // min
 //            Log.d(TAG, "diffMin: $diffMin")
 
-                return diffMin
-            }
+            return diffMin
         }
-        return -1
+        Log.d(TAG, "updateTime = null")
+        return 0
     }
 
 

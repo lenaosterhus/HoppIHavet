@@ -4,6 +4,8 @@ package com.example.badeapp.api.LocationForecast
 import com.example.badeapp.models.LocationForecastInfo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.text.SimpleDateFormat
+import java.util.*
 
 // // created = når data ble hentet ISO
 internal data class ResponseFormat(
@@ -15,11 +17,18 @@ internal data class ResponseFormat(
 
     fun summarise(): LocationForecastInfo {
 
+        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
+
         val luftTempC: Double? = getCurrentAirTemp()
         val symbol: Int? = getCurrentSymbolNumber()
-        val nextIssue: String? = meta?.model?.nextrun
+        var nextIssue: String? = meta?.model?.nextrun
+        if (nextIssue == null) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
+            dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+            nextIssue = dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
+        }
 
-        return LocationForecastInfo(luftTempC, symbol, nextIssue)
+        return LocationForecastInfo(luftTempC, symbol, nextIssue!!)
     }
 
     /**
