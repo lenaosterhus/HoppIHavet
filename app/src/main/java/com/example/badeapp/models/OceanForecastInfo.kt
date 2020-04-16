@@ -1,7 +1,7 @@
 package com.example.badeapp.models
 
 import android.util.Log
-import java.text.SimpleDateFormat
+import com.example.badeapp.util.DATE_FORMAT
 import java.util.*
 
 private val TAG = "DEBUG - OceanInfo"
@@ -14,11 +14,9 @@ data class OceanForecastInfo(val vannTempC: Double?, val nextIssue: String) {
     }
 
     fun minUntilOutdated(): Long {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
 //        Log.d(TAG, "nextIssue: $nextIssue")
 
-        val updateTime: Date? = dateFormat.parse(nextIssue)
+        val updateTime: Date? = DATE_FORMAT.parse(nextIssue)
         val currentTime = Date()
 //            Log.d(TAG, "updateTime: $updateTime")
 //            Log.d(TAG, "currentTime: $currentTime")
