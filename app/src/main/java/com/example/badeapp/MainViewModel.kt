@@ -23,18 +23,7 @@ class MainViewModel: ViewModel() {
         _badesteder.value = Badested::class.nestedClasses.map {
             it.objectInstance as Badested
         }
-        updateData()
-    }
-
-    fun updateData() {
-        Log.d(TAG, "updateData: ...")
-
-        countUpdated.value = 0
-
-        // Setter Location- og OceanForecast for alle badestedene
         _badesteder.value?.forEach { badested ->
-            Log.d(TAG, "setData: for $badested")
-
             // Observerer om LocationForecast er ferdig oppdatert for badestedet
             countUpdated.addSource(badested.isFinishedUpdatingLocationForecast) { isFinished ->
                 if (isFinished) {
@@ -51,7 +40,15 @@ class MainViewModel: ViewModel() {
 //                    badested.oceanForecastInfo.value?.minUntilOutdated()
                 }
             }
+        }
+        updateData()
+    }
 
+    fun updateData() {
+        Log.d(TAG, "updateData: ...")
+        countUpdated.value = 0
+        // Setter Location- og OceanForecast for alle badestedene
+        _badesteder.value?.forEach { badested ->
             badested.updateLocationForecast()
             badested.updateOceanForecast()
         }
