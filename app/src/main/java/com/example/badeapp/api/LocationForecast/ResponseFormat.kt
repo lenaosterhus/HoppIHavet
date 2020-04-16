@@ -17,8 +17,9 @@ internal data class ResponseFormat(
 
         val luftTempC: Double? = getCurrentAirTemp()
         val symbol: Int? = getCurrentSymbolNumber()
+        val nextIssue: String? = meta?.model?.nextrun
 
-        return LocationForecastInfo(luftTempC, symbol)
+        return LocationForecastInfo(luftTempC, symbol, nextIssue)
     }
 
     /**
