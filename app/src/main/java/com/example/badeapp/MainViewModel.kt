@@ -29,6 +29,7 @@ class MainViewModel: ViewModel() {
                 if (isFinished) {
                     countUpdated.value = countUpdated.value?.plus(1)
                     Log.d(TAG, "isFinished WEATHER $badested")
+//                    badested.locationForecastInfo.value?.minUntilOutdated()
                 }
             }
             // Observerer om OceanForecast er ferdig oppdatert for badestedet
@@ -36,6 +37,7 @@ class MainViewModel: ViewModel() {
                 if (isFinished) {
                     Log.d(TAG, "isFinished OCEAN $badested")
                     countUpdated.value = countUpdated.value?.plus(1)
+//                    badested.oceanForecastInfo.value?.minUntilOutdated()
                 }
             }
         }

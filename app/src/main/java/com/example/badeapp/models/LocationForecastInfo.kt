@@ -1,21 +1,37 @@
 package com.example.badeapp.models
 
 import android.util.Log
+import java.text.SimpleDateFormat
+import java.util.*
 import com.example.badeapp.R
 
 
-data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?) {
+private val TAG = "DEBUG - LocationInfo"
 
-    private val TAG = "LOC-INF"
 
     fun isOutdated(): Boolean {
-        return minUnitlOutdated() == 0.0
+        return minUntilOutdated() < 10L
     }
 
-    fun minUnitlOutdated(): Double {
-        //TODO implement this feature, for å gjøre dette må du jobbe i api mappen for å hente
-        //ut informasjonen som trengs.
-        return 0.0
+    fun minUntilOutdated(): Long {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
+        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+//        Log.d(TAG, "nextIssue: $nextIssue")
+
+        val updateTime: Date? = dateFormat.parse(nextIssue)
+        val currentTime = Date()
+//            Log.d(TAG, "updateTime: $updateTime")
+//            Log.d(TAG, "currentTime: $currentTime")
+
+        updateTime?.let {
+            val diff = updateTime.time - currentTime.time // millisek
+            val diffMin = diff / (1000 * 60) // min
+//            Log.d(TAG, "diffMin: $diffMin")
+
+            return diffMin
+        }
+        Log.d(TAG, "updateTime = null")
+        return 0
     }
 
 
