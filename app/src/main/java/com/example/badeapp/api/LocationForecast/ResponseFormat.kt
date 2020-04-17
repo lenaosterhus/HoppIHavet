@@ -3,12 +3,14 @@ package com.example.badeapp.api.LocationForecast
 
 import android.util.Log
 import com.example.badeapp.models.LocationForecastInfo
-import com.example.badeapp.util.DATE_FORMAT
+import com.example.badeapp.util.inTheFutureFromNow
+import com.example.badeapp.util.minBetween
+import com.example.badeapp.util.toGmtIsoString
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.util.*
 
-private val TAG = "DEBUG - LFRFormat"
+private const val TAG = "DEBUG - LFRFormat"
+private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
 
 // // created = når data ble hentet ISO
 internal data class ResponseFormat(
@@ -22,13 +24,9 @@ internal data class ResponseFormat(
         val luftTempC: Double? =9.9 //@TODO remove
         val symbol: Int? = 1  //@TODO remove
 
-        //Set next issue time to the given time or at NEXT_UPDATE... time
-        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000 // 20 min
-        val nextIssue: String = meta?.model?.nextrun ?:
-            DATE_FORMAT.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
-
+        //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
+        val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN).toGmtIsoString()
         val timeList = getHourlyForecasts()
-
 
         return LocationForecastInfo(luftTempC, symbol, nextIssue)
     }
@@ -40,7 +38,7 @@ internal data class ResponseFormat(
         val returnedList = product?.time?.toMutableList() ?: return null
         return returnedList
             .filter {
-                it.durationH() < 2 //Make sure only the ones that last a  hour are included
+                it.durationMin() < 61L //Make sure only the ones that last a  hour are included
             }.sortedBy {
                 it.from
             }
@@ -96,21 +94,15 @@ internal data class Time(
     }
 
     // @TODO: Noen av datoene blir parset feil! Sjekk logging
-    fun durationH(): Long {
-        val forecastTo = DATE_FORMAT.parse(to)
-        val forecastFrom = DATE_FORMAT.parse(from)
+    fun durationMin(): Long {
+        val diff = minBetween(from,to)
 
-        if (forecastFrom == null || forecastTo == null) {
-            Log.e(TAG, "Feil i parsing av dato")
-            return Long.MAX_VALUE // @TODO sjekk at dette blir riktig senere også!
+        if (diff == null ) {
+            Log.e(TAG, "Tidsintervall diff ikke funnet for:\n\tTo:   $to,\n\tFrom: $from\n")
+        } else if ( diff < 0L) {
+            Log.e(TAG, "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n")
         }
-        val diff = forecastTo.time - forecastFrom.time // millisek
-        val diffH = diff / (1000 * 60 * 60)
-//        Log.d(TAG, "durationH: diffH: $diffH")
-        if (diffH < 0 ) {
-            Log.e(TAG, "Tidsintervall mindre enn 0 - diff = $diffH\nTo:   $to - parsedTo: ${forecastTo}\nFrom: $from - parsedTo: $forecastFrom")
-        }
-        return diffH
+        return diff!!
     }
 }
 

@@ -1,10 +1,10 @@
 package com.example.badeapp.models
 
-import android.util.Log
-import com.example.badeapp.util.DATE_FORMAT
-import java.util.*
+import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.minBetween
 
-private val TAG = "DEBUG - OceanInfo"
+
+private const val TAG = "DEBUG - OceanInfo"
 
 data class OceanForecastInfo(val vannTempC: Double?, val nextIssue: String) {
 
@@ -15,21 +15,7 @@ data class OceanForecastInfo(val vannTempC: Double?, val nextIssue: String) {
 
     fun minUntilOutdated(): Long {
 //        Log.d(TAG, "nextIssue: $nextIssue")
-
-        val updateTime: Date? = DATE_FORMAT.parse(nextIssue)
-        val currentTime = Date()
-//            Log.d(TAG, "updateTime: $updateTime")
-//            Log.d(TAG, "currentTime: $currentTime")
-
-        updateTime?.let {
-            val diff = updateTime.time - currentTime.time // millisek
-            val diffMin = diff / (1000 * 60) // min
-//            Log.d(TAG, "diffMin: $diffMin")
-
-            return diffMin
-        }
-        Log.d(TAG, "updateTime = null")
-        return 0
+        return minBetween(currentTime(), nextIssue)!!
     }
 
 }

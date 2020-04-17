@@ -2,8 +2,8 @@ package com.example.badeapp.models
 
 import android.util.Log
 import com.example.badeapp.R
-import com.example.badeapp.util.DATE_FORMAT
-import java.util.*
+import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.minBetween
 
 
 private const val TAG = "DEBUG - LocationInfo"
@@ -11,29 +11,12 @@ private const val TAG = "DEBUG - LocationInfo"
 data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String) {
 
     fun isOutdated(): Boolean {
-        return minUntilOutdated() < 10L
+        return minUntilOutdated() < 0L
     }
 
     fun minUntilOutdated(): Long {
-//        Log.d(TAG, "nextIssue: $nextIssue")
-
-        val updateTime: Date? = DATE_FORMAT.parse(nextIssue)
-        val currentTime = Date()
-//            Log.d(TAG, "updateTime: $updateTime")
-//            Log.d(TAG, "currentTime: $currentTime")
-
-        updateTime?.let {
-            val diff = updateTime.time - currentTime.time // millisek
-            val diffMin = diff / (1000 * 60) // min
-//          Log.d(TAG, "diffMin: $diffMin")
-
-            return diffMin
-        }
-        Log.d(TAG, "updateTime = null")
-        return 0
+        return minBetween(currentTime(), nextIssue)!!
     }
-
-
 
     /*
     *  This function looks at the weather data to determine what little icon best summarises
