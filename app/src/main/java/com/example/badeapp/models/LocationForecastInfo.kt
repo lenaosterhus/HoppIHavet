@@ -10,6 +10,8 @@ private const val TAG = "DEBUG - LocationInfo"
 
 data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String) {
 
+    data class Forecast(val from : String, val to: String, val luftTempC: Double?, val symbol: Int?)
+
     fun isOutdated(): Boolean {
         return minUntilOutdated() < 0L
     }

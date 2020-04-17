@@ -104,7 +104,6 @@ class TimeToolsTest {
 
     @Test
     fun inTheFutureFromNow() {
-
         val now = inTheFutureFromNow(0)
         var future = inTheFutureFromNow(10)
         assertTrue(now.before(future))
@@ -112,9 +111,6 @@ class TimeToolsTest {
         Thread.sleep(100L)
         future = inTheFutureFromNow(0)
         assertTrue(now.before(future))
-
-
-
     }
 
     @Test

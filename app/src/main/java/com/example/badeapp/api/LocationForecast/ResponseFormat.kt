@@ -26,10 +26,21 @@ internal data class ResponseFormat(
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
         val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN).toGmtIsoString()
-        val timeList = getHourlyForecasts()
+
+        //val timeList = getHourlyForecasts()
+        //val hourlyForecasts = merge(timeList)
 
         return LocationForecastInfo(luftTempC, symbol, nextIssue)
     }
+
+    /*
+    private fun merge(timeList: List<Time>): List<LocationForecastInfo.Forecast> {
+        var grouped = timeList.groupBy { time -> time.from}.values
+        grouped.map{
+            group -> summarise(group)
+        }
+    }
+    */
 
     /**
      *  Returns a list of today's hourly forecasts
