@@ -19,59 +19,54 @@ internal data class ResponseFormat(
 
     fun summarise(): LocationForecastInfo {
 
-        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
-        
-        val luftTempC: Double? = getCurrentAirTemp()
-        val symbol: Int? = getCurrentSymbolNumber()
-        
-        var nextIssue: String? = meta?.model?.nextrun
-        if (nextIssue == null) {
-            nextIssue = DATE_FORMAT.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
-        }
-        val timeList = getTodaysHourlyForecasts()
+        val luftTempC: Double? =9.9 //@TODO remove
+        val symbol: Int? = 1  //@TODO remove
 
-        return LocationForecastInfo(luftTempC, symbol, nextIssue!!)
+        //Set next issue time to the given time or at NEXT_UPDATE... time
+        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000 // 20 min
+        val nextIssue: String = meta?.model?.nextrun ?:
+            DATE_FORMAT.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
+
+        val timeList = getHourlyForecasts()
+
+
+        return LocationForecastInfo(luftTempC, symbol, nextIssue)
     }
 
     /**
      *  Returns a list of today's hourly forecasts
      */
-    private fun getTodaysHourlyForecasts(): List<Time>? {
-        var returnedList = product?.time
-        Log.d(TAG, "Antall elementer i ufiltrert liste: ${returnedList?.size}")
-        returnedList = returnedList?.filter {
-            it.durationH() < 2
-        }
-            ?.filter { time ->
-            // Hvis from er samme dag som created --> ta med i listen
-            time.from[8] == created?.get(8) && time.from[9] == created[9]
-        }
-        Log.d(TAG, "Antall elementer i filtrert liste: ${returnedList?.size}")
+    private fun getHourlyForecasts(): List<Time>? {
+        val returnedList = product?.time?.toMutableList() ?: return null
         return returnedList
+            .filter {
+                it.durationH() < 2 //Make sure only the ones that last a  hour are included
+            }.sortedBy {
+                it.from
+            }
     }
 
-    /**
+    /** @TODO remove
      * When viewing a location you expect a icon showing weather status (cloudy, sunny etc..)
      * MI assigns different symbols for every integer.
      * @TODO: Flyttes til LocationForecastInfo
-     */
+
     private fun getCurrentSymbolNumber(): Int? {
         product?.time?.get(0)?.let {
             return it.location?.symbol?.number?.toInt()
         }
         return null
     }
+    */
 
-    /**
-     * @TODO: Flyttes til LocationForecastInfo
-     */
+    /* @TODO REMOVE
     private fun getCurrentAirTemp(): Double? {
         product?.time?.get(0)?.let {
             return it.location?.temperature?.value?.toDouble()
         }
         return null
     }
-
+    */
 }
 
 // ----- TOP LEVEL -----
@@ -113,7 +108,7 @@ internal data class Time(
         val diffH = diff / (1000 * 60 * 60)
 //        Log.d(TAG, "durationH: diffH: $diffH")
         if (diffH < 0 ) {
-            Log.e(TAG, "Tidsintervall mindre enn 0 - diff = $diffH\nTo:   $to - parsedTo: ${forecastTo}\nFrom: $from - parsedTo: ${forecastFrom}")
+            Log.e(TAG, "Tidsintervall mindre enn 0 - diff = $diffH\nTo:   $to - parsedTo: ${forecastTo}\nFrom: $from - parsedTo: $forecastFrom")
         }
         return diffH
     }

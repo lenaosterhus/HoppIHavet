@@ -6,9 +6,9 @@ import com.example.badeapp.util.DATE_FORMAT
 import java.util.*
 
 
-private val TAG = "DEBUG - LocationInfo"
+private const val TAG = "DEBUG - LocationInfo"
 
-data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String?) {
+data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String) {
 
     fun isOutdated(): Boolean {
         return minUntilOutdated() < 10L
@@ -25,19 +25,12 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
         updateTime?.let {
             val diff = updateTime.time - currentTime.time // millisek
             val diffMin = diff / (1000 * 60) // min
-//            Log.d(TAG, "diffMin: $diffMin")
+//          Log.d(TAG, "diffMin: $diffMin")
 
             return diffMin
         }
         Log.d(TAG, "updateTime = null")
         return 0
-    }
-
-    private fun getCurrentSymbolNumber(): Int? {
-//        getCurrentTime()?.let {
-//            return it.location?.symbol?.number?.toInt()
-//        }
-        return null
     }
 
 

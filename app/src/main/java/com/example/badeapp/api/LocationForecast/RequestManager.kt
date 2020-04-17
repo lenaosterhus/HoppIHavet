@@ -15,8 +15,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RequestManager {
 
 
-    private val TAG = "DEBUG - MyRetroBuilder"
-    private val BASE_URL_WEATHER =
+    private const val TAG = "DEBUG - MyRetroBuilder"
+    private const val BASE_URL_WEATHER =
         "https://in2000-apiproxy.ifi.uio.no/weatherapi/locationforecast/1.9/"
 
     // lazy = only initialized once, use the same instance
@@ -27,7 +27,7 @@ object RequestManager {
             .addConverterFactory(GsonConverterFactory.create())
     }
 
-    internal val apiService: ApiService by lazy {
+    private val apiService: ApiService by lazy {
         Log.d(TAG, "building WEATHER apiService")
         retrofitBuilder
             .build()
