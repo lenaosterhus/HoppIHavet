@@ -8,9 +8,9 @@ import com.example.badeapp.util.minBetween
 
 private const val TAG = "DEBUG - LocationInfo"
 
-data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String) {
+data class LocationForecastInfo(val nextIssue: String, val forecasts: List<Forecast>) {
 
-    data class Forecast(val from : String, val to: String, val luftTempC: Double?, val symbol: Int?)
+    data class Forecast(val from : String, val to: String, val airTempC: Double?, val symbol: Int?)
 
     fun isOutdated(): Boolean {
         return minUntilOutdated() < 0L
@@ -20,11 +20,27 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
         return minBetween(currentTime(), nextIssue)!!
     }
 
+    fun getCurrentAirTempC() : Double? {
+        return forecasts.getOrNull(0)?.airTempC
+    }
+
+    /**
+     * Returns the symbol that best represents the weather prediction for the next hour.
+     */
+    private fun getCurrentSymbol() : Int? {
+        //@TODO change so that it gets this hours forecast
+        return forecasts.find { forecast -> forecast.symbol != null  }?.symbol
+    }
+
     /*
     *  This function looks at the weather data to determine what little icon best summarises
-    *  the weather.
+    *  the weather. It returns the symbol that best summarises the current weather forecast.
     */
-    fun getIcon(isDay:Boolean = true): Int? {
+    fun getIcon(): Int? {
+
+        val isDay = true //@TODO figure out if it is daytime aka is the sun up?
+
+        val symbol = getCurrentSymbol()
 
         if (isDay) {
             when (symbol) {
@@ -138,7 +154,7 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
             }
         }
 
-        Log.w(TAG,"The given symbol ${symbol} is not mapped to a image!")
+        Log.w(TAG,"The given symbol $symbol is not mapped to a image!")
         return null
 
     }

@@ -19,18 +19,22 @@ internal data class ResponseFormat(
     @Expose @SerializedName("meta") val meta: Meta?
 ) {
 
-    fun summarise(): LocationForecastInfo {
+    fun summarise(): LocationForecastInfo? {
 
-        val luftTempC: Double? =9.9 //@TODO remove
-        val symbol: Int? = 1  //@TODO remove
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
         val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN).toGmtIsoString()
+        val timeList = getHourlyForecasts()?.map{ time -> time.summarise() }
+        Log.d(TAG,"timelist -> ${timeList.toString()}")
 
-        //val timeList = getHourlyForecasts()
-        //val hourlyForecasts = merge(timeList)
-
-        return LocationForecastInfo(luftTempC, symbol, nextIssue)
+        if(timeList == null){
+            //@TODO log this as a faital error
+            return null
+        } else {
+            val result = LocationForecastInfo(nextIssue,timeList)
+            //Log.d(TAG,result.toString())
+            return result
+        }
     }
 
     /*
@@ -104,10 +108,15 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    // @TODO: Noen av datoene blir parset feil! Sjekk logging
+    fun summarise() : LocationForecastInfo.Forecast {
+        val symbol = location?.getSymbol()
+        val luftTempC = location?.getLuftTempC()
+        return LocationForecastInfo.Forecast(from,to,luftTempC,symbol)
+    }
+
+
     fun durationMin(): Long {
         val diff = minBetween(from,to)
-
         if (diff == null ) {
             Log.e(TAG, "Tidsintervall diff ikke funnet for:\n\tTo:   $to,\n\tFrom: $from\n")
         } else if ( diff < 0L) {
@@ -183,6 +192,32 @@ internal data class Location(
     // For logcat
     override fun toString(): String {
         return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed, precipitation=$precipitation)"
+    }
+
+    /**
+     * Gets the number representing the weather icon in symbol that summarises the forecast.
+     * It seems that MI is undergoing some api changes, and are moving the
+     * weather icon around. This method looks around for where it could be.
+     */
+    fun getSymbol() : Int? {
+
+        weather?.symbol?.also { return it }
+        symbol?.number?.also { return it }
+        // symbolProbability?.value  Hva er det denne verdien står for?
+
+        return null
+    }
+
+    fun getLuftTempC(): Double? {
+        val unit = temperature?.unit
+        val temp = temperature?.value?.toDouble()
+
+        if(unit == "celsius") {
+            return temp
+        } else if (unit != null) {
+            Log.e(TAG,"The given unit for temperature was unexpected. $unit != expected, celsius")
+        }
+        return null
     }
 }
 
@@ -264,7 +299,7 @@ internal data class Pressure(
 // id = "cloud", "sun" etc., number = id fra WeatherIcon API
 internal data class Symbol(
     @Expose @SerializedName("id") val id: String?,
-    @Expose @SerializedName("number") val number: String?
+    @Expose @SerializedName("number") val number: Int?
 )
 
 internal data class TemperatureProbability(
