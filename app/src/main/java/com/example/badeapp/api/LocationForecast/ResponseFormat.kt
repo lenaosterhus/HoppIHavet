@@ -29,6 +29,7 @@ internal data class ResponseFormat(
 
         if(timeList == null){
             //@TODO log this as a faital error
+            Log.d(TAG, "timeList as not pressent when summarising LocationForecastInfo!")
             return null
         } else {
             val result = LocationForecastInfo(nextIssue,timeList)
@@ -37,17 +38,10 @@ internal data class ResponseFormat(
         }
     }
 
-    /*
-    private fun merge(timeList: List<Time>): List<LocationForecastInfo.Forecast> {
-        var grouped = timeList.groupBy { time -> time.from}.values
-        grouped.map{
-            group -> summarise(group)
-        }
-    }
-    */
+
 
     /**
-     *  Returns a list of today's hourly forecasts
+     *  Returns a list of the hourlyForecasts
      */
     private fun getHourlyForecasts(): List<Time>? {
         val returnedList = product?.time?.toMutableList() ?: return null
@@ -59,27 +53,6 @@ internal data class ResponseFormat(
             }
     }
 
-    /** @TODO remove
-     * When viewing a location you expect a icon showing weather status (cloudy, sunny etc..)
-     * MI assigns different symbols for every integer.
-     * @TODO: Flyttes til LocationForecastInfo
-
-    private fun getCurrentSymbolNumber(): Int? {
-        product?.time?.get(0)?.let {
-            return it.location?.symbol?.number?.toInt()
-        }
-        return null
-    }
-    */
-
-    /* @TODO REMOVE
-    private fun getCurrentAirTemp(): Double? {
-        product?.time?.get(0)?.let {
-            return it.location?.temperature?.value?.toDouble()
-        }
-        return null
-    }
-    */
 }
 
 // ----- TOP LEVEL -----
@@ -110,8 +83,8 @@ internal data class Time(
 
     fun summarise() : LocationForecastInfo.Forecast {
         val symbol = location?.getSymbol()
-        val luftTempC = location?.getLuftTempC()
-        return LocationForecastInfo.Forecast(from,to,luftTempC,symbol)
+        val airTempC = location?.getAirTempC()
+        return LocationForecastInfo.Forecast(from,to,airTempC,symbol)
     }
 
 
@@ -203,12 +176,13 @@ internal data class Location(
 
         weather?.symbol?.also { return it }
         symbol?.number?.also { return it }
+
         // symbolProbability?.value  Hva er det denne verdien står for?
 
         return null
     }
 
-    fun getLuftTempC(): Double? {
+    fun getAirTempC(): Double? {
         val unit = temperature?.unit
         val temp = temperature?.value?.toDouble()
 
@@ -216,7 +190,11 @@ internal data class Location(
             return temp
         } else if (unit != null) {
             Log.e(TAG,"The given unit for temperature was unexpected. $unit != expected, celsius")
+        } else if(temp != null){
+            Log.e(TAG,"The unit for temperature was not given (null), assuming celsius!")
+            return temp
         }
+
         return null
     }
 }
