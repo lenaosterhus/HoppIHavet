@@ -46,6 +46,10 @@ fun minBetween(from:Date, to:Date) : Long {
     return (to.time - from.time).div(60L * 1000L) //Convert from mill to min
 }
 
+fun Date.minBetwene(other: Date): Long = minBetweene(this, other)
+
+
+
 // --------------------------------------------------------------------------------
 
 /**
