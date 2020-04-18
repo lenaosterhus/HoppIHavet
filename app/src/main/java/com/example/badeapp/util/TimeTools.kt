@@ -1,6 +1,5 @@
 package com.example.badeapp.util
 
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -85,6 +84,16 @@ fun String.parseAsGmtIsoDate() : Date? {
     } catch (e : Exception) {
         return null
     }
+}
+
+/**
+ * Returns true if the given date lies betwene (inclusive) before and after.
+ * @return before <= it <= after
+ */
+fun Date.liesBetweneInclusive(before: Date, after: Date): Boolean {
+    val low = before.time == this.time || this.after(before)
+    val high = after.time == this.time || this.before(after)
+    return low && high
 }
 
 

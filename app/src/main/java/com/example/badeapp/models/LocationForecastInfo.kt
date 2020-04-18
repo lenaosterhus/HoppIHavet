@@ -3,7 +3,9 @@ package com.example.badeapp.models
 import android.util.Log
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.minBetween
+import com.example.badeapp.util.parseAsGmtIsoDate
 
 
 private const val TAG = "DEBUG - LocationInfo"
@@ -21,15 +23,30 @@ data class LocationForecastInfo(val nextIssue: String, val forecasts: List<Forec
     }
 
     fun getCurrentAirTempC() : Double? {
-        return forecasts.getOrNull(0)?.airTempC
+        val now = currentTime()
+        return forecasts
+            .find { hour ->
+                now.liesBetweneInclusive(
+                    hour.from.parseAsGmtIsoDate()!!,
+                    hour.to.parseAsGmtIsoDate()!!
+                )
+            }
+            ?.airTempC
     }
 
     /**
      * Returns the symbol that best represents the weather prediction for the next hour.
      */
     private fun getCurrentSymbol() : Int? {
-        //@TODO change so that it gets this hours forecast
-        return forecasts.find { forecast -> forecast.symbol != null  }?.symbol
+        val now = currentTime()
+        return forecasts
+            .find { hour ->
+                now.liesBetweneInclusive(
+                    hour.from.parseAsGmtIsoDate()!!,
+                    hour.to.parseAsGmtIsoDate()!!
+                )
+            }
+            ?.symbol
     }
 
     /*

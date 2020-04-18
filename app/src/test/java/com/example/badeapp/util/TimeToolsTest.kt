@@ -1,15 +1,14 @@
 package com.example.badeapp.util
 
-import org.junit.Test
-
 import org.junit.Assert.*
+import org.junit.Test
 
 class TimeToolsTest {
 
     @Test
     fun minBetwene() {
 
-        //@TODO write more tests, maybe gather some time
+        //@TODO write more tests, maybe gather some unusual ISO8601 gmt times
 
         //Test that the time between a time and itself is zero
         var res = minBetween("2020-04-17T14:00:00Z","2020-04-17T14:00:00Z")

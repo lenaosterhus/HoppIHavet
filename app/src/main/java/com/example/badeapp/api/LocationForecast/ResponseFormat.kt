@@ -24,18 +24,34 @@ internal data class ResponseFormat(
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
         val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN).toGmtIsoString()
-        val timeList = getHourlyForecasts()?.map{ time -> time.summarise() }
-        Log.d(TAG,"timelist -> ${timeList.toString()}")
+        val timeList =
+            getHourlyForecasts()?.map { time -> time.summarise() }?.toMutableList() ?: return null
 
-        if(timeList == null){
-            //@TODO log this as a faital error
-            Log.d(TAG, "timeList as not pressent when summarising LocationForecastInfo!")
-            return null
-        } else {
-            val result = LocationForecastInfo(nextIssue,timeList)
-            //Log.d(TAG,result.toString())
-            return result
+        /*
+        Now there are some forecasts that overlap. One forecast goes from 11 -> 12, while the other
+        shows a snapshot from 12->12. We need to combine them because some of them might hold values
+        the other lacks, like the snapshot holding the symbol.
+        */
+        for ((index, value) in timeList.withIndex()) {
+            for (other in timeList) {
+                if (other.from == other.to && (value.from == other.from || value.to == other.to)) {
+                    timeList[index] = LocationForecastInfo.Forecast(
+                        value.from,
+                        value.to,
+                        value.airTempC ?: other.airTempC,
+                        value.symbol ?: other.symbol
+                    )
+                    continue
+                }
+            }
         }
+
+        val timeListCleaned = timeList.filter {
+            it.from != it.to
+        }
+
+        return LocationForecastInfo(nextIssue, timeListCleaned)
+
     }
 
 
@@ -183,11 +199,16 @@ internal data class Location(
     }
 
     fun getAirTempC(): Double? {
+
+        //Log.d(TAG,this.toString())
+
         val unit = temperature?.unit
         val temp = temperature?.value?.toDouble()
 
+
         if(unit == "celsius") {
-            return temp
+            Log.d(TAG, "Returning $temp")
+            return temp!!
         } else if (unit != null) {
             Log.e(TAG,"The given unit for temperature was unexpected. $unit != expected, celsius")
         } else if(temp != null){
@@ -195,6 +216,7 @@ internal data class Location(
             return temp
         }
 
+        Log.d(TAG, "Returning null")
         return null
     }
 }

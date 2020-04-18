@@ -1,6 +1,5 @@
 package com.example.badeapp.repository
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
@@ -64,7 +63,7 @@ sealed class Badested(
     object Ulvoya:          Badested("59.866607", "10.770682", "Sydstranda, Ulvøya", "Sydstranda ligger helt sør på Ulvøya og drives av Ulvøy Vel og er den eneste badeplassen i Oslofjorden (?) hvor du må betale inngangspenger. Resultatet er en ren og ordentlig badeplass.\n" + "Sanden på stranda er ganske fin, en del mindre steiner fra oppsmuldrede bergknauser i vannkanten.\n" + "Fint stupetårn med 2 avsatser henholdsvis 3 og 5 meter høyt. NB det er litt grunnt ved stupetårnet, pass på å følge annvisningene på skiltet om å hoppe/stupe rett fram og vise ekstra forsiktighet ved lavvann.\n" + "Et gjennomregulert område med mange skilt. Ro på stranden etter kl 22. Stranden stenges kl 24.00. Hunder har ikke adgang til standa i badesesongen, 1. mai - 1. september")
 
 
-    //@TODO replace tekst with womething we have written ourself
+    //@TODO replace text with something we have written ourself
 
 
     val isFinishedUpdatingLocationForecast = MutableLiveData<Boolean>()
@@ -82,7 +81,6 @@ sealed class Badested(
                 locationMutex.withLock {
                     if (locationForecastInfo.value?.isOutdated() != false) {
                         val newData = LocationForecastAPI.request(lat, lon)
-                        //@TODO("Handle potential errors with the new data"
                         // what if new data has less info then the old?
                         if (newData != null) {
                             withContext(Main) {
@@ -103,7 +101,6 @@ sealed class Badested(
                 oceanMutex.withLock {
                     if (oceanForecastInfo.value?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
                         val newData = OceanForecastAPI.request(lat, lon)
-                        //@TODO("Handle potential errors with the new data"
                         // what if new data has less info then the old?
                         if (newData != null) {
                             withContext(Main) {
@@ -118,7 +115,7 @@ sealed class Badested(
     }
 
     override fun toString(): String {
-        return "Badested: ${name}"
+        return "Badested: $name"
     }
 }
 
