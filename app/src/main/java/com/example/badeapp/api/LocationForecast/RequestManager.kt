@@ -11,9 +11,11 @@ import android.util.Log
 import com.example.badeapp.models.LocationForecastInfo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Headers
 
 object RequestManager {
 
+    private const val USER_HEADER = "GRUPPE-38"
 
     private val TAG = "DEBUG - MyRetroBuilder"
     private val BASE_URL_WEATHER =
@@ -34,7 +36,7 @@ object RequestManager {
             .create(ApiService::class.java)
     }
 
-
+    @Headers("user-key: $USER_HEADER")
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
         Log.d("RESPONSE", "Running request for a badested.")
