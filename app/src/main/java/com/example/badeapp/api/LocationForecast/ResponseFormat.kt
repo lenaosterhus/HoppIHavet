@@ -206,14 +206,21 @@ internal data class Location(
         val temp = temperature?.value?.toDouble()
 
 
-        if(unit == "celsius") {
-            Log.d(TAG, "Returning $temp")
-            return temp!!
-        } else if (unit != null) {
-            Log.e(TAG,"The given unit for temperature was unexpected. $unit != expected, celsius")
-        } else if(temp != null){
-            Log.e(TAG,"The unit for temperature was not given (null), assuming celsius!")
-            return temp
+        when {
+            unit == "celsius" -> {
+                Log.d(TAG, "Returning $temp")
+                return temp!!
+            }
+            unit != null -> {
+                Log.e(
+                    TAG,
+                    "The given unit for temperature was unexpected. $unit != expected, celsius"
+                )
+            }
+            temp != null -> {
+                Log.e(TAG, "The unit for temperature was not given (null), assuming celsius!")
+                return temp
+            }
         }
 
         Log.d(TAG, "Returning null")

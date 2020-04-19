@@ -13,41 +13,38 @@ import java.util.*
 fun minBetween(from:String, toDate:Date) : Long? {
     //Denne kan ikke deles mellom felere tråder da  SimpleDateFormat ikke er threadsafe, derfor
     //kan denne ikke deles.
-    val date_format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
-    val fromDate = date_format.parse(from) ?: return null
+    val fromDate = dateFormat.parse(from) ?: return null
     return minBetween(fromDate, toDate)
 }
 
 fun minBetween(fromDate:Date, to:String) : Long? {
     //Denne kan ikke deles mellom felere tråder da  SimpleDateFormat ikke er threadsafe, derfor
     //kan denne ikke deles.
-    val date_format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no","NO")).also {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
-    val toDate = date_format.parse(to) ?: return null
+    val toDate = dateFormat.parse(to) ?: return null
     return minBetween(fromDate,toDate)
 }
 
 fun minBetween(from:String, to:String) : Long? {
     //Denne kan ikke deles mellom felere tråder da  SimpleDateFormat ikke er threadsafe, derfor
     //kan denne ikke deles.
-    val date_format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no","NO")).also {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
 
-    val toDate = date_format.parse(to) ?: return null
-    val fromDate = date_format.parse(from) ?: return null
+    val toDate = dateFormat.parse(to) ?: return null
+    val fromDate = dateFormat.parse(from) ?: return null
     return minBetween(fromDate,toDate)
 }
 
 fun minBetween(from:Date, to:Date) : Long {
     return (to.time - from.time).div(60L * 1000L) //Convert from mill to min
 }
-
-fun Date.minBetwene(other: Date): Long = minBetweene(this, other)
-
 
 
 // --------------------------------------------------------------------------------
@@ -72,19 +69,19 @@ fun currentTime() : Date {
  * Extends date objects to return string representations of gmt iso time.
  */
 fun Date.toGmtIsoString() : String {
-    val date_format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no","NO")).also {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
-    return date_format.format(this)
+    return dateFormat.format(this)
 }
 
 
 fun String.parseAsGmtIsoDate() : Date? {
-    val date_format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no","NO")).also {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     try {
-        return date_format.parse(this)
+        return dateFormat.parse(this)
     } catch (e : Exception) {
         return null
     }
