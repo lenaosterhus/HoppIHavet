@@ -36,7 +36,7 @@ object RequestManager {
             .create(ApiService::class.java)
     }
 
-    @Headers("user-key: $USER_HEADER")
+    @Headers("User-Agent: $USER_HEADER")
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
         Log.d("RESPONSE", "Running request for a badested.")
