@@ -56,16 +56,17 @@ object MIThrottler {
     fun submitCode(code: Int) {
         require(code in 0..599)
 
-        if (code == 200) return
-        if (code == 203) throttle()
-        if (code == 429) {
-            throttle()
-            halt()
+        when (code) {
+            200 -> return //All good
+            203 -> throttle() //Plz slow down
+            429 -> {          //If we dont stop now, we are banned
+                throttle()
+                halt()
+            }
+            403 -> Log.d("MI-BAN-HAMMER!!", "We are banned from MI!")
+            //@TODO log if there was a 404, or any unknown response.
         }
-        if (code == 403) Log.d("MI-BAN-HAMMER!!", "We are banned from MI!")
 
-
-        //@TODO log if there was a 404, or any unknown response.
 
 
     }
