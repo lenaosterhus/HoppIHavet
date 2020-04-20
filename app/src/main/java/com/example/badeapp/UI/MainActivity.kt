@@ -39,28 +39,31 @@ class MainActivity : AppCompatActivity(),
             badested.symbol.observe(this, Observer {
                 Log.d(TAG, "symbol is set for $badested")
                 Log.d(TAG, "Updating badesteder RC view for $badested symbol")
-                updateRecyclerAdapter()
+                updateRecyclerAdapter(badested)
             })
             badested.waterTempC.observe(this, Observer {
                 Log.d(TAG, "water temp is set for $badested")
                 Log.d(TAG, "Updating badesteder RC view for $badested water temp")
-                updateRecyclerAdapter()
+                updateRecyclerAdapter(badested)
             })
             badested.airTempC.observe(this, Observer {
                 Log.d(TAG, "air temp is set for $badested")
                 Log.d(TAG, "Updating badesteder RC view for $badested air temp")
-                updateRecyclerAdapter()
+                updateRecyclerAdapter(badested)
             })
         }
         Log.d(TAG, "Updating badesteder RC view for everyone")
         updateRecyclerAdapter()
     }
 
-    private fun updateRecyclerAdapter() {
-        viewModel.badesteder.value?.let {
-            recyclerAdapter.submitList(it)
-        }
+    private fun updateRecyclerAdapter(badested: Badested) {
+        recyclerAdapter.notifyChangeFor(badested)
     }
+
+    private fun updateRecyclerAdapter() {
+        recyclerAdapter.updateRecyclerAdapter()
+    }
+
 
     private fun initRecyclerView() {
         recycler_view.apply {

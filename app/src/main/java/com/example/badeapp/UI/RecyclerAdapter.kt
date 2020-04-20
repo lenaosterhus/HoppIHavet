@@ -3,8 +3,6 @@ package com.example.badeapp.UI
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
 import com.example.badeapp.repository.Badested
@@ -13,30 +11,14 @@ import kotlinx.android.synthetic.main.rv_element.view.*
 private val TAG = "DEBUG - Adapter"
 
 class RecyclerAdapter(
+    val badesteder: MutableList<Badested>,
     private val interaction: Interaction? = null
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Badested>() {
 
-        // Called to check whether two objects represent the same item.
-        // Compare something unique!
-        override fun areItemsTheSame(oldItem: Badested, newItem: Badested): Boolean {
-            return false
-            //return (oldItem.lat == newItem.lat && oldItem.lon == newItem.lon)
-        }
-
-        // Called to check whether two items have the same data.
-        // Used to make the update to the list item
-        override fun areContentsTheSame(oldItem: Badested, newItem: Badested): Boolean {
-            return false //We have no way of knowing if badested has changed.
-        }
-    }
-
-    // AsyncListDiffer is an improvement on DiffUtil. Instead of calculating the amount of
-    // update operations on the main thread, it calculates them on a background thread.
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
-
+    //maps badested -> view holder that contain them
+    private val visible = mutableMapOf<Badested, RecyclerView.ViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -53,21 +35,38 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ElementView -> {
-                holder.bind(differ.currentList[position])
+
+                holder.badested?.let {
+                    visible -= it
+                }
+                visible[badesteder[position]] = holder
+                holder.bind(badesteder[position])
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return differ.currentList.size
+        return badesteder.size
     }
 
-    /** If a List is already present, a diff will be computed asynchronously on a background thread.
-    * When the diff is computed, it will be applied,
-    * and the new List will be swapped in.
-     */
-    fun submitList(list: List<Badested>) {
-        differ.submitList(list)
+    fun notifyChangeFor(badested: Badested) {
+        if (badested in visible) {
+            when (val holder = visible[badested]) {
+                is ElementView -> {
+                    holder.drawData()
+                }
+            }
+        }
+    }
+
+    fun updateRecyclerAdapter() {
+        visible.entries.forEach {
+            when (val holder = it.value) {
+                is ElementView -> {
+                    holder.drawData()
+                }
+            }
+        }
     }
 
     class ElementView
@@ -76,16 +75,22 @@ class RecyclerAdapter(
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(badested: Badested) = with(itemView) {
-            itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, badested)
-            }
+        var badested: Badested? = null
 
-            itemView.TextView_badested_name.text = badested.name
+        fun bind(sted: Badested) = with(itemView) {
+            badested = sted
+            itemView.setOnClickListener {
+                interaction?.onItemSelected(adapterPosition, sted)
+            }
+            drawData()
+        }
+
+        fun drawData() {
+            itemView.TextView_badested_name.text = badested?.name ?: ""
             itemView.TextView_badested_water_temp.text =
-                badested.waterTempC.value?.toString() ?: ""
+                badested?.waterTempC?.value?.toString() ?: ""
             itemView.TextView_badested_air_temp.text =
-                badested.airTempC.value?.toString() ?: ""
+                badested?.airTempC?.value?.toString() ?: ""
             itemView.ImageView_badested_image.clipToOutline = true
         }
     }
