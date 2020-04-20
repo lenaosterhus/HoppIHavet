@@ -8,18 +8,20 @@ import com.example.badeapp.R
 import com.example.badeapp.repository.Badested
 import kotlinx.android.synthetic.main.rv_element.view.*
 
-private val TAG = "DEBUG - Adapter"
+private const val TAG = "DEBUG - Adapter"
 
 class RecyclerAdapter(
-    val badesteder: MutableList<Badested>,
+    private val badesteder: List<Badested>,
     private val interaction: Interaction? = null
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-
     //maps badested -> view holder that contain them
-    private val visible = mutableMapOf<Badested, RecyclerView.ViewHolder>()
+    private val visible = mutableMapOf<Badested, ElementView>()
 
+    // .................................
+    // Recycler adapter methods
+    //---------------------------------
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         return ElementView(
@@ -49,28 +51,24 @@ class RecyclerAdapter(
         return badesteder.size
     }
 
-    fun notifyChangeFor(badested: Badested) {
-        if (badested in visible) {
-            when (val holder = visible[badested]) {
-                is ElementView -> {
-                    holder.drawData()
-                }
-            }
-        }
-    }
 
+    // ........................................
+    // Methods for keeping shown data updated
+    //-----------------------------------------
+    fun notifyChangeFor(badested: Badested) {
+        visible[badested]?.drawData()
+    }
     fun updateRecyclerAdapter() {
         visible.entries.forEach {
-            when (val holder = it.value) {
-                is ElementView -> {
-                    holder.drawData()
-                }
-            }
+            it.value.drawData()
         }
     }
 
-    class ElementView
-    constructor(
+
+    // ..........................................
+    // The RV element containing the information
+    //-------------------------------------------
+    class ElementView(
         itemView: View,
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
@@ -94,6 +92,7 @@ class RecyclerAdapter(
             itemView.ImageView_badested_image.clipToOutline = true
         }
     }
+
 
     interface Interaction {
         fun onItemSelected(position: Int, item: Badested)
