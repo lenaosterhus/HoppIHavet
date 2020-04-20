@@ -10,7 +10,7 @@ import com.example.badeapp.util.parseAsGmtIsoDate
 
 private const val TAG = "DEBUG - LocationInfo"
 
-data class LocationForecastInfo(val nextIssue: String, val forecasts: List<Forecast>) {
+data class LocationForecastInfo(val nextIssue: String, private val forecasts: List<Forecast>) {
 
     data class Forecast(val from : String, val to: String, val airTempC: Double?, val symbol: Int?)
 
@@ -22,13 +22,14 @@ data class LocationForecastInfo(val nextIssue: String, val forecasts: List<Forec
         return minBetween(currentTime(), nextIssue)!!
     }
 
+
     fun getCurrentAirTempC() : Double? {
         val now = currentTime()
         return forecasts
-            .find { hour ->
+            .find { forecast ->
                 now.liesBetweneInclusive(
-                    hour.from.parseAsGmtIsoDate()!!,
-                    hour.to.parseAsGmtIsoDate()!!
+                    forecast.from.parseAsGmtIsoDate()!!,
+                    forecast.to.parseAsGmtIsoDate()!!
                 )
             }
             ?.airTempC
@@ -37,7 +38,7 @@ data class LocationForecastInfo(val nextIssue: String, val forecasts: List<Forec
     /**
      * Returns the symbol that best represents the weather prediction for the next hour.
      */
-    private fun getCurrentSymbol() : Int? {
+    fun getCurrentSymbol(): Int? {
         val now = currentTime()
         return forecasts
             .find { hour ->

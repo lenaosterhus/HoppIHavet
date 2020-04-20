@@ -18,7 +18,12 @@ internal data class ResponseFormat(
     @Expose @SerializedName("created") val created: String?,
     @Expose @SerializedName("meta") val meta: Meta?
 ) {
-
+    /**
+     * Returns a location forecast info object that is a nicer summary of the data present in this class.
+     * As of this time it contains two values. The nextIssue, that says when we are allowed to
+     * request new forecasts (for this location), and a list of LocationForecastInfo.Forecasts.
+     * The forecasts are a summary of this class's Time objects, containing the
+     */
     fun summarise(): LocationForecastInfo? {
 
 
@@ -32,25 +37,26 @@ internal data class ResponseFormat(
         shows a snapshot from 12->12. We need to combine them because some of them might hold values
         the other lacks, like the snapshot holding the symbol.
         */
-        for ((index, value) in timeList.withIndex()) {
-            for (other in timeList) {
-                if (other.from == other.to && (value.from == other.from || value.to == other.to)) {
-                    timeList[index] = LocationForecastInfo.Forecast(
+
+        val noTimeSpan = timeList.filter { time -> time.from == time.to }
+        val oneHourSpan = timeList.filter { time -> time.from != time.to }.toMutableList()
+
+        for ((index, value) in oneHourSpan.withIndex()) {
+            for (other in noTimeSpan) {
+                if (value.from == other.from || value.to == other.to) {
+                    oneHourSpan[index] = LocationForecastInfo.Forecast(
                         value.from,
                         value.to,
                         value.airTempC ?: other.airTempC,
                         value.symbol ?: other.symbol
                     )
-                    continue
+                    break
                 }
             }
         }
 
-        val timeListCleaned = timeList.filter {
-            it.from != it.to
-        }
 
-        return LocationForecastInfo(nextIssue, timeListCleaned)
+        return LocationForecastInfo(nextIssue, oneHourSpan)
 
     }
 
@@ -64,8 +70,6 @@ internal data class ResponseFormat(
         return returnedList
             .filter {
                 it.durationMin() < 61L //Make sure only the ones that last a  hour are included
-            }.sortedBy {
-                it.from
             }
     }
 
@@ -190,8 +194,8 @@ internal data class Location(
      */
     fun getSymbol() : Int? {
 
-        weather?.symbol?.also { return it }
-        symbol?.number?.also { return it }
+        weather?.symbol?.let { return it }
+        symbol?.number?.let { return it }
 
         // symbolProbability?.value  Hva er det denne verdien står for?
 
@@ -207,10 +211,11 @@ internal data class Location(
 
 
         when {
-            unit == "celsius" -> {
+            unit == "celsius" && temp != null -> {
                 Log.d(TAG, "Returning $temp")
-                return temp!!
+                return temp
             }
+
             unit != null -> {
                 Log.e(
                     TAG,

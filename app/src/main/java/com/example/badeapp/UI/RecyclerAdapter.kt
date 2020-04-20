@@ -1,6 +1,5 @@
 package com.example.badeapp.UI
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,14 +22,14 @@ class RecyclerAdapter(
         // Called to check whether two objects represent the same item.
         // Compare something unique!
         override fun areItemsTheSame(oldItem: Badested, newItem: Badested): Boolean {
-            return (oldItem.lat == newItem.lat && oldItem.lon == newItem.lon)
+            return false
+            //return (oldItem.lat == newItem.lat && oldItem.lon == newItem.lon)
         }
 
         // Called to check whether two items have the same data.
         // Used to make the update to the list item
         override fun areContentsTheSame(oldItem: Badested, newItem: Badested): Boolean {
-            return oldItem.oceanForecastInfo.value == newItem.oceanForecastInfo.value &&
-                    oldItem.locationForecastInfo.value == newItem.locationForecastInfo.value
+            return false //We have no way of knowing if badested has changed.
         }
     }
 
@@ -84,9 +83,9 @@ class RecyclerAdapter(
 
             itemView.TextView_badested_name.text = badested.name
             itemView.TextView_badested_water_temp.text =
-                badested.oceanForecastInfo.value?.vannTempC.toString()
+                badested.waterTempC.value?.toString() ?: ""
             itemView.TextView_badested_air_temp.text =
-                badested.locationForecastInfo.value?.getCurrentAirTempC().toString()
+                badested.airTempC.value?.toString() ?: ""
             itemView.ImageView_badested_image.clipToOutline = true
         }
     }
