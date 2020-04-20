@@ -4,11 +4,14 @@ import android.util.Log
 import com.example.badeapp.models.OceanForecastInfo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Headers
 
 object RequestManager {
 
-    private val TAG = "DEBUG - MyRetroBuilder"
-    private val BASE_URL_OCEAN = "https://in2000-apiproxy.ifi.uio.no/weatherapi/oceanforecast/0.9/"
+    private const val TAG = "DEBUG - MyRetroBuilder"
+    private const val BASE_URL_OCEAN =
+        "https://in2000-apiproxy.ifi.uio.no/weatherapi/oceanforecast/0.9/"
+    private const val USER_HEADER = "GRUPPE-38"
 
     // lazy = only initialize once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {
@@ -25,6 +28,7 @@ object RequestManager {
             .create(ApiService::class.java)
     }
 
+    @Headers("User-Agent: $USER_HEADER")
     suspend fun request(lat: String, long: String): OceanForecastInfo? {
 
         Log.d("RESPONSE", "Running request for a badested.")
