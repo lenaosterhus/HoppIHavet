@@ -73,10 +73,6 @@ sealed class Badested(
 
     //@TODO replace text with something we have written ourself
 
-
-    val isFinishedUpdatingLocationForecast = MutableLiveData<Boolean>()
-    val isFinishedUpdatingOceanForecast = MutableLiveData<Boolean>()
-
     /**
      * This function updates the weather data if there exists newer data.
      * This function does not consider things like how many other requests are
@@ -86,7 +82,7 @@ sealed class Badested(
      */
     private fun updateLocationForecast() {
         if (locationForecastInfo?.isOutdated() != false) {
-            isFinishedUpdatingLocationForecast.value = false
+            if (locationMutex.isLocked) return;
             CoroutineScope(IO).launch {
                 locationMutex.withLock {
                     if (locationForecastInfo?.isOutdated() != false) {
@@ -108,7 +104,7 @@ sealed class Badested(
 
     private fun updateOceanForecast() {
         if (oceanForecastInfo == null || oceanForecastInfo!!.isOutdated()) {
-            isFinishedUpdatingOceanForecast.value = false
+            if (oceanMutex.isLocked) return;
             CoroutineScope(IO).launch {
                 oceanMutex.withLock {
                     if (oceanForecastInfo?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
