@@ -12,9 +12,11 @@ import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.LocationForecastInfo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Headers
 
 object RequestManager {
 
+    private const val USER_HEADER = "GRUPPE-38"
 
     private val TAG = "DEBUG-LocationReqMngr"
     private val BASE_URL_WEATHER =
@@ -22,20 +24,21 @@ object RequestManager {
 
     // lazy = only initialized once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {
-        Log.d(TAG, "building...")
+        Log.d(TAG, "building WEATHER...")
         Retrofit.Builder()
             .baseUrl(BASE_URL_WEATHER)
             .addConverterFactory(GsonConverterFactory.create())
     }
 
+
     private val apiService: ApiService by lazy {
-        Log.d(TAG, "building apiService")
+        Log.d(TAG, "building WEATHER apiService")
         retrofitBuilder
             .build()
             .create(ApiService::class.java)
     }
 
-
+    @Headers("User-Agent: $USER_HEADER")
     suspend fun request(lat: String, long: String): LocationForecastInfo? {
 
         if (!MIThrottler.hasStopped()) {

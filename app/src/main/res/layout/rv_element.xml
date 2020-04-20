@@ -1,53 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="5dp"
-    app:cardCornerRadius="4dp"
+    app:cardCornerRadius="30dp"
     app:cardPreventCornerOverlap="false"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        >
 
-        <LinearLayout
-            android:id="@+id/container1"
+        <ImageView
+            android:id="@+id/ImageView_badested_image"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
+            android:layout_height="100dp"
+            android:layout_margin="15dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round_outline"
+            android:contentDescription="@string/badested"
+            android:padding="0dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/default_image_background" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ImageView_badested_image">
+
+            <TextView
+                android:id="@+id/TextView_badested_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Badestednavn"
+                android:textColor="#000"
+                android:textSize="20sp"
+                android:textStyle="italic"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/TextView_badested_air_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Air"
+                android:textColor="#000"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/symbol_air"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TextView_badested_name" />
+
+            <ImageView
+                android:id="@+id/symbol_air"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/symbol_air_foreground"
+                android:contentDescription="@string/symbol_for_air"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="@+id/TextView_badested_air_temp"
+                app:layout_constraintStart_toEndOf="@+id/TextView_badested_air_temp"
+                app:layout_constraintTop_toBottomOf="@+id/TextView_badested_name" />
+
+            <TextView
+                android:id="@+id/TextView_badested_water_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:text="Wtr"
+                android:textColor="#000"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@+id/symbol_water"
+                app:layout_constraintLeft_toLeftOf="@+id/symbol_air"
+                app:layout_constraintStart_toEndOf="@+id/symbol_air"
+                app:layout_constraintTop_toBottomOf="@+id/TextView_badested_name" />
+
+            <ImageView
+                android:id="@+id/symbol_water"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/symbol_water_foreground"
+                android:contentDescription="@string/symbol_for_water"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="@+id/TextView_badested_water_temp"
+                app:layout_constraintStart_toEndOf="@+id/TextView_badested_water_temp"
+                app:layout_constraintTop_toBottomOf="@+id/TextView_badested_name" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toEndOf="@+id/container_1"
+            app:layout_constraintTop_toBottomOf="@id/ImageView_badested_image">
 
-            <TextView
-                android:id="@+id/TextView_location_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:textSize="19sp"
-                android:text="TestNavn" />
+            <ImageView
+                android:id="@+id/symbol_weather"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@android:drawable/btn_star_big_on"
+                android:contentDescription="@string/symbol_for_weather"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
 
-            <TextView
-                android:id="@+id/TextView_air_temp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textSize="15sp"
-                android:text="Test AirTemp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/TextView_water_temp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textSize="15sp"
-                android:text="Test WaterTemp" />
-        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
