@@ -20,12 +20,19 @@ sealed class Badested(
     val name: String,
     val info: String
 ) {
+
+    private val TAG = "BADESTED"
+
+    private var oceanForecastInfo: OceanForecastInfo? = null
+    private var locationForecastInfo: LocationForecastInfo? = null
+
     /**
      * Other parts of the code use these values to observe changes. This is part of the mvvm
      * philosophy.
      */
-    var locationForecastInfo = MutableLiveData<LocationForecastInfo?>()
-    var oceanForecastInfo = MutableLiveData<OceanForecastInfo?>()
+    var airTempC = MutableLiveData<Double?>()
+    var waterTempC = MutableLiveData<Double?>()
+    var symbol = MutableLiveData<Int?>()
 
     /**
      * We cant have multiple threads trying to update the weather data at once, we
@@ -64,30 +71,29 @@ sealed class Badested(
     object Ulvoya:          Badested("59.866607", "10.770682", "Sydstranda, Ulvøya", "Sydstranda ligger helt sør på Ulvøya og drives av Ulvøy Vel og er den eneste badeplassen i Oslofjorden (?) hvor du må betale inngangspenger. Resultatet er en ren og ordentlig badeplass.\n" + "Sanden på stranda er ganske fin, en del mindre steiner fra oppsmuldrede bergknauser i vannkanten.\n" + "Fint stupetårn med 2 avsatser henholdsvis 3 og 5 meter høyt. NB det er litt grunnt ved stupetårnet, pass på å følge annvisningene på skiltet om å hoppe/stupe rett fram og vise ekstra forsiktighet ved lavvann.\n" + "Et gjennomregulert område med mange skilt. Ro på stranden etter kl 22. Stranden stenges kl 24.00. Hunder har ikke adgang til standa i badesesongen, 1. mai - 1. september")
 
 
-    //@TODO replace tekst with womething we have written ourself
-
-
-    val isFinishedUpdatingLocationForecast = MutableLiveData<Boolean>()
-    val isFinishedUpdatingOceanForecast = MutableLiveData<Boolean>()
+    //@TODO replace text with something we have written ourself
 
     /**
      * This function updates the weather data if there exists newer data.
      * This function does not consider things like how many other requests are
      * happening, or if the user is actually wanting the info.
+     *
+     * The deferred boolean tells us
      */
-    fun updateLocationForecast() {
-        if (locationForecastInfo.value?.isOutdated() != false) {
-            isFinishedUpdatingLocationForecast.value = false
+    private fun updateLocationForecast() {
+        if (locationForecastInfo?.isOutdated() != false) {
+            if (locationMutex.isLocked) return;
             CoroutineScope(IO).launch {
                 locationMutex.withLock {
-                    if (locationForecastInfo.value?.isOutdated() != false) {
+                    if (locationForecastInfo?.isOutdated() != false) {
                         val newData = LocationForecastAPI.request(lat, lon)
-                        //@TODO("Handle potential errors with the new data"
                         // what if new data has less info then the old?
                         if (newData != null) {
                             withContext(Main) {
-                                locationForecastInfo.value = newData
-                                isFinishedUpdatingLocationForecast.value = true
+                                locationForecastInfo = newData
+                                airTempC.value = locationForecastInfo?.getCurrentAirTempC()
+                                symbol.value = locationForecastInfo?.getCurrentSymbol()
+                                Log.d(TAG, "Air temp & Symbol set for $name")
                             }
                         }
                     }
@@ -96,19 +102,19 @@ sealed class Badested(
         }
     }
 
-    fun updateOceanForecast() {
-        if (oceanForecastInfo.value == null || oceanForecastInfo.value!!.isOutdated()) {
-            isFinishedUpdatingOceanForecast.value = false
+    private fun updateOceanForecast() {
+        if (oceanForecastInfo == null || oceanForecastInfo!!.isOutdated()) {
+            if (oceanMutex.isLocked) return;
             CoroutineScope(IO).launch {
                 oceanMutex.withLock {
-                    if (oceanForecastInfo.value?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
+                    if (oceanForecastInfo?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
                         val newData = OceanForecastAPI.request(lat, lon)
-                        //@TODO("Handle potential errors with the new data"
                         // what if new data has less info then the old?
                         if (newData != null) {
                             withContext(Main) {
-                                oceanForecastInfo.value = newData
-                                isFinishedUpdatingOceanForecast.value = true
+                                oceanForecastInfo = newData
+                                waterTempC.value = oceanForecastInfo?.vannTempC
+                                Log.d(TAG, "Water temp set for $this")
                             }
                         }
                     }
@@ -117,8 +123,41 @@ sealed class Badested(
         }
     }
 
+
+    fun updateAll() {
+        updateAirTempC()
+        updateWaterTempC()
+        updateSymbol()
+    }
+
+    fun updateAirTempC() {
+        updateLocationForecast()
+        locationForecastInfo?.let {
+            Log.d(TAG, "Air temp set for $this")
+            airTempC.value = it.getCurrentAirTempC()
+        }
+    }
+
+    fun updateWaterTempC() {
+        updateOceanForecast()
+        oceanForecastInfo?.let {
+            Log.d(TAG, "Water temp set for $this")
+            waterTempC.value = it.vannTempC
+        }
+
+    }
+
+    fun updateSymbol() {
+        updateLocationForecast()
+        locationForecastInfo?.let {
+            Log.d(TAG, "Symbol set for $this")
+            symbol.value = it.getCurrentSymbol()
+        }
+    }
+
+
     override fun toString(): String {
-        return "Badested: ${name}"
+        return "Badested: $name"
     }
 }
 

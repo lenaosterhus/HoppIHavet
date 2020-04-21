@@ -2,59 +2,76 @@ package com.example.badeapp.models
 
 import android.util.Log
 import com.example.badeapp.R
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.liesBetweneInclusive
+import com.example.badeapp.util.minBetween
+import com.example.badeapp.util.parseAsGmtIsoDate
 
 
-private val TAG = "DEBUG - LocationInfo"
+private const val TAG = "DEBUG - LocationInfo"
 
-data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val nextIssue: String?) {
+data class LocationForecastInfo(val nextIssue: String, private val forecasts: List<Forecast>) {
+
+    data class Forecast(val from : String, val to: String, val airTempC: Double?, val symbol: Int?)
 
     fun isOutdated(): Boolean {
-        return minUntilOutdated() < 10L
+        return minUntilOutdated() < 0L
     }
 
     fun minUntilOutdated(): Long {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-//        Log.d(TAG, "nextIssue: $nextIssue")
-
-        val updateTime: Date? = dateFormat.parse(nextIssue)
-        val currentTime = Date()
-//            Log.d(TAG, "updateTime: $updateTime")
-//            Log.d(TAG, "currentTime: $currentTime")
-
-        updateTime?.let {
-            val diff = updateTime.time - currentTime.time // millisek
-            val diffMin = diff / (1000 * 60) // min
-//            Log.d(TAG, "diffMin: $diffMin")
-
-            return diffMin
-        }
-        Log.d(TAG, "updateTime = null")
-        return 0
+        return minBetween(currentTime(), nextIssue)!!
     }
 
 
+    fun getCurrentAirTempC() : Double? {
+        val now = currentTime()
+        return forecasts
+            .find { forecast ->
+                now.liesBetweneInclusive(
+                    forecast.from.parseAsGmtIsoDate()!!,
+                    forecast.to.parseAsGmtIsoDate()!!
+                )
+            }
+            ?.airTempC
+    }
+
+    /**
+     * Returns the symbol that best represents the weather prediction for the next hour.
+     */
+    fun getCurrentSymbol(): Int? {
+        val now = currentTime()
+        return forecasts
+            .find { hour ->
+                now.liesBetweneInclusive(
+                    hour.from.parseAsGmtIsoDate()!!,
+                    hour.to.parseAsGmtIsoDate()!!
+                )
+            }
+            ?.symbol
+    }
 
     /*
     *  This function looks at the weather data to determine what little icon best summarises
-    *  the weather.
+    *  the weather. It returns the symbol that best summarises the current weather forecast.
     */
-    fun getIcon(isDay:Boolean = true): Int {
+    fun getIcon(): Int? {
+
+        val isDay = true //@TODO figure out if it is daytime aka is the sun up?
+
+        val symbol = getCurrentSymbol()
 
         if (isDay) {
             when (symbol) {
-                1 -> return R.mipmap.wic_1_day //Sun
-                2 -> return R.mipmap.wic_2_day //LightCloud
-                3 -> return R.mipmap.wic_day_3 //PartlyCloud
-                4 -> return R.mipmap.wic_day_4 //Cloud
-                5 -> return R.mipmap.wic_day_5 //LightRainSun
-                6 -> return R.mipmap.wic_day_6 //LightRainThunderSun
-                7 -> return R.mipmap.wic_day_7 //SleetSun
-                8 -> return R.mipmap.wic_day_8 //SnowSun
-                9 -> return R.mipmap.wic_day_9 //LightRain
-                10 -> return R.mipmap.wic_10_day //Rain
+                1  -> return R.mipmap.wic_1_day //Sun - @TODO!
+                2  -> return R.mipmap.wic_2_day //LightCloud - @TODO!
+                3  -> return R.mipmap.wic_day_3 //PartlyCloud
+                4  -> return R.mipmap.wic_day_4 //Cloud
+                5  -> return R.mipmap.wic_day_5 //LightRainSun
+                6  -> return R.mipmap.wic_day_6 //LightRainThunderSun
+                7  -> return R.mipmap.wic_day_7 //SleetSun
+                8  -> return R.mipmap.wic_day_8 //SnowSun
+                9  -> return R.mipmap.wic_day_9 //LightRain
+                10 -> return R.mipmap.wic_10_day //Rain - @TODO!
                 11 -> return R.mipmap.wic_day_11 //RainThunder
                 12 -> return R.mipmap.wic_day_12 //Sleet
                 13 -> return R.mipmap.wic_day_13 //Snow
@@ -89,15 +106,15 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
             }
         } else {
             when (symbol) {
-                1 -> return R.mipmap.wic_night_1 //Sun
-                2 -> return R.mipmap.wic_night_2 //LightCloud
-                3 -> return R.mipmap.wic_night_3 //PartlyCloud
-                4 -> return R.mipmap.wic_night_4 //Cloud
-                5 -> return R.mipmap.wic_night_5 //LightRainSun
-                6 -> return R.mipmap.wic_night_6 //LightRainThunderSun
-                7 -> return R.mipmap.wic_night_7 //SleetSun
-                8 -> return R.mipmap.wic_night_8 //SnowSun
-                9 -> return R.mipmap.wic_night_9 //LightRain
+                1  -> return R.mipmap.wic_night_1 //Sun
+                2  -> return R.mipmap.wic_night_2 //LightCloud
+                3  -> return R.mipmap.wic_night_3 //PartlyCloud
+                4  -> return R.mipmap.wic_night_4 //Cloud
+                5  -> return R.mipmap.wic_night_5 //LightRainSun
+                6  -> return R.mipmap.wic_night_6 //LightRainThunderSun
+                7  -> return R.mipmap.wic_night_7 //SleetSun
+                8  -> return R.mipmap.wic_night_8 //SnowSun
+                9  -> return R.mipmap.wic_night_9 //LightRain
                 10 -> return R.mipmap.wic_night_10 //Rain
                 11 -> return R.mipmap.wic_night_11 //RainThunder
                 12 -> return R.mipmap.wic_night_12 //Sleet
@@ -131,7 +148,6 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
                 49 -> return R.mipmap.wic_night_49 //LightSnow
                 50 -> return R.mipmap.wic_night_50 //HeavySnow
 
-
                 //Polar (midnight sun/constant dark) values
                 101 -> return R.mipmap.wic_night_101 //Sun (polar)
                 102 -> return R.mipmap.wic_night_102 //LightCloud
@@ -153,13 +169,11 @@ data class LocationForecastInfo(val luftTempC: Double?, val symbol: Int?, val ne
                 143 -> return R.mipmap.wic_night_143 //HeavySleetSun
                 144 -> return R.mipmap.wic_night_144 //LightSnowSun
                 145 -> return R.mipmap.wic_night_145 //HeavySnowSun
-
             }
         }
 
-
-        Log.w(TAG,"The given symbol ${symbol} is not mapped to a image!")
-        return R.mipmap.wic_1_day //@TODO change to a missing image sprite
+        Log.w(TAG,"The given symbol $symbol is not mapped to a image!")
+        return null
 
     }
 }

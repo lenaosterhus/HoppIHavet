@@ -1,11 +1,16 @@
 package com.example.badeapp.api.LocationForecast
 
 
+import android.util.Log
 import com.example.badeapp.models.LocationForecastInfo
+import com.example.badeapp.util.inTheFutureFromNow
+import com.example.badeapp.util.minBetween
+import com.example.badeapp.util.toGmtIsoString
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.text.SimpleDateFormat
-import java.util.*
+
+private const val TAG = "DEBUG - LFRFormat"
+private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
 
 // // created = når data ble hentet ISO
 internal data class ResponseFormat(
@@ -13,48 +18,59 @@ internal data class ResponseFormat(
     @Expose @SerializedName("created") val created: String?,
     @Expose @SerializedName("meta") val meta: Meta?
 ) {
+    /**
+     * Returns a location forecast info object that is a nicer summary of the data present in this class.
+     * As of this time it contains two values. The nextIssue, that says when we are allowed to
+     * request new forecasts (for this location), and a list of LocationForecastInfo.Forecasts.
+     * The forecasts are a summary of this class's Time objects, containing the
+     */
+    fun summarise(): LocationForecastInfo? {
 
 
-    fun summarise(): LocationForecastInfo {
+        //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
+        val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN).toGmtIsoString()
+        val timeList =
+            getHourlyForecasts()?.map { time -> time.summarise() }?.toMutableList() ?: return null
 
-        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
+        /*
+        Now there are some forecasts that overlap. One forecast goes from 11 -> 12, while the other
+        shows a snapshot from 12->12. We need to combine them because some of them might hold values
+        the other lacks, like the snapshot holding the symbol.
+        */
 
-        val luftTempC: Double? = getCurrentAirTemp()
-        val symbol: Int? = getCurrentSymbolNumber()
-        var nextIssue: String? = meta?.model?.nextrun
-        if (nextIssue == null) {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
-            dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-            nextIssue = dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
+        val noTimeSpan = timeList.filter { time -> time.from == time.to }
+        val oneHourSpan = timeList.filter { time -> time.from != time.to }.toMutableList()
+
+        for ((index, value) in oneHourSpan.withIndex()) {
+            for (other in noTimeSpan) {
+                if (value.from == other.from || value.to == other.to) {
+                    oneHourSpan[index] = LocationForecastInfo.Forecast(
+                        value.from,
+                        value.to,
+                        value.airTempC ?: other.airTempC,
+                        value.symbol ?: other.symbol
+                    )
+                    break
+                }
+            }
         }
 
-        return LocationForecastInfo(luftTempC, symbol, nextIssue!!)
+
+        return LocationForecastInfo(nextIssue, oneHourSpan)
+
     }
+
+
 
     /**
-     *  Returns the first time "dataclass" in the response. This
+     *  Returns a list of the hourlyForecasts
      */
-    private fun getCurrentTime(): Time? {
-        return product?.time?.get(0)
-    }
-
-    /**
-     * When viewing a location you expect a icon showing weather status (cloudy, sunny etc..)
-     * MI assigns different symbols for every integer.
-     */
-    private fun getCurrentSymbolNumber(): Int? {
-        getCurrentTime()?.let {
-            return it.location?.symbol?.number?.toInt()
-        }
-        return null
-    }
-
-    private fun getCurrentAirTemp(): Double? {
-        //@TODO find time that contians temperature (and not the first :S)
-        getCurrentTime()?.let {
-            return it.location?.temperature?.value?.toDouble()
-        }
-        return null
+    private fun getHourlyForecasts(): List<Time>? {
+        val returnedList = product?.time?.toMutableList() ?: return null
+        return returnedList
+            .filter {
+                it.durationMin() < 61L //Make sure only the ones that last a  hour are included
+            }
     }
 
 }
@@ -83,6 +99,23 @@ internal data class Time(
     // For logcat
     override fun toString(): String {
         return "\nTime(from=$from, to=$to, location=$location)"
+    }
+
+    fun summarise() : LocationForecastInfo.Forecast {
+        val symbol = location?.getSymbol()
+        val airTempC = location?.getAirTempC()
+        return LocationForecastInfo.Forecast(from,to,airTempC,symbol)
+    }
+
+
+    fun durationMin(): Long {
+        val diff = minBetween(from,to)
+        if (diff == null ) {
+            Log.e(TAG, "Tidsintervall diff ikke funnet for:\n\tTo:   $to,\n\tFrom: $from\n")
+        } else if ( diff < 0L) {
+            Log.e(TAG, "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n")
+        }
+        return diff!!
     }
 }
 
@@ -152,6 +185,51 @@ internal data class Location(
     // For logcat
     override fun toString(): String {
         return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed, precipitation=$precipitation)"
+    }
+
+    /**
+     * Gets the number representing the weather icon in symbol that summarises the forecast.
+     * It seems that MI is undergoing some api changes, and are moving the
+     * weather icon around. This method looks around for where it could be.
+     */
+    fun getSymbol() : Int? {
+
+        weather?.symbol?.let { return it }
+        symbol?.number?.let { return it }
+
+        // symbolProbability?.value  Hva er det denne verdien står for?
+
+        return null
+    }
+
+    fun getAirTempC(): Double? {
+
+        //Log.d(TAG,this.toString())
+
+        val unit = temperature?.unit
+        val temp = temperature?.value?.toDouble()
+
+
+        when {
+            unit == "celsius" && temp != null -> {
+                Log.d(TAG, "Returning $temp")
+                return temp
+            }
+
+            unit != null -> {
+                Log.e(
+                    TAG,
+                    "The given unit for temperature was unexpected. $unit != expected, celsius"
+                )
+            }
+            temp != null -> {
+                Log.e(TAG, "The unit for temperature was not given (null), assuming celsius!")
+                return temp
+            }
+        }
+
+        Log.d(TAG, "Returning null")
+        return null
     }
 }
 
@@ -233,7 +311,7 @@ internal data class Pressure(
 // id = "cloud", "sun" etc., number = id fra WeatherIcon API
 internal data class Symbol(
     @Expose @SerializedName("id") val id: String?,
-    @Expose @SerializedName("number") val number: String?
+    @Expose @SerializedName("number") val number: Int?
 )
 
 internal data class TemperatureProbability(
