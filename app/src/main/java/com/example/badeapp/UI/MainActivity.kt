@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity(),
         initViewModel()
         initRecyclerView()
 
+
         //If one of symbol, aitTempC or waterTempC changes, then update the RC adapter.
         viewModel.badesteder.value?.forEach { badested ->
             badested.symbol.observe(this, Observer {

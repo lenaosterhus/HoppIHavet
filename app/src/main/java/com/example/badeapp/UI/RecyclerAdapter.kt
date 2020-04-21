@@ -23,7 +23,6 @@ class RecyclerAdapter(
     // Recycler adapter methods
     //---------------------------------
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         return ElementView(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.rv_element,
@@ -37,7 +36,6 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ElementView -> {
-
                 holder.badested?.let {
                     visible -= it
                 }
@@ -80,6 +78,8 @@ class RecyclerAdapter(
             itemView.setOnClickListener {
                 interaction?.onItemSelected(adapterPosition, sted)
             }
+            //Cuts image corners so that they follow the rounded shape.
+            itemView.ImageView_badested_image.clipToOutline = true
             drawData()
         }
 
@@ -89,7 +89,6 @@ class RecyclerAdapter(
                 badested?.waterTempC?.value?.toString() ?: ""
             itemView.TextView_badested_air_temp.text =
                 badested?.airTempC?.value?.toString() ?: ""
-            itemView.ImageView_badested_image.clipToOutline = true
         }
     }
 
