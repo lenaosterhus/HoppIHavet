@@ -1,5 +1,10 @@
 package android.util;
 
+/**
+ * This file is needed when running the tests. The android libraries
+ * are not included when running the tests, so we need to implement the
+ * log functions. The output is therefor not routed to logcat.
+ */
 public class Log {
     public static int d(String tag, String msg) {
         System.out.println("DEBUG: " + tag + ": " + msg);

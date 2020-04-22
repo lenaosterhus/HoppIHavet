@@ -65,7 +65,7 @@ object MIThrottler {
                 throttle()
                 halt()
             }
-            403 -> Log.d("MI-BAN-HAMMER!!", "We are banned from MI!")
+            403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")
             //@TODO log if there was a 404, or any unknown response.
         }
 
