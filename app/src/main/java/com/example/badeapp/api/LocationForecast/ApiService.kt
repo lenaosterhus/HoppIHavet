@@ -19,13 +19,5 @@ internal interface ApiService {
         @Query("lon") lon: String
     ): Response<ResponseFormat?>
 
-    @Headers("Content-Type:application/x-www-form-urlencoded")
-    @GET(".json")
-    suspend fun getWeatherDataWithMsl(
-        @Query("lat") lat: String,
-        @Query("lon") lon: String,
-        @Query("msl") msl: String
-    ): Response<ResponseFormat?>
-
 
 }

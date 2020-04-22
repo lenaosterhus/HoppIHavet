@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.badeapp.repository.Badested
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val TAG = "DEBUG - MainViewModel"
 

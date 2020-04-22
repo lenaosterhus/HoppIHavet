@@ -16,14 +16,17 @@ class RecyclerAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    //maps badested -> view holder that contain them
+    /**
+     * This value maps a badested to the ViewHolder that it is present in.
+     * If the badested is not present in the map, then it is not visible
+     * on screen.
+     */
     private val visible = mutableMapOf<Badested, ElementView>()
 
     // .................................
     // Recycler adapter methods
     //---------------------------------
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         return ElementView(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.rv_element,
@@ -58,6 +61,7 @@ class RecyclerAdapter(
     fun notifyChangeFor(badested: Badested) {
         visible[badested]?.drawData()
     }
+
     fun updateRecyclerAdapter() {
         visible.entries.forEach {
             it.value.drawData()

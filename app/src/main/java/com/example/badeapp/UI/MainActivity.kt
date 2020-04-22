@@ -2,7 +2,6 @@ package com.example.badeapp.UI
 
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,37 +28,29 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initViewModel()
-        initRecyclerView()
+        //Init view model
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.init()
 
-        // If symbol, airTempC or waterTempC changes, then update the RC adapter.
+        //Init recycler view
+        recycler_view.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            recyclerAdapter = RecyclerAdapter(viewModel.badesteder)
+            adapter = recyclerAdapter
+        }
+
+
+        // Observe badested and update view on change.
         viewModel.badesteder.forEach { badested ->
-            Log.d(TAG, "onCreate: setting observers for $badested")
             badested.forecast.observe(this, Observer {
-                Log.d(TAG, "onCreate: new value is set for $badested: $it")
-                Log.d(TAG, "onCreate: Updating badesteder RC view for $badested")
                 recyclerAdapter.notifyChangeFor(badested)
             })
         }
 
-
-        //Update all the vissible values at least once.
+        //Update all the vissible values at least once, so that the
         recyclerAdapter.updateRecyclerAdapter()
     }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.init()
-    }
-
-    private fun initRecyclerView() {
-        recycler_view.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            recyclerAdapter =
-                RecyclerAdapter(viewModel.badesteder)
-            adapter = recyclerAdapter
-        }
-    }
 
     override fun onItemSelected(position: Int, item: Badested) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
