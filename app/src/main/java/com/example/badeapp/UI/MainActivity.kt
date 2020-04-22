@@ -42,9 +42,10 @@ class MainActivity : AppCompatActivity(),
             })
         }
 
-        Log.d(TAG, "Updating badesteder RC view for all")
-        //Update all the values at least once
-        recyclerAdapter.updateRecyclerAdapter()
+
+        //Update all the values at least once, so that the values that finished
+        //their requests before the livedata was observer get initialised
+        //recyclerAdapter.updateRecyclerAdapter()
     }
 
     private fun initViewModel() {
