@@ -39,11 +39,29 @@ object RequestManager {
             .create(ApiServiceTest::class.java)
     }
 
-
+    /**
+     * @param lat, lon -> lat and lon of area we are wanting the response for
+     * @param session -> we get the same result for every session
+     * @param timeShift This variable manipulates all the dates in the reponse time make it look like
+     * the response was created at this time. The temperature and symbols etc.. are the same, but the
+     * times are shifted.
+     *
+     * @param banMe -> makes the server give the response code 429, that signals we are about to be banned
+     * @param throttleMe -> makes the server give the response 203, that signals we are approaching
+     * a situation were we might get banned.
+     * */
     @Headers("User-Agent: $USER_HEADER")
-    suspend fun request(session: String, lat: String, long: String): LocationForecastInfo? {
+    suspend fun request(
+        lat: String,
+        long: String,
+        session: String,
+        timeShift: String,
+        throttleMe: Boolean,
+        banMe: Boolean
+    ): LocationForecastInfo? {
         if (!MIThrottler.hasStopped()) {
-            val response = apiService.getWeatherData(lat, long, session)
+            val response =
+                apiService.getWeatherData(lat, long, session, timeShift, throttleMe, banMe)
             MIThrottler.submitCode(response.code())
             if (response.isSuccessful)
                 return response.body()?.summarise()

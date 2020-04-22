@@ -22,7 +22,14 @@ class SimpleRequestTest {
         val sted = badesteder.find { badested -> badested.name.toLowerCase() == "hovedøya" }!!
 
         runBlocking {
-            val response = RequestManager.request(SESSION, sted.lat, sted.lon)
+            val response = RequestManager.request(
+                sted.lat,
+                sted.lon,
+                SESSION,
+                timeShift = "",
+                banMe = false,
+                throttleMe = false
+            )
             assertNotNull(response)
             if (response == null) return@runBlocking
             assertEquals("2020-04-22T14:11:08Z", response.nextIssue)

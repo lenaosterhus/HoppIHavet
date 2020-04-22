@@ -25,7 +25,9 @@ internal interface ApiServiceTest {
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("session") session: String,
-        @Query("timeshift") timeShift: Boolean
+        @Query("timeshift") timeShift: String,
+        @Query("throttleMe") throttleMe: Boolean,
+        @Query("banMe") banMe: Boolean
     ): Response<ResponseFormat?>
 
 
