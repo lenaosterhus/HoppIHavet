@@ -12,7 +12,7 @@ internal interface ApiServiceTest {
 
 
     @Headers("Content-Type:application/x-www-form-urlencoded")
-    @GET("locationforecast/")
+    @GET("locationforecast")
     suspend fun getWeatherData(
         @Query("lat") lat: String,
         @Query("lon") lon: String,
@@ -20,7 +20,7 @@ internal interface ApiServiceTest {
     ): Response<ResponseFormat?>
 
     @Headers("Content-Type:application/x-www-form-urlencoded")
-    @GET("locationforecast/")
+    @GET("locationforecast")
     suspend fun getWeatherData(
         @Query("lat") lat: String,
         @Query("lon") lon: String,

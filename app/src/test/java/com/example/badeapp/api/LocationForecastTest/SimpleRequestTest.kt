@@ -1,5 +1,6 @@
 package com.example.badeapp.api.LocationForecastTest
 
+import android.util.Log
 import com.example.badeapp.repository.Badested
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -21,7 +22,7 @@ class SimpleRequestTest {
 
         runBlocking {
             val response = RequestManager.request(SESSION, sted.lat, sted.lon)
-
+            Log.d(TAG, response.toString())
         }
 
 

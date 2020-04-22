@@ -9,7 +9,7 @@ import android.util.Log
  * If they give certain response codes they want us to throttle or halt requests.
  */
 object MIThrottler {
-
+    val TAG = "MIThrottler"
     private const val throttleTimeMin = 10
     private var throttledStart: Long? = null
 
@@ -33,6 +33,8 @@ object MIThrottler {
      * determine if requests COULD happen.
      */
     fun hasStopped(): Boolean {
+
+        Log.d(TAG, stoppStart.toString())
         stoppStart?.let {
             return (it + stoppTimeMin * 60000) < uptimeMillis()
         }

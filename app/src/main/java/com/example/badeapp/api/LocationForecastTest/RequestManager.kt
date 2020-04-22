@@ -19,7 +19,7 @@ object RequestManager {
 
     private const val USER_HEADER = "GRUPPE-38"
 
-    private val TAG = "DEBUG-LocationReqMngr"
+    private val TAG = "DEBUG-LocReqMngrTest"
     private val BASE_URL_WEATHER =
         "http://139.162.240.144/"
 
@@ -42,13 +42,16 @@ object RequestManager {
 
     @Headers("User-Agent: $USER_HEADER")
     suspend fun request(session: String, lat: String, long: String): LocationForecastInfo? {
-
         if (!MIThrottler.hasStopped()) {
             val response = apiService.getWeatherData(lat, long, session)
             MIThrottler.submitCode(response.code())
             if (response.isSuccessful)
                 return response.body()?.summarise()
+            else {
+                Log.d(TAG, response.toString())
+            }
         }
+        Log.d(TAG, "Request halted because MIThrotteler says we are banned.")
         return null
     }
 
