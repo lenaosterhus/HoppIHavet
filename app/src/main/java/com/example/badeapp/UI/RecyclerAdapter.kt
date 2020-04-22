@@ -93,6 +93,15 @@ class RecyclerAdapter(
                 badested?.forecast?.value?.waterTempC?.toString() ?: ""
             itemView.TextView_badested_air_temp.text =
                 badested?.forecast?.value?.airTempC?.toString() ?: ""
+
+            val symbol = badested?.forecast?.value?.symbol.let {
+                if (it == null) {
+                    //itemView.symbol_water.setImageDrawable(null)
+                } else {
+                    itemView.symbol_weather.setImageResource(it)
+                }
+            }
+
             itemView.ImageView_badested_image.clipToOutline = true
         }
     }

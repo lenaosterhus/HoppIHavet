@@ -241,13 +241,13 @@ sealed class Badested(
     }
 
     private fun setNewForecast() {
-        val update = _forecast.value
-        update?.let {
-            oceanForecastInfo?.vannTempC?.run { it.waterTempC = this }
-            locationForecastInfo?.getCurrentAirTempC()?.run { it.airTempC = this }
-            locationForecastInfo?.getCurrentSymbol()?.run { it.symbol = this }
-        }
-        _forecast.value = update
+        val newForecast = BadestedForecast(
+            locationForecastInfo?.getCurrentAirTempC(),
+            oceanForecastInfo?.vannTempC,
+            locationForecastInfo?.getIcon()
+        )
+        _forecast.value = newForecast
+
     }
 
     override fun toString(): String {
