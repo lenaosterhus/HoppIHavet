@@ -82,7 +82,6 @@ sealed class Badested(
      * This function does not consider things like how many other requests are
      * happening, or if the user is actually wanting the info.
      *
-     * The deferred boolean tells us
      */
     private fun updateLocationForecast() {
         Log.d(TAG, "updateLocationForecast: $name")
