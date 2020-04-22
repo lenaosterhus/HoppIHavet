@@ -62,8 +62,8 @@ data class LocationForecastInfo(val nextIssue: String, private val forecasts: Li
 
         if (isDay) {
             when (symbol) {
-                1  -> return R.mipmap.wic_1_day //Sun - @TODO!
-                2  -> return R.mipmap.wic_2_day //LightCloud - @TODO!
+                1 -> return R.mipmap.wic_day_1 //Sun
+                2 -> return R.mipmap.wic_day_2 //LightCloud
                 3  -> return R.mipmap.wic_day_3 //PartlyCloud
                 4  -> return R.mipmap.wic_day_4 //Cloud
                 5  -> return R.mipmap.wic_day_5 //LightRainSun
@@ -71,7 +71,7 @@ data class LocationForecastInfo(val nextIssue: String, private val forecasts: Li
                 7  -> return R.mipmap.wic_day_7 //SleetSun
                 8  -> return R.mipmap.wic_day_8 //SnowSun
                 9  -> return R.mipmap.wic_day_9 //LightRain
-                10 -> return R.mipmap.wic_10_day //Rain - @TODO!
+                10 -> return R.mipmap.wic_day_10 //Rain
                 11 -> return R.mipmap.wic_day_11 //RainThunder
                 12 -> return R.mipmap.wic_day_12 //Sleet
                 13 -> return R.mipmap.wic_day_13 //Snow
