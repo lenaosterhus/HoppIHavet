@@ -10,9 +10,7 @@ import java.util.*
  * way and returns the time delta.
  */
 
-fun minBetween(from:String, toDate:Date) : Long? {
-    //Denne kan ikke deles mellom felere tråder da  SimpleDateFormat ikke er threadsafe, derfor
-    //kan denne ikke deles.
+fun minBetween(from: String, toDate: Date): Long? {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
@@ -20,29 +18,25 @@ fun minBetween(from:String, toDate:Date) : Long? {
     return minBetween(fromDate, toDate)
 }
 
-fun minBetween(fromDate:Date, to:String) : Long? {
-    //Denne kan ikke deles mellom felere tråder da  SimpleDateFormat ikke er threadsafe, derfor
-    //kan denne ikke deles.
+fun minBetween(fromDate: Date, to: String): Long? {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     val toDate = dateFormat.parse(to) ?: return null
-    return minBetween(fromDate,toDate)
+    return minBetween(fromDate, toDate)
 }
 
-fun minBetween(from:String, to:String) : Long? {
-    //Denne kan ikke deles mellom felere tråder da  SimpleDateFormat ikke er threadsafe, derfor
-    //kan denne ikke deles.
+fun minBetween(from: String, to: String): Long? {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
 
     val toDate = dateFormat.parse(to) ?: return null
     val fromDate = dateFormat.parse(from) ?: return null
-    return minBetween(fromDate,toDate)
+    return minBetween(fromDate, toDate)
 }
 
-fun minBetween(from:Date, to:Date) : Long {
+fun minBetween(from: Date, to: Date): Long {
     return (to.time - from.time).div(60L * 1000L) //Convert from mill to min
 }
 
@@ -52,14 +46,14 @@ fun minBetween(from:Date, to:Date) : Long {
 /**
  * Returns a date that is min minutes in the future from now
  */
-fun inTheFutureFromNow(min:Long) : Date {
+fun inTheFutureFromNow(min: Long): Date {
     return Date(System.currentTimeMillis() + min * 60 * 1000)
 }
 
 /**
  * Returns a  string representation of current time
  */
-fun currentTime() : Date {
+fun currentTime(): Date {
     return inTheFutureFromNow(0)
 }
 
@@ -68,7 +62,7 @@ fun currentTime() : Date {
 /**
  * Extends date objects to return string representations of gmt iso time.
  */
-fun Date.toGmtIsoString() : String {
+fun Date.toGmtIsoString(): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
@@ -76,13 +70,13 @@ fun Date.toGmtIsoString() : String {
 }
 
 
-fun String.parseAsGmtIsoDate() : Date? {
+fun String.parseAsGmtIsoDate(): Date? {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     try {
         return dateFormat.parse(this)
-    } catch (e : Exception) {
+    } catch (e: Exception) {
         return null
     }
 }

@@ -2,7 +2,6 @@ package com.example.badeapp.UI
 
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -25,48 +24,30 @@ class MainActivity : AppCompatActivity(),
     private lateinit var viewModel: MainViewModel
     private lateinit var recyclerAdapter: RecyclerAdapter
 
-    private fun initRecyclerView() {
-        recycler_view.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity) // Vertikal layout
-            recyclerAdapter =
-                RecyclerAdapter(viewModel.badesteder.value!!)
-            adapter = recyclerAdapter
-        }
-    }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.init()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initViewModel()
-        initRecyclerView()
+        //Init view model
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.init()
 
-        //If one of symbol, aitTempC or waterTempC changes, then update the RC adapter.
-        viewModel.badesteder.value?.forEach { badested ->
-            badested.symbol.observe(this, Observer {
-                Log.d(TAG, "symbol is set for $badested")
-                Log.d(TAG, "Updating badesteder RC view for $badested symbol")
-                recyclerAdapter.notifyChangeFor(badested)
-            })
-            badested.waterTempC.observe(this, Observer {
-                Log.d(TAG, "water temp is set for $badested")
-                Log.d(TAG, "Updating badesteder RC view for $badested water temp")
-                recyclerAdapter.notifyChangeFor(badested)
-            })
-            badested.airTempC.observe(this, Observer {
-                Log.d(TAG, "air temp is set for $badested")
-                Log.d(TAG, "Updating badesteder RC view for $badested air temp")
+        //Init recycler view
+        recycler_view.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            recyclerAdapter = RecyclerAdapter(viewModel.badesteder)
+            adapter = recyclerAdapter
+        }
+
+
+        // Observe badested and update view on change.
+        viewModel.badesteder.forEach { badested ->
+            badested.forecast.observe(this, Observer {
                 recyclerAdapter.notifyChangeFor(badested)
             })
         }
 
-        Log.d(TAG, "Updating badesteder RC view for everyone")
-        //Update all the values at least once
+        //Update all the vissible values at least once, so that the
         recyclerAdapter.updateRecyclerAdapter()
     }
 
