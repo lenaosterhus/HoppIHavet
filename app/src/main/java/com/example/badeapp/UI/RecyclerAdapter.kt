@@ -86,9 +86,9 @@ class RecyclerAdapter(
         fun drawData() {
             itemView.TextView_badested_name.text = badested?.name ?: ""
             itemView.TextView_badested_water_temp.text =
-                badested?.waterTempC?.value?.toString() ?: ""
+                badested?.forecast?.value?.waterTempC?.toString() ?: ""
             itemView.TextView_badested_air_temp.text =
-                badested?.airTempC?.value?.toString() ?: ""
+                badested?.forecast?.value?.airTempC?.toString() ?: ""
             itemView.ImageView_badested_image.clipToOutline = true
         }
     }

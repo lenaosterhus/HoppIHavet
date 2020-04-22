@@ -25,20 +25,6 @@ class MainActivity : AppCompatActivity(),
     private lateinit var viewModel: MainViewModel
     private lateinit var recyclerAdapter: RecyclerAdapter
 
-    private fun initRecyclerView() {
-        recycler_view.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity) // Vertikal layout
-            recyclerAdapter =
-                RecyclerAdapter(viewModel.badesteder.value!!)
-            adapter = recyclerAdapter
-        }
-    }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.init()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,30 +32,34 @@ class MainActivity : AppCompatActivity(),
         initViewModel()
         initRecyclerView()
 
-        //If one of symbol, aitTempC or waterTempC changes, then update the RC adapter.
-        viewModel.badesteder.value?.forEach { badested ->
-            badested.symbol.observe(this, Observer {
-                Log.d(TAG, "symbol is set for $badested")
-                Log.d(TAG, "Updating badesteder RC view for $badested symbol")
-                recyclerAdapter.notifyChangeFor(badested)
-            })
-            badested.waterTempC.observe(this, Observer {
-                Log.d(TAG, "water temp is set for $badested")
-                Log.d(TAG, "Updating badesteder RC view for $badested water temp")
-                recyclerAdapter.notifyChangeFor(badested)
-            })
-            badested.airTempC.observe(this, Observer {
-                Log.d(TAG, "air temp is set for $badested")
-                Log.d(TAG, "Updating badesteder RC view for $badested air temp")
+        // If symbol, airTempC or waterTempC changes, then update the RC adapter.
+        viewModel.badesteder.forEach { badested ->
+            Log.d(TAG, "onCreate: setting observers for $badested")
+            badested.forecast.observe(this, Observer {
+                Log.d(TAG, "onCreate: new value is set for $badested: $it")
+                Log.d(TAG, "onCreate: Updating badesteder RC view for $badested")
                 recyclerAdapter.notifyChangeFor(badested)
             })
         }
 
-        Log.d(TAG, "Updating badesteder RC view for everyone")
+        Log.d(TAG, "Updating badesteder RC view for all")
         //Update all the values at least once
         recyclerAdapter.updateRecyclerAdapter()
     }
 
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.init()
+    }
+
+    private fun initRecyclerView() {
+        recycler_view.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            recyclerAdapter =
+                RecyclerAdapter(viewModel.badesteder)
+            adapter = recyclerAdapter
+        }
+    }
 
     override fun onItemSelected(position: Int, item: Badested) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

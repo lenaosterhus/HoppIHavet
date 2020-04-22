@@ -10,12 +10,14 @@ class MainViewModel: ViewModel() {
 
     private val TAG = "DEBUG - MainViewModel"
 
-    val badesteder: MutableLiveData<List<Badested>> = MutableLiveData<List<Badested>>()
+    // Skjer ingen endringer i selve listen... Ikke poeng at det er LiveData?
+    lateinit var badesteder: List<Badested>
+
     val tid = MutableLiveData<Date>()
 
     fun init() {
         Log.d(TAG, "init: initializing...")
-        badesteder.value = Badested::class.nestedClasses.map {
+        badesteder = Badested::class.nestedClasses.map {
             it.objectInstance as Badested
         }
         updateData()
@@ -24,7 +26,7 @@ class MainViewModel: ViewModel() {
     fun updateData() {
         Log.d(TAG, "updateData: ...")
         // Setter Location- og OceanForecast for alle badestedene
-        badesteder.value?.forEach { badested ->
+        badesteder.forEach { badested ->
             badested.updateAll()
         }
     }

@@ -1,7 +1,9 @@
 package com.example.badeapp.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
 import kotlinx.coroutines.CoroutineScope
@@ -28,11 +30,14 @@ sealed class Badested(
 
     /**
      * Other parts of the code use these values to observe changes. This is part of the mvvm
-     * philosophy.
+     * pattern.
      */
-    var airTempC = MutableLiveData<Double?>()
-    var waterTempC = MutableLiveData<Double?>()
-    var symbol = MutableLiveData<Int?>()
+    private val _forecast = MutableLiveData<BadestedForecast>().apply { value = BadestedForecast() }
+    /*
+    * Best practice way to access MutableLiveData - should not be mutable outside of this class
+    */
+    val forecast: LiveData<BadestedForecast>
+        get() = _forecast
 
     /**
      * We cant have multiple threads trying to update the weather data at once, we
@@ -42,7 +47,6 @@ sealed class Badested(
      */
     private val locationMutex = Mutex()
     private val oceanMutex = Mutex()
-
 
 
     // Info fra Oslo Kommune eller https://www.oslofjorden.com/badesteder/
@@ -81,8 +85,10 @@ sealed class Badested(
      * The deferred boolean tells us
      */
     private fun updateLocationForecast() {
+        Log.d(TAG, "updateLocationForecast: $name")
         if (locationForecastInfo?.isOutdated() != false) {
-            if (locationMutex.isLocked) return;
+            Log.d(TAG, "updateLocationForecast: $name not outdated")
+            if (locationMutex.isLocked) return
             CoroutineScope(IO).launch {
                 locationMutex.withLock {
                     if (locationForecastInfo?.isOutdated() != false) {
@@ -91,9 +97,7 @@ sealed class Badested(
                         if (newData != null) {
                             withContext(Main) {
                                 locationForecastInfo = newData
-                                airTempC.value = locationForecastInfo?.getCurrentAirTempC()
-                                symbol.value = locationForecastInfo?.getCurrentSymbol()
-                                Log.d(TAG, "Air temp & Symbol set for $name")
+                                setNewForecast()
                             }
                         }
                     }
@@ -103,18 +107,18 @@ sealed class Badested(
     }
 
     private fun updateOceanForecast() {
+        Log.d(TAG, "updateOceanForecast: $name")
         if (oceanForecastInfo == null || oceanForecastInfo!!.isOutdated()) {
-            if (oceanMutex.isLocked) return;
+            Log.d(TAG, "updateOceanForecast: $name not outdated")
+            if (oceanMutex.isLocked) return
             CoroutineScope(IO).launch {
                 oceanMutex.withLock {
-                    if (oceanForecastInfo?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
+                    if (oceanForecastInfo?.isOutdated() != false) {
                         val newData = OceanForecastAPI.request(lat, lon)
-                        // what if new data has less info then the old?
                         if (newData != null) {
                             withContext(Main) {
                                 oceanForecastInfo = newData
-                                waterTempC.value = oceanForecastInfo?.vannTempC
-                                Log.d(TAG, "Water temp set for $this")
+                                setNewForecast()
                             }
                         }
                     }
@@ -123,38 +127,21 @@ sealed class Badested(
         }
     }
 
-
     fun updateAll() {
-        updateAirTempC()
-        updateWaterTempC()
-        updateSymbol()
-    }
-
-    fun updateAirTempC() {
+        Log.d(TAG, "updateAll: for $name")
         updateLocationForecast()
-        locationForecastInfo?.let {
-            Log.d(TAG, "Air temp set for $this")
-            airTempC.value = it.getCurrentAirTempC()
-        }
-    }
-
-    fun updateWaterTempC() {
         updateOceanForecast()
-        oceanForecastInfo?.let {
-            Log.d(TAG, "Water temp set for $this")
-            waterTempC.value = it.vannTempC
-        }
-
     }
 
-    fun updateSymbol() {
-        updateLocationForecast()
-        locationForecastInfo?.let {
-            Log.d(TAG, "Symbol set for $this")
-            symbol.value = it.getCurrentSymbol()
+    private fun setNewForecast() {
+        val update = _forecast.value
+        update?.let {
+            oceanForecastInfo?.vannTempC?.run { it.waterTempC = this }
+            locationForecastInfo?.getCurrentAirTempC()?.run { it.airTempC = this}
+            locationForecastInfo?.getCurrentSymbol()?.run { it.symbol = this}
         }
+        _forecast.value = update
     }
-
 
     override fun toString(): String {
         return "Badested: $name"
