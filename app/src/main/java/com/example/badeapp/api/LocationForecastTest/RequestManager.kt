@@ -11,9 +11,10 @@ package com.example.badeapp.api.LocationForecastTest
 import android.util.Log
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.LocationForecastInfo
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Headers
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object RequestManager {
 
@@ -32,12 +33,29 @@ object RequestManager {
     }
 
 
+    private val retrofitBuilderRaw: Retrofit.Builder by lazy {
+        Log.d(TAG, "building WEATHER raw...")
+        Retrofit.Builder()
+            .baseUrl(BASE_URL_WEATHER)
+            .addConverterFactory(ScalarsConverterFactory.create())
+
+    }
+
+
     private val apiService: ApiServiceTest by lazy {
         Log.d(TAG, "building WEATHER apiService")
         retrofitBuilder
             .build()
             .create(ApiServiceTest::class.java)
     }
+
+    private val apiServiceRaw: ApiServiceTest by lazy {
+        Log.d(TAG, "building WEATHER apiService raw")
+        retrofitBuilderRaw
+            .build()
+            .create(ApiServiceTest::class.java)
+    }
+
 
     /**
      * @param lat, lon -> lat and lon of area we are wanting the response for
@@ -50,7 +68,7 @@ object RequestManager {
      * @param throttleMe -> makes the server give the response 203, that signals we are approaching
      * a situation were we might get banned.
      * */
-    @Headers("User-Agent: $USER_HEADER")
+
     suspend fun request(
         lat: String,
         long: String,
@@ -72,6 +90,21 @@ object RequestManager {
         Log.d(TAG, "Request halted because MIThrotteler says we are banned.")
         return null
     }
+
+
+    suspend fun requestRaw(
+        lat: String,
+        long: String,
+        session: String,
+        timeShift: String = "",
+        throttleMe: Boolean = false,
+        banMe: Boolean = false
+    ): Response<String> {
+        val res = apiServiceRaw.getWeatherDataRaw(lat, long, session, timeShift, throttleMe, banMe)
+        Log.d(TAG, "HERE")
+        return res
+    }
+
 
 
 }

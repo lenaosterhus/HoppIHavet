@@ -80,6 +80,9 @@ dependencies {
     def leak_canary_version = "2.2"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
 
+    // Returning string for retrofit2
+    def converter_version = "2.1.0"
+    implementation "com.squareup.retrofit2:converter-scalars:$converter_version"
 
 
 }

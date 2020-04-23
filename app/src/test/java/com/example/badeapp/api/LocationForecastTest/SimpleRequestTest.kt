@@ -1,9 +1,9 @@
 package com.example.badeapp.api.LocationForecastTest
 
+import android.util.Log
 import com.example.badeapp.repository.Badested
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 
@@ -22,17 +22,21 @@ class SimpleRequestTest {
         val sted = badesteder.find { badested -> badested.name.toLowerCase() == "hovedøya" }!!
 
         runBlocking {
-            val response = RequestManager.request(
+            val response = RequestManager.requestRaw(
                 sted.lat,
                 sted.lon,
-                SESSION,
-                timeShift = "",
-                banMe = false,
-                throttleMe = false
+                SESSION
             )
-            assertNotNull(response)
-            if (response == null) return@runBlocking
-            assertEquals("2020-04-22T14:11:08Z", response.nextIssue)
+            Log.d(TAG, response.body().toString())
+
+            if (!response.isSuccessful) {
+                response.errorBody()?.string()?.let {
+                    Log.d("$TAG error_body", it)
+                }
+                Log.d("$TAG error_code", "Error code: ${response.code()}")
+                assertTrue(false)
+            }
+
         }
 
 

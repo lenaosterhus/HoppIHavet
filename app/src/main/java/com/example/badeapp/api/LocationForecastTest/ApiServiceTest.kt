@@ -11,7 +11,10 @@ import retrofit2.http.Query
 internal interface ApiServiceTest {
 
 
-    @Headers("Content-Type:application/x-www-form-urlencoded")
+    @Headers(
+        "Content-Type: application/x-www-form-urlencoded",
+        "User-Agent: GRUPPE-38"
+    )
     @GET("locationforecast")
     suspend fun getWeatherData(
         @Query("lat") lat: String,
@@ -19,7 +22,10 @@ internal interface ApiServiceTest {
         @Query("session") session: String
     ): Response<ResponseFormat?>
 
-    @Headers("Content-Type:application/x-www-form-urlencoded")
+    @Headers(
+        "Content-Type: application/x-www-form-urlencoded",
+        "User-Agent: GRUPPE-38"
+    )
     @GET("locationforecast")
     suspend fun getWeatherData(
         @Query("lat") lat: String,
@@ -28,7 +34,22 @@ internal interface ApiServiceTest {
         @Query("timeshift") timeShift: String,
         @Query("throttleMe") throttleMe: Boolean,
         @Query("banMe") banMe: Boolean
-    ): Response<ResponseFormat?>
+    ): Response<ResponseFormat>
+
+    @Headers(
+        "Content-Type: application/x-www-form-urlencoded",
+        "User-Agent: GRUPPE-38"
+    )
+    @GET("locationforecast")
+    suspend fun getWeatherDataRaw(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("session") session: String,
+        @Query("timeshift") timeShift: String,
+        @Query("throttleMe") throttleMe: Boolean,
+        @Query("banMe") banMe: Boolean
+    ): Response<String>
+
 
 
 }
