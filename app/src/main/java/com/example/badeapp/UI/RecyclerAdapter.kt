@@ -90,13 +90,13 @@ class RecyclerAdapter(
         fun drawData() {
             itemView.TextView_badested_name.text = badested?.name ?: ""
             itemView.TextView_badested_water_temp.text =
-                badested?.forecast?.value?.waterTempC?.toString() ?: ""
+                badested?.forecast?.value?.waterTempC?.toString() + "°"
             itemView.TextView_badested_air_temp.text =
-                badested?.forecast?.value?.airTempC?.toString() ?: ""
+                badested?.forecast?.value?.airTempC?.toString() + "°"
 
             val symbol = badested?.forecast?.value?.symbol.let {
                 if (it == null) {
-                    //itemView.symbol_water.setImageDrawable(null)
+                    itemView.symbol_water.setImageDrawable(null)
                 } else {
                     itemView.symbol_weather.setImageResource(it)
                 }
