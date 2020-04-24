@@ -34,7 +34,6 @@ object MIThrottler {
      */
     fun hasStopped(): Boolean {
 
-        Log.d(TAG, stoppStart.toString())
         stoppStart?.let {
             return (it + stoppTimeMin * 60000) < uptimeMillis()
         }
