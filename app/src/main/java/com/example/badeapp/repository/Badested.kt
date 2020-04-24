@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
+import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.inTheFutureFromNow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -11,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.util.*
 import com.example.badeapp.api.LocationForecast.RequestManager as LocationForecastAPI
 import com.example.badeapp.api.OceanForecast.RequestManager as OceanForecastAPI
 
@@ -42,6 +45,14 @@ sealed class Badested(
      */
     private val locationMutex = Mutex()
     private val oceanMutex = Mutex()
+
+
+    /**
+     * If we a request results in a exception (something terrible and unexpected has happened),
+     * we don't want to keep spamming the MI servers with new attempts.
+     */
+    private var locationForecastLockdown: Date? = null
+    private var oceanForecastLockdown: Date? = null
 
 
 
@@ -78,38 +89,65 @@ sealed class Badested(
      * This function does not consider things like how many other requests are
      * happening, or if the user is actually wanting the info.
      *
-     * The deferred boolean tells us
+     *
      */
     private fun updateLocationForecast() {
-        if (locationForecastInfo?.isOutdated() != false) {
-            if (locationMutex.isLocked) return;
-            CoroutineScope(IO).launch {
-                locationMutex.withLock {
-                    if (locationForecastInfo?.isOutdated() != false) {
+
+        if (!(locationForecastInfo?.isOutdated() != false &&
+                    locationForecastLockdown?.after(currentTime()) != false)
+        ) {
+            //Then we should not update the data, as its either not outdated,
+            //or we have determined to wait before attempting a new request.
+            return
+        }
+
+        CoroutineScope(IO).launch {
+            locationMutex.withLock { //Make sure only one thread is updating
+                if (locationForecastInfo?.isOutdated() != false &&
+                    locationForecastLockdown?.after(currentTime()) != false
+                ) {
+
+                    try {
                         val newData = LocationForecastAPI.request(lat, lon)
-                        // what if new data has less info then the old?
+
                         if (newData != null) {
                             withContext(Main) {
                                 locationForecastInfo = newData
                                 airTempC.value = locationForecastInfo?.getCurrentAirTempC()
-                                symbol.value = locationForecastInfo?.getCurrentSymbol()
-                                Log.d(TAG, "Air temp & Symbol set for $name")
+                                Log.d(TAG, "Air temp set for $this")
                             }
                         }
+
+                    } catch (exs: Exception) {
+                        //If request fails we assume the server needs some time
+                        //before attempting a new request.
+                        locationForecastLockdown = inTheFutureFromNow(min = 10L)
                     }
                 }
             }
         }
     }
 
+
     private fun updateOceanForecast() {
-        if (oceanForecastInfo == null || oceanForecastInfo!!.isOutdated()) {
-            if (oceanMutex.isLocked) return;
-            CoroutineScope(IO).launch {
-                oceanMutex.withLock {
-                    if (oceanForecastInfo?.isOutdated() != false) { // Hvorfor sjekker vi dette to ganger? - Lena
+
+        if (!(oceanForecastInfo?.isOutdated() != false &&
+                    oceanForecastLockdown?.after(currentTime()) != false)
+        ) {
+            //Then we should not update the data, as its either not outdated,
+            //or we have determined to wait before attempting a new request.
+            return
+        }
+
+        CoroutineScope(IO).launch {
+            oceanMutex.withLock { //Make sure only one thread is updating
+                if (oceanForecastInfo?.isOutdated() != false &&
+                    oceanForecastLockdown?.after(currentTime()) != false
+                ) {
+
+                    try {
                         val newData = OceanForecastAPI.request(lat, lon)
-                        // what if new data has less info then the old?
+
                         if (newData != null) {
                             withContext(Main) {
                                 oceanForecastInfo = newData
@@ -117,6 +155,11 @@ sealed class Badested(
                                 Log.d(TAG, "Water temp set for $this")
                             }
                         }
+
+                    } catch (exs: Exception) {
+                        //If request fails we assume the server needs some time
+                        //before attempting a new request.
+                        oceanForecastLockdown = inTheFutureFromNow(min = 10L)
                     }
                 }
             }

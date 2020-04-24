@@ -22,24 +22,54 @@ class SimpleRequestTest {
         val sted = badesteder.find { badested -> badested.name.toLowerCase() == "hovedøya" }!!
 
         runBlocking {
-            val response = RequestManager.requestRaw(
+            val responseRaw = RequestManager.requestRaw(
                 sted.lat,
                 sted.lon,
                 SESSION
             )
-            Log.d(TAG, response.body().toString())
-
-            if (!response.isSuccessful) {
-                response.errorBody()?.string()?.let {
-                    Log.d("$TAG error_body", it)
-                }
-                Log.d("$TAG error_code", "Error code: ${response.code()}")
+            if (!responseRaw.isSuccessful) {
                 assertTrue(false)
             }
 
+            //If request had no error, then we know the headers are properly set
         }
+    }
 
+    /**
+     * This test checks what happens if we try to request malformed json.
+     */
+    @Test
+    fun badResponse() {
+        val sted = badesteder.find { badested -> badested.name.toLowerCase() == "gressholmen" }!!
 
+        runBlocking {
+            try {
+                //We get a reponse containing '{{}'. This is not valid json and should not be
+                //possible to parse.
+                val responseRaw = RequestManager.requestRaw(
+                    sted.lat,
+                    sted.lon,
+                    SESSION
+                )
+
+                Log.d(TAG, responseRaw.body() ?: responseRaw.errorBody().toString())
+
+                //Tries to parse the response "{{}", that should not result in anything
+                val response = RequestManager.request(
+                    sted.lat,
+                    sted.lon,
+                    SESSION,
+                    "",
+                    false,
+                    false
+                )
+
+                assertTrue(response == null)
+            } catch (exs: Exception) {
+                Log.d(TAG, exs.toString())
+                assertTrue(false) //We don't want any exception to be thrown.
+            }
+        }
     }
 
 }
