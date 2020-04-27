@@ -10,6 +10,7 @@ package com.example.badeapp.api.LocationForecastTest
 
 import android.util.Log
 import com.example.badeapp.api.MIThrottler
+import com.example.badeapp.models.LocationForecast
 import com.example.badeapp.models.LocationForecastInfo
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -71,18 +72,18 @@ object RequestManager {
 
     suspend fun request(
         lat: String,
-        long: String,
+        lon: String,
         session: String,
         timeShift: String,
         throttleMe: Boolean,
         banMe: Boolean
-    ): LocationForecastInfo? {
+    ): Pair<LocationForecastInfo, List<LocationForecast>>? {
         if (!MIThrottler.hasStopped()) {
             val response =
-                apiService.getWeatherData(lat, long, session, timeShift, throttleMe, banMe)
+                apiService.getWeatherData(lat, lon, session, timeShift, throttleMe, banMe)
             MIThrottler.submitCode(response.code())
             if (response.isSuccessful)
-                return response.body()?.summarise()
+                return response.body()?.summarise(lat, lon)
             else {
                 Log.d(TAG, response.toString())
             }
@@ -94,13 +95,13 @@ object RequestManager {
 
     suspend fun requestRaw(
         lat: String,
-        long: String,
+        lon: String,
         session: String,
         timeShift: String = "",
         throttleMe: Boolean = false,
         banMe: Boolean = false
     ): Response<String> {
-        val res = apiServiceRaw.getWeatherDataRaw(lat, long, session, timeShift, throttleMe, banMe)
+        val res = apiServiceRaw.getWeatherDataRaw(lat, lon, session, timeShift, throttleMe, banMe)
         Log.d(TAG, "HERE")
         return res
     }

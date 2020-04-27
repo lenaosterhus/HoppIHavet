@@ -2,6 +2,7 @@ package com.example.badeapp.api.LocationForecast
 
 
 import android.util.Log
+import com.example.badeapp.models.LocationForecast
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.minBetween
@@ -11,6 +12,9 @@ import com.google.gson.annotations.SerializedName
 
 private const val TAG = "DEBUG - LFRFormat"
 private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
+
+data class Result(val info: LocationForecastInfo?, val forecasts: List<LocationForecast>)
+
 
 // // created = når data ble hentet ISO
 internal data class ResponseFormat(
@@ -24,7 +28,7 @@ internal data class ResponseFormat(
      * request new forecasts (for this location), and a list of LocationForecastInfo.Forecasts.
      * The forecasts are a summary of this class's Time objects, containing the
      */
-    fun summarise(lat: String, lon: String): LocationForecastInfo? {
+    fun summarise(lat: String, lon: String): Pair<LocationForecastInfo, List<LocationForecast>>? {
 
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
@@ -47,7 +51,7 @@ internal data class ResponseFormat(
         for ((index, value) in oneHourSpan.withIndex()) {
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
-                    oneHourSpan[index] = LocationForecastInfo.Forecast(
+                    oneHourSpan[index] = LocationForecast(
                         lat,
                         lon,
                         value.from,
@@ -61,7 +65,7 @@ internal data class ResponseFormat(
         }
 
 
-        return LocationForecastInfo(lat, lon, nextIssue, oneHourSpan)
+        return Pair(LocationForecastInfo(lat, lon, nextIssue), oneHourSpan)
 
     }
 
@@ -105,10 +109,10 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise(lat: String, lon: String): LocationForecastInfo.Forecast {
+    fun summarise(lat: String, lon: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
-        return LocationForecastInfo.Forecast(lat, lon, from, to, airTempC, symbol)
+        return LocationForecast(lat, lon, from, to, airTempC, symbol)
     }
 
 

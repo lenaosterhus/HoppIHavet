@@ -9,6 +9,7 @@ package com.example.badeapp.api.LocationForecast
 
 import android.util.Log
 import com.example.badeapp.api.MIThrottler
+import com.example.badeapp.models.LocationForecast
 import com.example.badeapp.models.LocationForecastInfo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -40,7 +41,10 @@ object RequestManager {
     }
 
     @Headers("User-Agent: $USER_HEADER")
-    suspend fun request(lat: String, lon: String): LocationForecastInfo? {
+    suspend fun request(
+        lat: String,
+        lon: String
+    ): Pair<LocationForecastInfo, List<LocationForecast>>? {
 
         if (!MIThrottler.hasStopped()) {
             val response = apiService.getWeatherData(lat, lon)

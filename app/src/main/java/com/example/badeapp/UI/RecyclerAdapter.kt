@@ -95,7 +95,7 @@ class RecyclerAdapter(
             itemView.TextView_badested_air_temp.text =
                 badested?.forecast?.value?.airTempC?.toString() + "°"
 
-            val symbol = badested?.forecast?.value?.symbol.let {
+            badested?.forecast?.value?.symbol.let {
                 if (it == null) {
                     itemView.symbol_water.setImageDrawable(null)
                 } else {

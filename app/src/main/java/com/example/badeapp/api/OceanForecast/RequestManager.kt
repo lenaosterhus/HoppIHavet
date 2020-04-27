@@ -2,6 +2,7 @@ package com.example.badeapp.api.OceanForecast
 
 import android.util.Log
 import com.example.badeapp.api.MIThrottler
+import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.models.OceanForecastInfo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,7 +31,7 @@ object RequestManager {
     }
 
     @Headers("User-Agent: $USER_HEADER")
-    suspend fun request(lat: String, lon: String): OceanForecastInfo? {
+    suspend fun request(lat: String, lon: String): Pair<OceanForecastInfo, List<OceanForecast>>? {
         if (!MIThrottler.hasStopped()) {
             val response = apiService.getData(lat, lon)
             MIThrottler.submitCode(response.code())

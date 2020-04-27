@@ -1,21 +1,23 @@
 package com.example.badeapp.repository
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
-import com.example.badeapp.util.currentTime
+import com.example.badeapp.persistence.LocationForecastDB
+import com.example.badeapp.persistence.LocationForecastInfoDB
+import com.example.badeapp.persistence.OceanForecastDB
+import com.example.badeapp.persistence.OceanForecastInfoDB
 import com.example.badeapp.util.inTheFutureFromNow
+import com.example.badeapp.util.toGmtIsoString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
-import java.util.*
 import com.example.badeapp.api.LocationForecast.RequestManager as LocationForecastAPI
 import com.example.badeapp.api.OceanForecast.RequestManager as OceanForecastAPI
 
@@ -26,10 +28,27 @@ sealed class Badested(
     val info: String
 ) {
 
+
     private val TAG = "BADESTED"
 
-    private var oceanForecastInfo: OceanForecastInfo? = null
-    private var locationForecastInfo: LocationForecastInfo? = null
+
+    //Databases
+    private lateinit var LFIDB: LocationForecastInfoDB
+    private lateinit var LFDB: LocationForecastDB
+    private lateinit var OFIDB: OceanForecastInfoDB
+    private lateinit var OFDB: OceanForecastDB
+
+    fun initialiseDB(application: Context) {
+        LFIDB = LocationForecastInfoDB.getDatabase(application)
+        LFDB = LocationForecastDB.getDatabase(application)
+        OFIDB = OceanForecastInfoDB.getDatabase(application)
+        OFDB = OceanForecastDB.getDatabase(application)
+
+
+    }
+
+
+
 
     /**
      * Other parts of the code use these values to observe changes. This is part of the mvvm
@@ -54,12 +73,7 @@ sealed class Badested(
 
 
 
-    /**
-     * If we a request results in a exception (something terrible and unexpected has happened),
-     * we don't want to keep spamming the MI servers with new attempts.
-     */
-    private var locationForecastLockdown: Date? = null
-    private var oceanForecastLockdown: Date? = null
+
 
 
     // Info fra Oslo Kommune eller https://www.oslofjorden.com/badesteder/
@@ -195,47 +209,45 @@ sealed class Badested(
     )
 
 
-    //@TODO replace text with something we have written ourself
-
     /**
      * This function updates the weather data if there exists newer data.
-     * This function does not consider things like how many other requests are
-     * happening, or if the user is actually wanting the info.
-     *
      */
     private fun updateLocationForecast() {
 
-        if (!(locationForecastInfo?.isOutdated() != false &&
-                    locationForecastLockdown?.after(currentTime()) != false)
-        ) {
-            //Then we should not update the data, as its either not outdated,
-            //or we have determined to wait before attempting a new request.
-            return
-        }
+        //If someone else is currently updating location forecast we exit
+        if (locationMutex.isLocked) return
 
         CoroutineScope(IO).launch {
-            locationMutex.withLock { //Make sure only one thread is updating
-                if (locationForecastInfo?.isOutdated() != false &&
-                    locationForecastLockdown?.after(currentTime()) != false
-                ) {
 
-                    try {
+            locationMutex.withLock { //Only one person updating data at once
 
-                        val newData = LocationForecastAPI.request(lat, lon)
+                //1) Get location forecast info from from database
+                val locationForecastInfo =
+                    LFIDB.locationForecastInfoDao().getForecastsInfo(lat, lon)
 
-                        if (newData != null) {
-                            withContext(Main) {
-                                locationForecastInfo = newData
-                                setNewForecast()
-                            }
-                        }
+                //2) If its missing or outdated we continue, else we return
+                if (locationForecastInfo?.value?.isOutdated() == false) return@launch
 
-                    } catch (exs: Exception) {
-                        //If request fails we assume the server needs some time
-                        //before attempting a new request.
-                        locationForecastLockdown = inTheFutureFromNow(min = 10L)
-                    }
+                //4) Get new data from server
+                val newData = LocationForecastAPI.request(lat, lon)
+
+
+                //5.a) If request fails, then set timeout on this badested
+                if (newData == null) {
+                    val nextAttempt =
+                        LocationForecastInfo(lat, lon, inTheFutureFromNow(10L).toGmtIsoString())
+                    LFIDB.locationForecastInfoDao().setForecastInfo(nextAttempt)
+                    return@launch
                 }
+
+                //5.b) Write new data to database
+                val locationInfo = newData.first
+                val locationForecastList = newData.second
+
+                LFIDB.locationForecastInfoDao().setForecastInfo(locationInfo)
+
+                //Removes existing entries and puts the new ones inn
+                LFDB.locationForecastDao().replaceAll(locationForecastList)
             }
         }
     }
@@ -243,36 +255,40 @@ sealed class Badested(
 
     private fun updateOceanForecast() {
 
-        if (!(oceanForecastInfo?.isOutdated() != false &&
-                    oceanForecastLockdown?.after(currentTime()) != false)
-        ) {
-            //Then we should not update the data, as its either not outdated,
-            //or we have determined to wait before attempting a new request.
-            return
-        }
+        //If someone else is currently updating ocean forecast we exit
+        if (oceanMutex.isLocked) return
 
         CoroutineScope(IO).launch {
-            oceanMutex.withLock { //Make sure only one thread is updating
-                if (oceanForecastInfo?.isOutdated() != false &&
-                    oceanForecastLockdown?.after(currentTime()) != false
-                ) {
 
-                    try {
-                        val newData = OceanForecastAPI.request(lat, lon)
+            oceanMutex.withLock { //Only one person updating data at once
 
-                        if (newData != null) {
-                            withContext(Main) {
-                                oceanForecastInfo = newData
-                                setNewForecast()
-                            }
-                        }
+                //1) Get ocean forecast info from from database
+                val oceanForecastInfo =
+                    OFIDB.oceanForecastInfoDao().getForecastsInfo(lat, lon)
 
-                    } catch (exs: Exception) {
-                        //If request fails we assume the server needs some time
-                        //before attempting a new request.
-                        oceanForecastLockdown = inTheFutureFromNow(min = 10L)
-                    }
+                //2) If not outdated, we exit
+                if (oceanForecastInfo.value?.isOutdated() == false) return@launch
+
+                //4) Get new data from server
+                val newData = OceanForecastAPI.request(lat, lon)
+
+
+                //5.a) If request fails, then set timeout on this badested
+                if (newData == null) {
+                    val nextAttempt =
+                        OceanForecastInfo(lat, lon, inTheFutureFromNow(10L).toGmtIsoString())
+                    OFIDB.oceanForecastInfoDao().setForecastInfo(nextAttempt)
+                    return@launch
                 }
+
+                //5.b) Write new data to database
+                val oceanInfo = newData.first
+                val oceanForecastList = newData.second
+
+                OFIDB.oceanForecastInfoDao().setForecastInfo(oceanInfo)
+
+                //Removes existing entries and puts the new ones inn
+                OFDB.oceanForecastDao().replaceAll(oceanForecastList)
             }
         }
     }
@@ -284,13 +300,13 @@ sealed class Badested(
     }
 
     private fun setNewForecast() {
+        //@TODO make this propper
         val newForecast = BadestedForecast(
-            locationForecastInfo?.getCurrentAirTempC(),
-            oceanForecastInfo?.vannTempC,
-            locationForecastInfo?.getIcon()
+            4.0,
+            5.0,
+            null
         )
         _forecast.value = newForecast
-
     }
 
     override fun toString(): String {
