@@ -24,7 +24,8 @@ internal data class ResponseFormat(
         if (nextIssue == null) {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
             dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-            nextIssue = dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
+            nextIssue =
+                dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
         }
 
         return OceanForecastInfo(vannTempC, nextIssue!!)

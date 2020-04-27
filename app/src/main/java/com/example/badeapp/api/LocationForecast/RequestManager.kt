@@ -20,8 +20,8 @@ object RequestManager {
 
 
     private val TAG = "DEBUG-LocationReqMngr"
-    private val BASE_URL_WEATHER = 
-            "https://in2000-apiproxy.ifi.uio.no/weatherapi/locationforecast/1.9/"
+    private val BASE_URL_WEATHER =
+        "https://in2000-apiproxy.ifi.uio.no/weatherapi/locationforecast/1.9/"
 
     // lazy = only initialized once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {

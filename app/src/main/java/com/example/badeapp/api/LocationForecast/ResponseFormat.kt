@@ -28,7 +28,9 @@ internal data class ResponseFormat(
 
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
-        val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN).toGmtIsoString()
+        val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(
+            NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
+        ).toGmtIsoString()
         val timeList =
             getHourlyForecasts()?.map { time -> time.summarise() }?.toMutableList() ?: return null
 
@@ -59,7 +61,6 @@ internal data class ResponseFormat(
         return LocationForecastInfo(nextIssue, oneHourSpan)
 
     }
-
 
 
     /**
@@ -101,19 +102,22 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise() : LocationForecastInfo.Forecast {
+    fun summarise(): LocationForecastInfo.Forecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
-        return LocationForecastInfo.Forecast(from,to,airTempC,symbol)
+        return LocationForecastInfo.Forecast(from, to, airTempC, symbol)
     }
 
 
     fun durationMin(): Long {
-        val diff = minBetween(from,to)
-        if (diff == null ) {
+        val diff = minBetween(from, to)
+        if (diff == null) {
             Log.e(TAG, "Tidsintervall diff ikke funnet for:\n\tTo:   $to,\n\tFrom: $from\n")
-        } else if ( diff < 0L) {
-            Log.e(TAG, "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n")
+        } else if (diff < 0L) {
+            Log.e(
+                TAG,
+                "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n"
+            )
         }
         return diff!!
     }
@@ -192,7 +196,7 @@ internal data class Location(
      * It seems that MI is undergoing some api changes, and are moving the
      * weather icon around. This method looks around for where it could be.
      */
-    fun getSymbol() : Int? {
+    fun getSymbol(): Int? {
 
         weather?.symbol?.let { return it }
         symbol?.number?.let { return it }
@@ -229,6 +233,7 @@ internal data class Location(
         }
 
         //Log.d(TAG, "Returning null")
+
         return null
     }
 }
