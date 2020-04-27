@@ -4,10 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.badeapp.models.BadestedForecast
-import com.example.badeapp.models.LocationForecastInfo
-import com.example.badeapp.models.OceanForecastInfo
-import com.example.badeapp.models.getCurrentWaterTempC
+import com.example.badeapp.models.*
 import com.example.badeapp.persistence.LocationForecastDB
 import com.example.badeapp.persistence.LocationForecastInfoDB
 import com.example.badeapp.persistence.OceanForecastDB
@@ -15,10 +12,12 @@ import com.example.badeapp.persistence.OceanForecastInfoDB
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.toGmtIsoString
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import com.example.badeapp.api.LocationForecast.RequestManager as LocationForecastAPI
 import com.example.badeapp.api.OceanForecast.RequestManager as OceanForecastAPI
 
@@ -40,6 +39,8 @@ sealed class Badested(
     private lateinit var OFDB: OceanForecastDB
 
     fun initialiseDB(application: Context) {
+
+        Log.d(TAG, "Initing DB's")
         LFIDB = LocationForecastInfoDB.getDatabase(application)
         LFDB = LocationForecastDB.getDatabase(application)
         OFIDB = OceanForecastInfoDB.getDatabase(application)
@@ -215,12 +216,20 @@ sealed class Badested(
      */
     private fun updateLocationForecast() {
 
+        Log.d(TAG, "Staring location forecast update")
+
         //If someone else is currently updating location forecast we exit
         if (locationMutex.isLocked) return
+
+        Log.d(TAG, "Staring location forecast update 1")
+
 
         CoroutineScope(IO).launch {
 
             locationMutex.withLock { //Only one person updating data at once
+
+                Log.d(TAG, "Staring location forecast update 2")
+
 
                 //1) Get location forecast info from from database
                 val locationForecastInfo =
@@ -229,8 +238,12 @@ sealed class Badested(
                 //2) If its missing or outdated we continue, else we return
                 if (locationForecastInfo?.value?.isOutdated() == false) return@launch
 
+                Log.d(TAG, "Staring location forecast update 3")
+
+
                 //4) Get new data from server
                 val newData = LocationForecastAPI.request(lat, lon)
+
 
 
                 //5.a) If request fails, then set timeout on this badested
@@ -238,6 +251,7 @@ sealed class Badested(
                     val nextAttempt =
                         LocationForecastInfo(lat, lon, inTheFutureFromNow(10L).toGmtIsoString())
                     LFIDB.locationForecastInfoDao().setForecastInfo(nextAttempt)
+                    Log.d(TAG, "Not getting new data 4")
                     return@launch
                 }
 
@@ -298,6 +312,7 @@ sealed class Badested(
         Log.d(TAG, "updateAll: for $name")
         updateLocationForecast()
         updateOceanForecast()
+        setNewForecast() // @TODO remove
     }
 
     private fun setNewForecast() {
@@ -305,23 +320,26 @@ sealed class Badested(
 
         var waterTempc: Double? = null
         var airTempc: Double? = null
+        var symbol: Int? = null
 
         CoroutineScope(IO).launch {
             val oceanForecasts = OFDB.oceanForecastDao().getForecasts(lat, lon)
+            val temp1 = oceanForecasts.getCurrentWaterTempC()
+            val waterTempc = temp1
 
-            val temp = oceanForecasts.getCurrentWaterTempC()
+            val locationForecasts = LFDB.locationForecastDao().getForecasts(lat, lon)
+            val temp = locationForecasts.getCurrentForecast()
+            airTempc = temp?.airTempC
+            symbol = temp?.getIcon()
 
-
+            withContext(Dispatchers.Main) {
+                _forecast.value = BadestedForecast(
+                    airTempc,
+                    waterTempc,
+                    symbol
+                )
+            }
         }
-
-        val List<LocationForecast> =
-
-        val newForecast = BadestedForecast(
-            4.0,
-            5.0,
-            null
-        )
-        _forecast.value = newForecast
     }
 
     override fun toString(): String {
