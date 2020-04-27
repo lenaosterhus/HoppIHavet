@@ -1,5 +1,6 @@
 package com.example.badeapp.util
 
+import androidx.room.TypeConverter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,5 +93,24 @@ fun Date.liesBetweneInclusive(before: Date, after: Date): Boolean {
 }
 
 
+// -----------------------------------------------------
+// Converter used by Room, to convert Date -> Iso String
+// and also back into Date.
+//
 
+object IsoGmtConverter {
+
+    @TypeConverter
+    @JvmStatic
+    fun toDate(value: String?): Date? {
+        return value?.parseAsGmtIsoDate()
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toString(value: Date?): String? {
+        return value?.toGmtIsoString()
+    }
+
+}
 

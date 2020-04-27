@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.LocationForecastInfo
 import com.example.badeapp.models.OceanForecastInfo
+import com.example.badeapp.models.getCurrentWaterTempC
 import com.example.badeapp.persistence.LocationForecastDB
 import com.example.badeapp.persistence.LocationForecastInfoDB
 import com.example.badeapp.persistence.OceanForecastDB
@@ -301,6 +302,20 @@ sealed class Badested(
 
     private fun setNewForecast() {
         //@TODO make this propper
+
+        var waterTempc: Double? = null
+        var airTempc: Double? = null
+
+        CoroutineScope(IO).launch {
+            val oceanForecasts = OFDB.oceanForecastDao().getForecasts(lat, lon)
+
+            val temp = oceanForecasts.getCurrentWaterTempC()
+
+
+        }
+
+        val List<LocationForecast> =
+
         val newForecast = BadestedForecast(
             4.0,
             5.0,
