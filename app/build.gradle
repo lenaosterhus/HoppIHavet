@@ -6,6 +6,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+    testBuildType "debug"
 
     defaultConfig {
         applicationId "com.example.badeapp"
@@ -21,7 +22,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [usesCleartextTraffic:"false"]
         }
+
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [usesCleartextTraffic:"true"]
+        }
+
+
     }
 
 
@@ -69,6 +80,9 @@ dependencies {
     def leak_canary_version = "2.2"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
 
+    // Returning string for retrofit2
+    def converter_version = "2.1.0"
+    implementation "com.squareup.retrofit2:converter-scalars:$converter_version"
 
 
 }

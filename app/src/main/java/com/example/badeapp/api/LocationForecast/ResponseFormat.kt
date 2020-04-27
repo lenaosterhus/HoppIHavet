@@ -216,7 +216,7 @@ internal data class Location(
 
         when {
             unit == "celsius" && temp != null -> {
-//                Log.d(TAG, "Returning $temp")
+                //Log.d(TAG, "Returning $temp")
                 return temp
             }
 
@@ -232,7 +232,8 @@ internal data class Location(
             }
         }
 
-//        Log.d(TAG, "Returning null")
+        //Log.d(TAG, "Returning null")
+
         return null
     }
 }

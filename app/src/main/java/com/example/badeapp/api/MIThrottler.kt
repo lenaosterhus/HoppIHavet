@@ -9,7 +9,7 @@ import android.util.Log
  * If they give certain response codes they want us to throttle or halt requests.
  */
 object MIThrottler {
-
+    val TAG = "MIThrottler"
     private const val throttleTimeMin = 10
     private var throttledStart: Long? = null
 
@@ -33,6 +33,7 @@ object MIThrottler {
      * determine if requests COULD happen.
      */
     fun hasStopped(): Boolean {
+
         stoppStart?.let {
             return (it + stoppTimeMin * 60000) < uptimeMillis()
         }
@@ -63,7 +64,7 @@ object MIThrottler {
                 throttle()
                 halt()
             }
-            403 -> Log.d("MI-BAN-HAMMER!!", "We are banned from MI!")
+            403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")
             //@TODO log if there was a 404, or any unknown response.
         }
 
