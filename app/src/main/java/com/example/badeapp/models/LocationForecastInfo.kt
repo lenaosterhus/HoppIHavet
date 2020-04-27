@@ -10,9 +10,21 @@ import com.example.badeapp.util.parseAsGmtIsoDate
 
 private const val TAG = "DEBUG - LocationInfo"
 
-data class LocationForecastInfo(val nextIssue: String, private val forecasts: List<Forecast>) {
+data class LocationForecastInfo(
+    val lat: String,
+    val lon: String,
+    val nextIssue: String,
+    private val forecasts: List<Forecast>
+) {
 
-    data class Forecast(val from : String, val to: String, val airTempC: Double?, val symbol: Int?)
+    data class Forecast(
+        val lat: String,
+        val lon: String,
+        val from: String,
+        val to: String,
+        val airTempC: Double?,
+        val symbol: Int?
+    )
 
     fun isOutdated(): Boolean {
         return minUntilOutdated() < 0L

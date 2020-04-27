@@ -6,7 +6,12 @@ import com.example.badeapp.util.minBetween
 
 private const val TAG = "DEBUG - OceanInfo"
 
-data class OceanForecastInfo(val vannTempC: Double?, val nextIssue: String) {
+data class OceanForecastInfo(
+    val lat: String,
+    val lon: String,
+    val vannTempC: Double?,
+    val nextIssue: String
+) {
 
     // Format timePosition: "2020-04-02T14:00:00Z"
     fun isOutdated(): Boolean {

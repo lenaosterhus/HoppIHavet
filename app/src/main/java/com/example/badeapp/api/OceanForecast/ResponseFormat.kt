@@ -14,7 +14,7 @@ internal data class ResponseFormat(
     @Expose @SerializedName("mox:forecast") val forecast: List<Forecast>? // Objektene har ikke navn...?
 ) {
 
-    fun summarize(): OceanForecastInfo {
+    fun summarize(lat: String, lon: String): OceanForecastInfo {
 
         val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
         //@TODO ikke bare ta første ellement
@@ -28,7 +28,7 @@ internal data class ResponseFormat(
                 dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
         }
 
-        return OceanForecastInfo(vannTempC, nextIssue!!)
+        return OceanForecastInfo(lat, lon, vannTempC, nextIssue!!)
     }
 
     data class Point(

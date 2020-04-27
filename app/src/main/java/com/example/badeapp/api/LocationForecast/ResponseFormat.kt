@@ -24,7 +24,7 @@ internal data class ResponseFormat(
      * request new forecasts (for this location), and a list of LocationForecastInfo.Forecasts.
      * The forecasts are a summary of this class's Time objects, containing the
      */
-    fun summarise(): LocationForecastInfo? {
+    fun summarise(lat: String, lon: String): LocationForecastInfo? {
 
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
@@ -32,7 +32,8 @@ internal data class ResponseFormat(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
         val timeList =
-            getHourlyForecasts()?.map { time -> time.summarise() }?.toMutableList() ?: return null
+            getHourlyForecasts()?.map { time -> time.summarise(lat, lon) }?.toMutableList()
+                ?: return null
 
         /*
         Now there are some forecasts that overlap. One forecast goes from 11 -> 12, while the other
@@ -47,6 +48,8 @@ internal data class ResponseFormat(
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
                     oneHourSpan[index] = LocationForecastInfo.Forecast(
+                        lat,
+                        lon,
                         value.from,
                         value.to,
                         value.airTempC ?: other.airTempC,
@@ -58,7 +61,7 @@ internal data class ResponseFormat(
         }
 
 
-        return LocationForecastInfo(nextIssue, oneHourSpan)
+        return LocationForecastInfo(lat, lon, nextIssue, oneHourSpan)
 
     }
 
@@ -102,10 +105,10 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise(): LocationForecastInfo.Forecast {
+    fun summarise(lat: String, lon: String): LocationForecastInfo.Forecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
-        return LocationForecastInfo.Forecast(from, to, airTempC, symbol)
+        return LocationForecastInfo.Forecast(lat, lon, from, to, airTempC, symbol)
     }
 
 

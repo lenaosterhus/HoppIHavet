@@ -40,13 +40,13 @@ object RequestManager {
     }
 
     @Headers("User-Agent: $USER_HEADER")
-    suspend fun request(lat: String, long: String): LocationForecastInfo? {
+    suspend fun request(lat: String, lon: String): LocationForecastInfo? {
 
         if (!MIThrottler.hasStopped()) {
-            val response = apiService.getWeatherData(lat, long)
+            val response = apiService.getWeatherData(lat, lon)
             MIThrottler.submitCode(response.code())
             if (response.isSuccessful)
-                return response.body()?.summarise()
+                return response.body()?.summarise(lat, lon)
         }
         return null
     }
