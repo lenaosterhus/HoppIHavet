@@ -3,10 +3,8 @@ package com.example.badeapp.repository
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.badeapp.models.BadestedForecast
-import com.example.badeapp.models.getCurrentForecast
-import com.example.badeapp.models.getCurrentWaterTempC
+import com.example.badeapp.models.LocationForecast
+import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.persistence.LocationForecastDB
 import com.example.badeapp.persistence.OceanForecastDB
 import com.example.badeapp.util.currentTime
@@ -59,11 +57,7 @@ sealed class Badested(
     private var oceanLockdown: Date? = null
 
 
-    private val _forecast: MutableLiveData<BadestedForecast?> = MutableLiveData()
-    val forecast: LiveData<BadestedForecast?> = _forecast
-
-
-    // Info fra Oslo Kommune eller https://www.oslofjorden.com/badesteder/
+    // Info fra Oslo Kommune og https://www.oslofjorden.com/badesteder/
 
     object Hovedoya : Badested(
         "59.898397",
@@ -196,6 +190,17 @@ sealed class Badested(
     )
 
 
+    val locationForecasts: LiveData<List<LocationForecast>> by lazy {
+        LFDB.locationForecastDao().getForecasts(lat, lon)
+    }
+
+    val oceanForecasts: LiveData<List<OceanForecast>> by lazy {
+        OFDB.oceanForecastDao().getForecasts(lat, lon)
+    }
+
+
+
+
     /**
      * This function updates the weather data if there exists newer data.
      */
@@ -221,10 +226,11 @@ sealed class Badested(
 
 
                     //1) Get location forecast info from from database
-                    val locationForecasts = LFDB.locationForecastDao().getForecasts(lat, lon)
+                    val forecasts = locationForecasts.value
 
                     //2) If data is present and not outdated we don't need to do anything
-                    if (locationForecasts.isNotEmpty() && !locationForecasts.any { it -> it.isOutdated() }) {
+                    if (!forecasts.isNullOrEmpty() && !forecasts.any { it -> it.isOutdated() }) {
+                        Log.d(TAG, "$name: update locationForecast - data does not need a update.")
                         return@launch
                     }
 
@@ -273,10 +279,11 @@ sealed class Badested(
 
 
                     //1) Get location forecast info from from database
-                    val oceanForecasts = OFDB.oceanForecastDao().getForecasts(lat, lon)
+                    val forecast = oceanForecasts.value
 
                     //2) If data is present and not outdated we don't need to do anything
-                    if (oceanForecasts.isNotEmpty() && !oceanForecasts.any { it -> it.isOutdated() }) {
+                    if (!forecast.isNullOrEmpty() && !forecast.any { it -> it.isOutdated() }) {
+                        Log.d(TAG, "$name: update oceanForecast - data does not need a update.")
                         return@launch
                     }
 
@@ -291,7 +298,7 @@ sealed class Badested(
                     }
 
 
-                    Log.d(TAG, "$name: update oceanForecast - new data exists")
+                    Log.d(TAG, "$name: update oceanForecast - new data being set ${newData}")
                     //Removes existing entries and puts the new ones inn
                     OFDB.oceanForecastDao().replaceAll(newData)
 
@@ -312,44 +319,9 @@ sealed class Badested(
         Log.d(TAG, "updateAll: for $name")
         updateLocationForecast()
         updateOceanForecast()
-        setNewForecast() // @TODO remove
     }
 
-    private fun setNewForecast() {
-        //@TODO make this propper
 
-        var waterTempc: Double? = null
-        var airTempc: Double? = null
-        var symbol: Int? = null
-
-        CoroutineScope(IO).launch {
-
-            delay(1000)
-
-            val oceanForecasts = OFDB.oceanForecastDao().getForecasts(lat, lon)
-            val temp1 = oceanForecasts.getCurrentWaterTempC()
-            val waterTempc = temp1
-
-            val locationForecasts = LFDB.locationForecastDao().getForecasts(lat, lon)
-            val temp = locationForecasts.getCurrentForecast()
-            airTempc = temp?.airTempC
-            symbol = temp?.getIcon()
-
-            if (temp == null) return@launch
-
-            withContext(Dispatchers.Main) {
-                _forecast.value = BadestedForecast(
-                    lat,
-                    lon,
-                    temp.from,
-                    temp.to,
-                    airTempc,
-                    waterTempc,
-                    symbol
-                )
-            }
-        }
-    }
 
     override fun toString(): String {
         return "Badested: $name"

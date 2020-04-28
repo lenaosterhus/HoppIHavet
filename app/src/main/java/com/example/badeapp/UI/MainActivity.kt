@@ -42,9 +42,14 @@ class MainActivity : AppCompatActivity(),
 
         // Observe badested and update view on change.
         viewModel.badesteder.forEach { badested ->
-            badested.forecast.observe(this, Observer {
+            badested.locationForecasts.observe(this, Observer {
                 recyclerAdapter.notifyChangeFor(badested)
             })
+
+            badested.oceanForecasts.observe(this, Observer {
+                recyclerAdapter.notifyChangeFor(badested)
+            })
+
         }
 
         //Update all the vissible values at least once, so that the

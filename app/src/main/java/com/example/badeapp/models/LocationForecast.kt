@@ -161,8 +161,8 @@ fun List<LocationForecast>.getCurrentAirTempC(): Double? {
 /**
  * Takes a list of LocationForecast and lets us find the current Symbol (if present)
  */
-fun List<LocationForecast>.getCurrentSymbol(): Int? {
-    return this.getCurrentForecast()?.symbol
+fun List<LocationForecast>.getCurrentIcon(): Int? {
+    return this.getCurrentForecast()?.getIcon()
 }
 
 /**

@@ -12,22 +12,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = "DEBUG - MainViewModel"
 
-    // Skjer ingen endringer i selve listen... Ikke poeng at det er LiveData?
-    lateinit var badesteder: List<Badested>
+    val badesteder: List<Badested> by lazy {
+        Badested::class.nestedClasses.map {
+            (it.objectInstance as Badested).apply {
+                this.initialiseDB(getApplication())
+            }
+        }
+    }
+
+
     val hasHalted = MediatorLiveData<Boolean>()
 
     fun init() {
         Log.d(TAG, "init: initializing...")
-        badesteder = Badested::class.nestedClasses.map {
-            it.objectInstance as Badested
-        }
-        updateData()
 
         hasHalted.addSource(MIThrottler.hasHalted, Observer { hasHalted ->
             if (hasHalted) {
                 cancelRequests()
             }
         })
+
+        updateData()
+
     }
 
 

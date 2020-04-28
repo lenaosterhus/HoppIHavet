@@ -4,6 +4,9 @@ import androidx.room.Entity
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.minBetween
 import com.example.badeapp.util.parseAsGmtIsoDate
+import java.lang.Math.abs
+
+private const val TAG = "OceanFrecast"
 
 @Entity(primaryKeys = ["lat", "lon", "timeInstance"], tableName = "Ocean_Forecast_Table")
 data class OceanForecast(
@@ -39,10 +42,8 @@ fun List<OceanForecast>.getCurrentWaterTempC(): Double? {
  */
 fun List<OceanForecast>.getCurrentForecast(): OceanForecast? {
     //@TODO sjekk at vi får riktig resultat
-    return this.find {
-        val delta = currentTime().time - it.timeInstance.parseAsGmtIsoDate()!!.time
-        val halfHour = 1000 * 60 * 30
-        delta in -halfHour..halfHour
+    return this.minBy {
+        abs(currentTime().time - it.timeInstance.parseAsGmtIsoDate()!!.time)
     }
 
 }

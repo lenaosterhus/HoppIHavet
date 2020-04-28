@@ -1,5 +1,6 @@
 package com.example.badeapp.persistence
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.badeapp.models.OceanForecast
 
@@ -14,7 +15,7 @@ interface OceanForecastDao {
      * Returns the location forecast based on the lat and longitude.
      */
     @Query("SELECT * from $OF_TABLE WHERE lat = :lat AND lon = :lon")
-    fun getForecasts(lat: String, lon: String): List<OceanForecast>
+    fun getForecasts(lat: String, lon: String): LiveData<List<OceanForecast>>
 
 
     /**

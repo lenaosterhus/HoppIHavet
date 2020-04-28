@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
+import com.example.badeapp.models.getCurrentAirTempC
+import com.example.badeapp.models.getCurrentIcon
+import com.example.badeapp.models.getCurrentWaterTempC
 import com.example.badeapp.repository.Badested
 import kotlinx.android.synthetic.main.rv_element.view.*
 
@@ -91,11 +94,11 @@ class RecyclerAdapter(
             //@TODO flytte strengene inn i resources.
             itemView.TextView_badested_name.text = badested?.name ?: ""
             itemView.TextView_badested_water_temp.text =
-                badested?.forecast?.value?.waterTempC?.toString() ?: "" + "°"
+                badested?.oceanForecasts?.value?.getCurrentWaterTempC()?.toString() ?: "" + "°"
             itemView.TextView_badested_air_temp.text =
-                badested?.forecast?.value?.airTempC?.toString() ?: "" + "°"
+                badested?.locationForecasts?.value?.getCurrentAirTempC()?.toString() ?: "" + "°"
 
-            badested?.forecast?.value?.symbol.let {
+            badested?.locationForecasts?.value?.getCurrentIcon().let {
                 if (it == null) {
                     itemView.symbol_water.setImageDrawable(null)
                 } else {

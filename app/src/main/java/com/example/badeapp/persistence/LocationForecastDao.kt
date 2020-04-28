@@ -15,7 +15,7 @@ interface LocationForecastDao {
      * Returns the location forecast based on the lat and longitude.
      */
     @Query("SELECT * from $LF_TABLE WHERE lat = :lat AND lon = :lon")
-    fun getForecasts(lat: String, lon: String): List<LocationForecast>
+    fun getForecasts(lat: String, lon: String): LiveData<List<LocationForecast>>
 
 
     /**
