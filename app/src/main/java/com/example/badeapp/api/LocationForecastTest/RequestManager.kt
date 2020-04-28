@@ -11,7 +11,6 @@ package com.example.badeapp.api.LocationForecastTest
 import android.util.Log
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.LocationForecast
-import com.example.badeapp.models.LocationForecastInfo
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -77,7 +76,7 @@ object RequestManager {
         timeShift: String,
         throttleMe: Boolean,
         banMe: Boolean
-    ): Pair<LocationForecastInfo, List<LocationForecast>>? {
+    ): List<LocationForecast>? {
         if (!MIThrottler.hasStopped()) {
             val response =
                 apiService.getWeatherData(lat, lon, session, timeShift, throttleMe, banMe)

@@ -3,6 +3,8 @@ package com.example.badeapp.api
 
 import android.os.SystemClock.uptimeMillis
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
 /**
  * This object makes sure we respect Meteorology Institute wishes not to spam their servers.
@@ -10,43 +12,33 @@ import android.util.Log
  */
 object MIThrottler {
     val TAG = "MIThrottler"
-    private const val throttleTimeMin = 10
-    private var throttledStart: Long? = null
+
 
     private const val stoppTimeMin = 10
     private var stoppStart: Long? = null
 
-    /**
-     * This variable/function tells if the traffic has been requested to be reduced. Not stopped,
-     * just reduced. This should be used as part of a triage to determine if data SHOULD (not could)
-     * update.
-     */
-    fun isThrottled(): Boolean {
-        throttledStart?.let {
-            return (it + throttleTimeMin * 60000) < uptimeMillis()
-        }
-        return false
-    }
+    private val _hasHalted = MutableLiveData<Boolean>()
+    val hasHalted: LiveData<Boolean> = _hasHalted
+
 
     /**
      * This variable/function tells if the traffic has been requested to halt. This is used to
      * determine if requests COULD happen.
      */
     fun hasStopped(): Boolean {
-
-        stoppStart?.let {
-            return (it + stoppTimeMin * 60000) < uptimeMillis()
-        }
-        return false
+        return _hasHalted.value ?: false
     }
 
 
     private fun halt() {
         stoppStart = uptimeMillis()
+        _hasHalted.value = true
     }
 
-    private fun throttle() {
-        throttledStart = uptimeMillis()
+    fun resume() {
+        stoppStart?.let {
+            _hasHalted.value = (it + stoppTimeMin * 60000) < uptimeMillis()
+        }
     }
 
 
@@ -59,9 +51,8 @@ object MIThrottler {
 
         when (code) {
             200 -> return //All good
-            203 -> throttle() //Plz slow down
+            203 -> halt() //Plz slow down
             429 -> {          //If we dont stop now, we are banned
-                throttle()
                 halt()
             }
             403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")

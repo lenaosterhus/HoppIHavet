@@ -4,7 +4,7 @@ import androidx.room.*
 import com.example.badeapp.models.OceanForecast
 
 
-private const val TABLE_NAME = "Ocean_Forecast_Table"
+const val OF_TABLE = "Ocean_Forecast_Table"
 
 
 @Dao
@@ -13,7 +13,7 @@ interface OceanForecastDao {
     /**
      * Returns the location forecast based on the lat and longitude.
      */
-    @Query("SELECT * from $TABLE_NAME WHERE lat = :lat AND lon = :lon")
+    @Query("SELECT * from $OF_TABLE WHERE lat = :lat AND lon = :lon")
     fun getForecasts(lat: String, lon: String): List<OceanForecast>
 
 
@@ -28,7 +28,7 @@ interface OceanForecastDao {
     /**
      * Deletes all the LocationForecasts in the DB, that have the right lat and lon
      */
-    @Query("DELETE FROM $TABLE_NAME WHERE lat = :lat AND lon = :lon")
+    @Query("DELETE FROM $OF_TABLE WHERE lat = :lat AND lon = :lon")
     fun removeAll(lat: String, lon: String)
 
 
@@ -56,4 +56,6 @@ interface OceanForecastDao {
     }
 
 
+    //@Query("SELECT DISTINCT * FROM $OF_TABLE WHERE lat = :lat AND lon = :lon AND datetime('now') -")
+    //fun getCurrentForecast(lat:String,lon:String) : LiveData<OceanForecast>
 }

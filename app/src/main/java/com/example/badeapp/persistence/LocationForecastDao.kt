@@ -1,24 +1,25 @@
 package com.example.badeapp.persistence
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.badeapp.models.LocationForecast
 
-private const val TABLE_NAME = "Location_Forecast_Table"
+const val LF_TABLE = "Location_Forecast_Table"
 
 
 @Dao
 interface LocationForecastDao {
 
+
     /**
      * Returns the location forecast based on the lat and longitude.
      */
-    @Query("SELECT * from $TABLE_NAME WHERE lat = :lat AND lon = :lon")
+    @Query("SELECT * from $LF_TABLE WHERE lat = :lat AND lon = :lon")
     fun getForecasts(lat: String, lon: String): List<LocationForecast>
 
 
     /**
      * Inserts all the values in the list. It does not remove the pre-existing values.
-     * You therefor would use
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(value: List<LocationForecast>)
@@ -27,7 +28,7 @@ interface LocationForecastDao {
     /**
      * Deletes all the LocationForecasts in the DB, that have the right lat and lon
      */
-    @Query("DELETE FROM $TABLE_NAME WHERE lat = :lat AND lon = :lon")
+    @Query("DELETE FROM $LF_TABLE WHERE lat = :lat AND lon = :lon")
     fun removeAll(lat: String, lon: String)
 
 
@@ -55,4 +56,6 @@ interface LocationForecastDao {
     }
 
 
+    @Query("SELECT DISTINCT * FROM $LF_TABLE WHERE lat = :lat AND lon = :lon AND datetime('now') BETWEEN `from` AND `to`  ")
+    fun getCurrentForecast(lat: String, lon: String): LiveData<LocationForecast>
 }

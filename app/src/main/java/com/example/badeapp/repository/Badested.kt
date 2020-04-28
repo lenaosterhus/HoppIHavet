@@ -4,20 +4,19 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.badeapp.models.*
+import com.example.badeapp.models.BadestedForecast
+import com.example.badeapp.models.getCurrentForecast
+import com.example.badeapp.models.getCurrentWaterTempC
 import com.example.badeapp.persistence.LocationForecastDB
-import com.example.badeapp.persistence.LocationForecastInfoDB
 import com.example.badeapp.persistence.OceanForecastDB
-import com.example.badeapp.persistence.OceanForecastInfoDB
+import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.inTheFutureFromNow
-import com.example.badeapp.util.toGmtIsoString
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
+import java.util.*
 import com.example.badeapp.api.LocationForecast.RequestManager as LocationForecastAPI
 import com.example.badeapp.api.OceanForecast.RequestManager as OceanForecastAPI
 
@@ -31,38 +30,20 @@ sealed class Badested(
 
     private val TAG = "BADESTED"
 
+    var jobLocation: CompletableJob? = null
+    var jobOcean: CompletableJob? = null
+
 
     //Databases
-    private lateinit var LFIDB: LocationForecastInfoDB
     private lateinit var LFDB: LocationForecastDB
-    private lateinit var OFIDB: OceanForecastInfoDB
     private lateinit var OFDB: OceanForecastDB
 
     fun initialiseDB(application: Context) {
-
         Log.d(TAG, "Initing DB's")
-        LFIDB = LocationForecastInfoDB.getDatabase(application)
         LFDB = LocationForecastDB.getDatabase(application)
-        OFIDB = OceanForecastInfoDB.getDatabase(application)
         OFDB = OceanForecastDB.getDatabase(application)
-
-
     }
 
-
-
-
-    /**
-     * Other parts of the code use these values to observe changes. This is part of the mvvm
-     * pattern.
-     */
-    private val _forecast = MutableLiveData<BadestedForecast>().apply { value = BadestedForecast() }
-
-    /*
-    * Best practice way to access MutableLiveData - should not be mutable outside of this class
-    */
-    val forecast: LiveData<BadestedForecast>
-        get() = _forecast
 
     /**
      * We cant have multiple threads trying to update the weather data at once, we
@@ -74,8 +55,12 @@ sealed class Badested(
     private val oceanMutex = Mutex()
 
 
+    private var locationLockdown: Date? = null
+    private var oceanLockdown: Date? = null
 
 
+    private val _forecast: MutableLiveData<BadestedForecast?> = MutableLiveData()
+    val forecast: LiveData<BadestedForecast?> = _forecast
 
 
     // Info fra Oslo Kommune eller https://www.oslofjorden.com/badesteder/
@@ -215,97 +200,112 @@ sealed class Badested(
      * This function updates the weather data if there exists newer data.
      */
     private fun updateLocationForecast() {
+        jobLocation = Job()
 
-        Log.d(TAG, "Staring location forecast update")
+        Log.d(TAG, "$name: update locationForecast- starting")
 
         //If someone else is currently updating location forecast we exit
-        if (locationMutex.isLocked) return
-
-        Log.d(TAG, "Staring location forecast update 1")
-
-
-        CoroutineScope(IO).launch {
-
-            locationMutex.withLock { //Only one person updating data at once
-
-                Log.d(TAG, "Staring location forecast update 2")
+        //Or if the updating is on lockdown
+        if (locationMutex.isLocked || locationLockdown?.after(currentTime()) == true)
+            return
 
 
-                //1) Get location forecast info from from database
-                val locationForecastInfo =
-                    LFIDB.locationForecastInfoDao().getForecastsInfo(lat, lon)
+        Log.d(TAG, "$name: update locationForecast - not locked")
 
-                //2) If its missing or outdated we continue, else we return
-                if (locationForecastInfo?.value?.isOutdated() == false) return@launch
+        jobLocation?.let { job ->
+            CoroutineScope(IO + job).launch {
 
-                Log.d(TAG, "Staring location forecast update 3")
+                locationMutex.withLock { //Only one person updating data at once
 
-
-                //4) Get new data from server
-                val newData = LocationForecastAPI.request(lat, lon)
+                    Log.d(TAG, "$name: update locationForecast - in coroutine and with lock")
 
 
+                    //1) Get location forecast info from from database
+                    val locationForecasts = LFDB.locationForecastDao().getForecasts(lat, lon)
 
-                //5.a) If request fails, then set timeout on this badested
-                if (newData == null) {
-                    val nextAttempt =
-                        LocationForecastInfo(lat, lon, inTheFutureFromNow(10L).toGmtIsoString())
-                    LFIDB.locationForecastInfoDao().setForecastInfo(nextAttempt)
-                    Log.d(TAG, "Not getting new data 4")
-                    return@launch
+                    //2) If data is present and not outdated we don't need to do anything
+                    if (locationForecasts.isNotEmpty() && !locationForecasts.any { it -> it.isOutdated() }) {
+                        return@launch
+                    }
+
+                    //4) Get new data from server
+                    val newData = LocationForecastAPI.request(lat, lon)
+
+                    ////5) If data is missing we lockdown any new requests for 20 min, and return
+                    if (newData.isNullOrEmpty()) {
+                        Log.d(TAG, "$name: update locationForecast - newData is null/empty")
+                        locationLockdown = inTheFutureFromNow(20L)
+                        return@launch
+                    }
+
+
+                    Log.d(TAG, "$name: update locationForecast - new data exists")
+                    //Removes existing entries and puts the new ones inn
+                    LFDB.locationForecastDao().replaceAll(newData)
+
+                    withContext(Main) {
+                        job.complete()
+                    }
                 }
-
-                //5.b) Write new data to database
-                val locationInfo = newData.first
-                val locationForecastList = newData.second
-
-                LFIDB.locationForecastInfoDao().setForecastInfo(locationInfo)
-
-                //Removes existing entries and puts the new ones inn
-                LFDB.locationForecastDao().replaceAll(locationForecastList)
             }
         }
     }
 
-
     private fun updateOceanForecast() {
+        jobOcean = Job()
 
-        //If someone else is currently updating ocean forecast we exit
-        if (oceanMutex.isLocked) return
+        Log.d(TAG, "$name: update oceanForecast- starting")
 
-        CoroutineScope(IO).launch {
-
-            oceanMutex.withLock { //Only one person updating data at once
-
-                //1) Get ocean forecast info from from database
-                val oceanForecastInfo =
-                    OFIDB.oceanForecastInfoDao().getForecastsInfo(lat, lon)
-
-                //2) If not outdated, we exit
-                if (oceanForecastInfo.value?.isOutdated() == false) return@launch
-
-                //4) Get new data from server
-                val newData = OceanForecastAPI.request(lat, lon)
+        //If someone else is currently updating location forecast we exit
+        //Or if the updating is on lockdown
+        if (oceanMutex.isLocked || oceanLockdown?.after(currentTime()) == true)
+            return
 
 
-                //5.a) If request fails, then set timeout on this badested
-                if (newData == null) {
-                    val nextAttempt =
-                        OceanForecastInfo(lat, lon, inTheFutureFromNow(10L).toGmtIsoString())
-                    OFIDB.oceanForecastInfoDao().setForecastInfo(nextAttempt)
-                    return@launch
+        Log.d(TAG, "$name: update oceanForecast - not locked")
+
+        jobOcean?.let { job ->
+            CoroutineScope(IO + job).launch {
+
+                oceanMutex.withLock { //Only one person updating data at once
+
+                    Log.d(TAG, "$name: update oceanForecast - in coroutine and with lock")
+
+
+                    //1) Get location forecast info from from database
+                    val oceanForecasts = OFDB.oceanForecastDao().getForecasts(lat, lon)
+
+                    //2) If data is present and not outdated we don't need to do anything
+                    if (oceanForecasts.isNotEmpty() && !oceanForecasts.any { it -> it.isOutdated() }) {
+                        return@launch
+                    }
+
+                    //4) Get new data from server
+                    val newData = OceanForecastAPI.request(lat, lon)
+
+                    ////5) If data is missing we lockdown any new requests for 20 min, and return
+                    if (newData.isNullOrEmpty()) {
+                        Log.d(TAG, "$name: update oceanForecast - newData is null/empty")
+                        oceanLockdown = inTheFutureFromNow(20L)
+                        return@launch
+                    }
+
+
+                    Log.d(TAG, "$name: update oceanForecast - new data exists")
+                    //Removes existing entries and puts the new ones inn
+                    OFDB.oceanForecastDao().replaceAll(newData)
+
+                    withContext(Main) {
+                        job.complete()
+                    }
                 }
-
-                //5.b) Write new data to database
-                val oceanInfo = newData.first
-                val oceanForecastList = newData.second
-
-                OFIDB.oceanForecastInfoDao().setForecastInfo(oceanInfo)
-
-                //Removes existing entries and puts the new ones inn
-                OFDB.oceanForecastDao().replaceAll(oceanForecastList)
             }
         }
+    }
+
+    fun cancelJobs() {
+        jobLocation?.cancel()
+        jobOcean?.cancel()
     }
 
     fun updateAll() {
@@ -323,6 +323,9 @@ sealed class Badested(
         var symbol: Int? = null
 
         CoroutineScope(IO).launch {
+
+            delay(1000)
+
             val oceanForecasts = OFDB.oceanForecastDao().getForecasts(lat, lon)
             val temp1 = oceanForecasts.getCurrentWaterTempC()
             val waterTempc = temp1
@@ -332,8 +335,14 @@ sealed class Badested(
             airTempc = temp?.airTempC
             symbol = temp?.getIcon()
 
+            if (temp == null) return@launch
+
             withContext(Dispatchers.Main) {
                 _forecast.value = BadestedForecast(
+                    lat,
+                    lon,
+                    temp.from,
+                    temp.to,
                     airTempc,
                     waterTempc,
                     symbol
@@ -345,6 +354,7 @@ sealed class Badested(
     override fun toString(): String {
         return "Badested: $name"
     }
+
 }
 
 

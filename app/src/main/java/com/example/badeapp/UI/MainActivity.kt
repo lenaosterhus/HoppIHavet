@@ -55,4 +55,9 @@ class MainActivity : AppCompatActivity(),
     override fun onItemSelected(position: Int, item: Badested) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.cancelRequests()
+    }
 }

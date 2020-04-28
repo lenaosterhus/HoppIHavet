@@ -91,9 +91,9 @@ class RecyclerAdapter(
             //@TODO flytte strengene inn i resources.
             itemView.TextView_badested_name.text = badested?.name ?: ""
             itemView.TextView_badested_water_temp.text =
-                badested?.forecast?.value?.waterTempC?.toString() + "°"
+                badested?.forecast?.value?.waterTempC?.toString() ?: "" + "°"
             itemView.TextView_badested_air_temp.text =
-                badested?.forecast?.value?.airTempC?.toString() + "°"
+                badested?.forecast?.value?.airTempC?.toString() ?: "" + "°"
 
             badested?.forecast?.value?.symbol.let {
                 if (it == null) {

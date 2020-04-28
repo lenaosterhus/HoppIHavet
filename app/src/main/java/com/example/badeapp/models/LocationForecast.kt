@@ -4,6 +4,7 @@ import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.liesBetweneInclusive
+import com.example.badeapp.util.minBetween
 import com.example.badeapp.util.parseAsGmtIsoDate
 
 @Entity(primaryKeys = ["lat", "lon", "from", "to"], tableName = "Location_Forecast_Table")
@@ -12,6 +13,7 @@ data class LocationForecast(
     val lon: String,
     val from: String,
     val to: String,
+    val nextIssue: String,
     val airTempC: Double?,
     val symbol: Int?
 ) {
@@ -137,6 +139,14 @@ data class LocationForecast(
         //Log.w(TAG,"The given symbol $symbol is not mapped to a image!")
         return null
 
+    }
+
+    fun isOutdated(): Boolean {
+        return minUntilOutdated() < 0L
+    }
+
+    fun minUntilOutdated(): Long {
+        return minBetween(currentTime(), nextIssue)!!
     }
 }
 
