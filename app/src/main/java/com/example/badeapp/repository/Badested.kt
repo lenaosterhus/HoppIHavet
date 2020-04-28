@@ -228,6 +228,10 @@ sealed class Badested(
                     //1) Get location forecast info from from database
                     val forecasts = locationForecasts.value
 
+                    if (forecasts.isNullOrEmpty()) {
+                        Log.d(TAG, "$name: update locationForecast - data is missing")
+                    }
+
                     //2) If data is present and not outdated we don't need to do anything
                     if (!forecasts.isNullOrEmpty() && !forecasts.any { it -> it.isOutdated() }) {
                         Log.d(TAG, "$name: update locationForecast - data does not need a update.")
@@ -235,7 +239,12 @@ sealed class Badested(
                     }
 
                     //4) Get new data from server
-                    val newData = LocationForecastAPI.request(lat, lon)
+                    var newData: List<LocationForecast>?
+                    try {
+                        newData = LocationForecastAPI.request(lat, lon)
+                    } catch (ex: Exception) {
+                        newData = null
+                    }
 
                     ////5) If data is missing we lockdown any new requests for 20 min, and return
                     if (newData.isNullOrEmpty()) {
@@ -287,8 +296,14 @@ sealed class Badested(
                         return@launch
                     }
 
+
                     //4) Get new data from server
-                    val newData = OceanForecastAPI.request(lat, lon)
+                    var newData: List<OceanForecast>?
+                    try {
+                        newData = OceanForecastAPI.request(lat, lon)
+                    } catch (ex: Exception) {
+                        newData = null
+                    }
 
                     ////5) If data is missing we lockdown any new requests for 20 min, and return
                     if (newData.isNullOrEmpty()) {

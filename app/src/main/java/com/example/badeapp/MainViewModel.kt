@@ -20,7 +20,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     val hasHalted = MediatorLiveData<Boolean>()
 
     fun init() {
