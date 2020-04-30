@@ -1,12 +1,17 @@
 package com.example.badeapp.UI
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
 import com.example.badeapp.repository.Badested
 import kotlinx.android.synthetic.main.rv_element.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 private const val TAG = "DEBUG - Adapter"
 
@@ -14,7 +19,11 @@ class RecyclerAdapter(
     private val badesteder: List<Badested>,
     private val interaction: Interaction? = null
 ) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+
+    internal var filteredBadestedList = badesteder
+
+
 
     /**
      * This value maps a badested to the ViewHolder that it is present in.
@@ -44,14 +53,14 @@ class RecyclerAdapter(
                 holder.badested?.let {
                     visible -= it
                 }
-                visible[badesteder[position]] = holder
-                holder.bind(badesteder[position])
+                visible[filteredBadestedList[position]] = holder
+                holder.bind(filteredBadestedList[position])
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return badesteder.size
+        return filteredBadestedList.size
     }
 
 
@@ -110,5 +119,45 @@ class RecyclerAdapter(
 
     interface Interaction {
         fun onItemSelected(position: Int, item: Badested)
+    }
+
+    /**
+     * Returns a filter that can be used to constrain data with a filtering
+     * pattern.
+     *
+     * @return a filter used to constrain data
+     */
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                Log.d(TAG, "performFiltering: $constraint")
+                val charSearch = constraint.toString()
+                if (charSearch.isEmpty()) {
+                    // No filter implemented we return the whole list
+                    Log.d(TAG, "performFiltering: input is empty")
+                    filteredBadestedList = badesteder
+                }
+                else {
+                    val resultList = ArrayList<Badested>()
+                    badesteder.forEach {
+                        val name: CharSequence = it.name.toUpperCase(Locale.ROOT)
+                        if (name.contains(charSearch.toUpperCase(Locale.ROOT))) {
+                            resultList.add(it)
+                        }
+                        filteredBadestedList = resultList
+                    }
+                }
+                val results = FilterResults()
+                results.values = filteredBadestedList
+                results.count = filteredBadestedList.size
+                return results
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredBadestedList = results?.values as List<Badested>
+                notifyDataSetChanged()
+            }
+        }
     }
 }

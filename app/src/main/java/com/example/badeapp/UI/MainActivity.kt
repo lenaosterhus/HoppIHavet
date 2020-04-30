@@ -1,7 +1,9 @@
 package com.example.badeapp.UI
 
-
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var viewModel: MainViewModel
     private lateinit var recyclerAdapter: RecyclerAdapter
+    private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,12 +50,32 @@ class MainActivity : AppCompatActivity(),
             })
         }
 
-        //Update all the vissible values at least once, so that the
+        //Update all the visible values at least once, so that the
         recyclerAdapter.updateRecyclerAdapter()
     }
 
-
     override fun onItemSelected(position: Int, item: Badested) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    // Search bar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search_menu, menu)
+        searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(queryString: String): Boolean {
+                Log.d(TAG, "onQueryTextSubmit: $queryString")
+                recyclerAdapter.filter.filter(queryString)
+                return false
+            }
+
+            override fun onQueryTextChange(queryString: String): Boolean {
+                recyclerAdapter.filter.filter(queryString)
+                return false
+            }
+        })
+
+        return super.onCreateOptionsMenu(menu)
     }
 }
