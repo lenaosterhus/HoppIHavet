@@ -138,14 +138,11 @@ class RecyclerAdapter(
                     filteredBadestedList = badesteder
                 }
                 else {
-                    val resultList = ArrayList<Badested>()
-                    badesteder.forEach {
+                    val resultList = badesteder.filter {
                         val name: CharSequence = it.name.toUpperCase(Locale.ROOT)
-                        if (name.contains(charSearch.toUpperCase(Locale.ROOT))) {
-                            resultList.add(it)
-                        }
-                        filteredBadestedList = resultList
+                        name.contains(charSearch.toUpperCase(Locale.ROOT))
                     }
+                    filteredBadestedList = resultList
                 }
                 val results = FilterResults()
                 results.values = filteredBadestedList
