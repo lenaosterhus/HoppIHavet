@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.badeapp.MainViewModel
 import com.example.badeapp.R
-import com.example.badeapp.repository.Badested
+import com.example.badeapp.models.BadestedSummary
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -37,26 +37,24 @@ class MainActivity : AppCompatActivity(),
 
         //Init recycler view
         recycler_view.apply {
+            Log.d(TAG, "Inflate RecyclerView")
             layoutManager = LinearLayoutManager(this@MainActivity)
-            recyclerAdapter = RecyclerAdapter(viewModel.badesteder)
+            recyclerAdapter = RecyclerAdapter()
             adapter = recyclerAdapter
         }
 
 
-        // Observe badested and update view on change.
-        viewModel.badesteder.forEach { badested ->
-            badested.forecast.observe(this, Observer {
-                recyclerAdapter.notifyChangeFor(badested)
-            })
-        }
+        viewModel.summaries.observe(this, Observer {
+            Log.d(TAG, "Submitting list $it")
+            viewModel.printRawDBQuerry() //@TODO remove
+            recyclerAdapter.submitList(it)
+        })
 
-        //Update all the visible values at least once, so that the
-        recyclerAdapter.updateRecyclerAdapter()
+        viewModel.updateData()
+
     }
 
-    override fun onItemSelected(position: Int, item: Badested) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+
 
     // Search bar
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -77,5 +75,20 @@ class MainActivity : AppCompatActivity(),
         })
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.updateData()
+    }
+
+
+    override fun onItemSelected(position: Int, item: BadestedSummary) {
+        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.cancelRequests()
     }
 }
