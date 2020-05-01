@@ -2,6 +2,7 @@ package com.example.badeapp.persistence
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.badeapp.models.Badested
 import com.example.badeapp.models.LocationForecast
 
 const val LF_TABLE = "Location_Forecast_Table"
@@ -10,16 +11,38 @@ const val LF_TABLE = "Location_Forecast_Table"
 @Dao
 interface LocationForecastDao {
 
-
     /**
-     * Returns the location forecast based on the lat and longitude.
+     * Returns all the forecasts stored for one badested
      */
-    @Query("SELECT * from $LF_TABLE WHERE lat = :lat AND lon = :lon")
-    fun getForecasts(lat: String, lon: String): LiveData<List<LocationForecast>>
+    @Query("SELECT * from $LF_TABLE WHERE badested = :badested")
+    fun getAllForecast(badested: Badested): List<LocationForecast>?
 
 
     /**
-     * Inserts all the values in the list. It does not remove the pre-existing values.
+     * Returns LiveData for all the forecasts stored for one badested
+     */
+    @Query("SELECT * from $LF_TABLE WHERE badested = :badested")
+    fun getAllForecastsLive(badested: Badested): LiveData<List<LocationForecast>>
+
+
+    @Query("SELECT * FROM $LF_TABLE WHERE badested = :badested AND DATETIME('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    fun getCurrent(badested: Badested): LocationForecast?
+
+
+    @Query("SELECT * FROM $LF_TABLE WHERE badested = :badested AND DATETIME('now') BETWEEN DATETIME(:from) AND DATETIME(:to)")
+    fun getBetween(badested: Badested, from: String, to: String): List<LocationForecast>?
+
+
+    /**
+     * Inserts all the values in the list. It does not remove the pre-existing values,
+     * unless they collide. You should basically never use this method. Use the replaceAll
+     * method.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(value: LocationForecast)
+
+    /**
+     * Inserts the values in the list
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(value: List<LocationForecast>)
@@ -28,8 +51,8 @@ interface LocationForecastDao {
     /**
      * Deletes all the LocationForecasts in the DB, that have the right lat and lon
      */
-    @Query("DELETE FROM $LF_TABLE WHERE lat = :lat AND lon = :lon")
-    fun removeAll(lat: String, lon: String)
+    @Query("DELETE FROM $LF_TABLE WHERE badested = :badested")
+    fun removeForecasts(badested: Badested)
 
 
     /**
@@ -39,23 +62,26 @@ interface LocationForecastDao {
      */
     @Transaction //Makes it atomic
     fun replaceAll(values: List<LocationForecast>) {
-
         if (values.isEmpty()) return
 
-        val lat = values[0].lat
-        val lon = values[0].lon
-
+        val badested = values[0].badested
         require( //Throw IllegalArgumentException
             values.all {
-                lat == it.lat && lon == it.lon
+                it.badested == badested
             }
         )
 
-        removeAll(lat, lon)
+        removeForecasts(badested)
         insertAll(values)
     }
 
 
-    @Query("SELECT DISTINCT * FROM $LF_TABLE WHERE lat = :lat AND lon = :lon AND datetime('now') BETWEEN `from` AND `to`  ")
-    fun getCurrentForecast(lat: String, lon: String): LiveData<LocationForecast>
+    @Query("SELECT * from $LF_TABLE WHERE datetime('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    fun getAllCurrentForecasts(): LiveData<List<LocationForecast>>
+
+
+    @Query("SELECT * from $LF_TABLE WHERE datetime('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    fun getAllCurrentForecastsRaw(): List<LocationForecast>
+
+
 }

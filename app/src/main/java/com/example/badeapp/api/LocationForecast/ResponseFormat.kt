@@ -2,6 +2,7 @@ package com.example.badeapp.api.LocationForecast
 
 
 import android.util.Log
+import com.example.badeapp.models.Badested
 import com.example.badeapp.models.LocationForecast
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.minBetween
@@ -25,14 +26,14 @@ internal data class ResponseFormat(
      * request new forecasts (for this location), and a list of LocationForecastInfo.Forecasts.
      * The forecasts are a summary of this class's Time objects, containing the
      */
-    fun summarise(lat: String, lon: String): List<LocationForecast>? {
+    fun summarise(badested: Badested): List<LocationForecast>? {
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
         val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
         val timeList =
-            getHourlyForecasts()?.map { time -> time.summarise(lat, lon, nextIssue) }
+            getHourlyForecasts()?.map { time -> time.summarise(badested, nextIssue) }
                 ?.toMutableList()
                 ?: return null
 
@@ -49,8 +50,7 @@ internal data class ResponseFormat(
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
                     oneHourSpan[index] = LocationForecast(
-                        lat,
-                        lon,
+                        badested,
                         value.from,
                         value.to,
                         nextIssue,
@@ -108,10 +108,10 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise(lat: String, lon: String, nextIssue: String): LocationForecast {
+    fun summarise(badestedName: Badested, nextIssue: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
-        return LocationForecast(lat, lon, from, to, nextIssue, airTempC, symbol)
+        return LocationForecast(badestedName, from, to, nextIssue, airTempC, symbol)
     }
 
 

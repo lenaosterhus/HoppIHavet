@@ -2,6 +2,7 @@ package com.example.badeapp.persistence
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.badeapp.models.Badested
 import com.example.badeapp.models.OceanForecast
 
 
@@ -12,25 +13,47 @@ const val OF_TABLE = "Ocean_Forecast_Table"
 interface OceanForecastDao {
 
     /**
-     * Returns the location forecast based on the lat and longitude.
+     * Returns all the forecasts stored for one badested
      */
-    @Query("SELECT * from $OF_TABLE WHERE lat = :lat AND lon = :lon")
-    fun getForecasts(lat: String, lon: String): LiveData<List<OceanForecast>>
+    @Query("SELECT * from $OF_TABLE WHERE badested = :badested")
+    fun getAllForecast(badested: Badested): List<OceanForecast>?
 
 
     /**
-     * Inserts all the values in the list. It does not remove the pre-existing values.
-     * You therefor would use
+     * Returns LiveData for all the forecasts stored for one badested
+     */
+    @Query("SELECT * from $OF_TABLE WHERE badested = :badested")
+    fun getAllForecastsLive(badested: Badested): LiveData<List<OceanForecast>>
+
+
+    @Query("SELECT * FROM $OF_TABLE WHERE badested = :badested AND DATETIME('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    fun getCurrent(badested: Badested): OceanForecast?
+
+
+    @Query("SELECT * FROM $OF_TABLE WHERE badested = :badested AND DATETIME('now') BETWEEN DATETIME(:from) AND DATETIME(:to)")
+    fun getBetween(badested: Badested, from: String, to: String): List<OceanForecast>?
+
+
+    /**
+     * Inserts all the values in the list. It does not remove the pre-existing values,
+     * unless they collide. You should basically never use this method. Use the replaceAll
+     * method.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(value: OceanForecast)
+
+    /**
+     * Inserts the values in the list
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(value: List<OceanForecast>)
 
 
     /**
-     * Deletes all the LocationForecasts in the DB, that have the right lat and lon
+     * Deletes all the OceanForecasts in the DB, that have the right lat and lon
      */
-    @Query("DELETE FROM $OF_TABLE WHERE lat = :lat AND lon = :lon")
-    fun removeAll(lat: String, lon: String)
+    @Query("DELETE FROM $OF_TABLE WHERE badested = :badested")
+    fun removeForecasts(badested: Badested)
 
 
     /**
@@ -40,23 +63,30 @@ interface OceanForecastDao {
      */
     @Transaction //Makes it atomic
     fun replaceAll(values: List<OceanForecast>) {
-
         if (values.isEmpty()) return
 
-        val lat = values[0].lat
-        val lon = values[0].lon
-
+        val badested = values[0].badested
         require( //Throw IllegalArgumentException
             values.all {
-                lat == it.lat && lon == it.lon
+                it.badested == badested
             }
         )
 
-        removeAll(lat, lon)
+        removeForecasts(badested)
         insertAll(values)
     }
 
 
-    //@Query("SELECT DISTINCT * FROM $OF_TABLE WHERE lat = :lat AND lon = :lon AND datetime('now') -")
-    //fun getCurrentForecast(lat:String,lon:String) : LiveData<OceanForecast>
+    @Query("SELECT * from $OF_TABLE WHERE datetime('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    fun getAllCurrentForecasts(): LiveData<List<OceanForecast>>
+
+
+    @Query("SELECT * from $OF_TABLE WHERE datetime('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    fun getAllCurrentForecastsRaw(): List<OceanForecast>
+
+
+
+
+
+
 }

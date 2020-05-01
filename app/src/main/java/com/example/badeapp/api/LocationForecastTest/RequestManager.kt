@@ -10,6 +10,7 @@ package com.example.badeapp.api.LocationForecastTest
 
 import android.util.Log
 import com.example.badeapp.api.MIThrottler
+import com.example.badeapp.models.Badested
 import com.example.badeapp.models.LocationForecast
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -58,9 +59,9 @@ object RequestManager {
 
 
     /**
-     * @param lat, lon -> lat and lon of area we are wanting the response for
+     * @param badested is where we want info about
      * @param session -> we get the same result for every session
-     * @param timeShift This variable manipulates all the dates in the reponse time make it look like
+     * @param timeShift This variable manipulates all the dates in the response time make it look like
      * the response was created at this time. The temperature and symbols etc.. are the same, but the
      * times are shifted.
      *
@@ -70,8 +71,7 @@ object RequestManager {
      * */
 
     suspend fun request(
-        lat: String,
-        lon: String,
+        badested: Badested,
         session: String,
         timeShift: String,
         throttleMe: Boolean,
@@ -79,10 +79,17 @@ object RequestManager {
     ): List<LocationForecast>? {
         if (!MIThrottler.hasStopped()) {
             val response =
-                apiService.getWeatherData(lat, lon, session, timeShift, throttleMe, banMe)
+                apiService.getWeatherData(
+                    badested.lat,
+                    badested.lon,
+                    session,
+                    timeShift,
+                    throttleMe,
+                    banMe
+                )
             MIThrottler.submitCode(response.code())
             if (response.isSuccessful)
-                return response.body()?.summarise(lat, lon)
+                return response.body()?.summarise(badested)
             else {
                 Log.d(TAG, response.toString())
             }
@@ -93,14 +100,20 @@ object RequestManager {
 
 
     suspend fun requestRaw(
-        lat: String,
-        lon: String,
+        badested: Badested,
         session: String,
         timeShift: String = "",
         throttleMe: Boolean = false,
         banMe: Boolean = false
     ): Response<String> {
-        val res = apiServiceRaw.getWeatherDataRaw(lat, lon, session, timeShift, throttleMe, banMe)
+        val res = apiServiceRaw.getWeatherDataRaw(
+            badested.lat,
+            badested.lon,
+            session,
+            timeShift,
+            throttleMe,
+            banMe
+        )
         Log.d(TAG, "HERE")
         return res
     }

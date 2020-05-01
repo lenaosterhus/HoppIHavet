@@ -93,6 +93,23 @@ fun Date.liesBetweneInclusive(before: Date, after: Date): Boolean {
 }
 
 
+fun Date.addOneHour(): Date {
+    return Calendar.getInstance().also {
+        it.time = this
+        it.add(Calendar.HOUR, 1)
+    }.time
+}
+
+
+fun Date.subOneHour(): Date {
+    return Calendar.getInstance().also {
+        it.time = this
+        it.add(Calendar.HOUR, -1)
+    }.time
+}
+
+
+
 // -----------------------------------------------------
 // Converter used by Room, to convert Date -> Iso String
 // and also back into Date.

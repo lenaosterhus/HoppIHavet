@@ -6,16 +6,15 @@ import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 
-@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Location_Forecast_Table")
-data class LocationForecast(
+@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Summary_Table")
+data class BadestedSummary(
     val badested: Badested,
     val from: String,
     val to: String,
-    val nextIssue: String,
+    val waterTempC: Double?,
     val airTempC: Double?,
-    val symbol: Int?
+    val symbol: Int?   // Symbol
 ) {
-
     /**
      * Returns the resource id of the icon that best summarises the LocationForecast
      */
@@ -138,32 +137,35 @@ data class LocationForecast(
         return null
 
     }
-
-    fun isOutdated(): Boolean {
-        return nextIssue.parseAsGmtIsoDate()!!.before(currentTime())
-    }
-
-
 }
+
+
+/**
+ * Takes a list of BadestedSummary and lets us find the current Air Temp (if present)
+ */
+fun List<BadestedSummary>.getCurrentAirTempCForBadestedSummary(): Double? {
+    return this.getCurrentForecastForBadestedSummary()?.airTempC
+}
+
+/**
+ * Takes a list of BadestedSummary and lets us find the current Symbol (if present)
+ */
+//fun List<BadestedSummary>.getCurrentIcon(): Int? {
+//   return this.getCurrentForecast()?.getIcon()
+//}
 
 /**
  * Takes a list of LocationForecast and lets us find the current Air Temp (if present)
  */
-fun List<LocationForecast>.getCurrentAirTempC(): Double? {
-    return this.getCurrentForecast()?.airTempC
+fun List<BadestedSummary>.getCurrentWaterTempCForBadestedSummary(): Double? {
+    return this.getCurrentForecastForBadestedSummary()?.waterTempC
 }
 
-/**
- * Takes a list of LocationForecast and lets us find the current Symbol (if present)
- */
-fun List<LocationForecast>.getCurrentIcon(): Int? {
-    return this.getCurrentForecast()?.getIcon()
-}
 
 /**
- * Takes a list of LocationForecasts and returns the one representing now, if that would be applicable
+ * Takes a list of BadestedSummarys and returns the one representing now, if that would be applicable
  */
-fun List<LocationForecast>.getCurrentForecast(): LocationForecast? {
+fun List<BadestedSummary>.getCurrentForecastForBadestedSummary(): BadestedSummary? {
     val now = currentTime()
     return this.find { hour ->
         now.liesBetweneInclusive(
@@ -172,11 +174,3 @@ fun List<LocationForecast>.getCurrentForecast(): LocationForecast? {
         )
     }
 }
-
-
-
-
-
-
-
-

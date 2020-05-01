@@ -1,36 +1,40 @@
 package com.example.badeapp.UI
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
-import com.example.badeapp.models.getCurrentAirTempC
-import com.example.badeapp.models.getCurrentIcon
-import com.example.badeapp.models.getCurrentWaterTempC
-import com.example.badeapp.repository.Badested
+import com.example.badeapp.models.BadestedSummary
 import kotlinx.android.synthetic.main.rv_element.view.*
 
-private const val TAG = "DEBUG - Adapter"
+private const val TAG = "ReyclerAdapter - DEBUG"
 
-class RecyclerAdapter(
-    private val badesteder: List<Badested>,
-    private val interaction: Interaction? = null
-) :
+class RecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    /**
-     * This value maps a badested to the ViewHolder that it is present in.
-     * If the badested is not present in the map, then it is not visible
-     * on screen.
-     */
-    private val visible = mutableMapOf<Badested, ElementView>()
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedSummary>() {
 
-    // .................................
-    // Recycler adapter methods
-    //---------------------------------
+        override fun areItemsTheSame(oldItem: BadestedSummary, newItem: BadestedSummary): Boolean {
+            return oldItem.badested == newItem.badested
+        }
+
+        override fun areContentsTheSame(
+            oldItem: BadestedSummary,
+            newItem: BadestedSummary
+        ): Boolean {
+            return oldItem.waterTempC == newItem.waterTempC && oldItem.symbol == newItem.symbol &&
+                    oldItem.airTempC == newItem.airTempC
+        }
+    }
+    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return ElementView(
+
+        return RVElement(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.rv_element,
                 parent,
@@ -42,76 +46,70 @@ class RecyclerAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ElementView -> {
-
-                holder.badested?.let {
-                    visible -= it
-                }
-                visible[badesteder[position]] = holder
-                holder.bind(badesteder[position])
+            is RVElement -> {
+                holder.bind(differ.currentList.get(position))
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return badesteder.size
+        return differ.currentList.size
     }
 
-
-    // ........................................
-    // Methods for keeping shown data updated
-    //-----------------------------------------
-    fun notifyChangeFor(badested: Badested) {
-        visible[badested]?.drawData()
+    fun submitList(list: List<BadestedSummary>) {
+        Log.d(TAG, "Submitting list new list")
+        differ.submitList(list)
     }
 
-    fun updateRecyclerAdapter() {
-        visible.entries.forEach {
-            it.value.drawData()
-        }
-    }
-
-
-    // ..........................................
-    // The RV element containing the information
-    //-------------------------------------------
-    class ElementView(
+    class RVElement
+    constructor(
         itemView: View,
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
+        var summary: BadestedSummary? = null
 
-        var badested: Badested? = null
-
-        fun bind(sted: Badested) = with(itemView) {
-            badested = sted
+        fun bind(item: BadestedSummary) {
             itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, sted)
+                interaction?.onItemSelected(adapterPosition, item)
             }
-            drawData()
+            summary = item
+            draw()
         }
 
-        fun drawData() {
-            //@TODO flytte strengene inn i resources.
-            itemView.TextView_badested_name.text = badested?.name ?: ""
-            itemView.TextView_badested_water_temp.text =
-                badested?.oceanForecasts?.value?.getCurrentWaterTempC()?.toString() ?: "" + "°"
-            itemView.TextView_badested_air_temp.text =
-                badested?.locationForecasts?.value?.getCurrentAirTempC()?.toString() ?: "" + "°"
+        fun draw() {
+            with(itemView) {
 
-            badested?.locationForecasts?.value?.getCurrentIcon().let {
-                if (it == null) {
-                    itemView.symbol_water.setImageDrawable(null)
+                TextView_badested_name.text = summary?.badested?.name
+
+                if (summary?.airTempC != null) {
+                    TextView_badested_air_temp.text = summary!!.airTempC.toString() + "°"
                 } else {
-                    itemView.symbol_weather.setImageResource(it)
+                    TextView_badested_air_temp.text = ""
                 }
+
+                if (summary?.waterTempC != null) {
+                    TextView_badested_water_temp.text = summary!!.waterTempC.toString() + "°"
+                } else {
+                    TextView_badested_water_temp.text = ""
+                }
+
+                val icon = summary?.getIcon()
+
+                if (icon != null) {
+                    itemView.symbol_weather.setImageResource(icon)
+                } else {
+                    itemView.symbol_weather.setImageDrawable(null)
+                }
+
+
             }
 
-            itemView.ImageView_badested_image.clipToOutline = true
         }
     }
-
 
     interface Interaction {
-        fun onItemSelected(position: Int, item: Badested)
+        fun onItemSelected(position: Int, item: BadestedSummary)
     }
 }
+
+

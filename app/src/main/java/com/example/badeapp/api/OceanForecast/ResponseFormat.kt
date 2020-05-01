@@ -1,9 +1,11 @@
 package com.example.badeapp.api.OceanForecast
 
 import android.util.Log
-
+import com.example.badeapp.models.Badested
 import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.util.inTheFutureFromNow
+import com.example.badeapp.util.parseAsGmtIsoDate
+import com.example.badeapp.util.subOneHour
 import com.example.badeapp.util.toGmtIsoString
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -19,7 +21,7 @@ internal data class ResponseFormat(
     @Expose @SerializedName("mox:forecast") val forecast: List<Forecast>? // Objektene har ikke navn...?
 ) {
 
-    fun summarize(lat: String, lon: String): List<OceanForecast>? {
+    fun summarize(badested: Badested): List<OceanForecast>? {
 
 
         val nextIssue: String = nextIssueTime?.timeInstant?.timePosition ?: inTheFutureFromNow(
@@ -27,7 +29,7 @@ internal data class ResponseFormat(
         ).toGmtIsoString()
 
         val forecasts = forecast?.map { it ->
-            it.summarise(lat, lon, nextIssue)
+            it.summarise(badested, nextIssue)
         }?.filterNotNull()
 
         if (forecasts.isNullOrEmpty())
@@ -65,7 +67,7 @@ internal data class ResponseFormat(
             return "\nForecast(forecast=$forecast)"
         }
 
-        fun summarise(lat: String, lon: String, nextIssue: String): OceanForecast? {
+        fun summarise(badested: Badested, nextIssue: String): OceanForecast? {
 
             val from = forecast?.validTime?.timePeriod?.begin
             val to = forecast?.validTime?.timePeriod?.end
@@ -76,23 +78,27 @@ internal data class ResponseFormat(
                     Log.e(TAG, "Failed to get 'from'  and 'to' for the ocean forecast")
                     return null
                 }
+
+
                 waterTempC == null -> {
                     Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast")
                 }
 
-                from != to -> {
+                from != to && to != null -> {
                     /**
                      * The ocean forecast api looks like it only shows the data for a instance.
                      * So we expect from == to.
                      */
                     Log.e(TAG, "'from' != 'to'    $from != $to")
-                    return null
+                    return OceanForecast(badested, from!!, to, nextIssue, waterTempC)
                 }
             }
 
-            val instance = from!!
+            val instance = to ?: from
+            val newFrom = instance!!.parseAsGmtIsoDate()!!.subOneHour().toGmtIsoString()
 
-            return OceanForecast(lat, lon, instance, nextIssue, waterTempC)
+            //val newTo = from!!.parseAsGmtIsoDate()?.addOneHour()?.toGmtIsoString()!!
+            return OceanForecast(badested, newFrom, to!!, nextIssue, waterTempC)
         }
     }
 
