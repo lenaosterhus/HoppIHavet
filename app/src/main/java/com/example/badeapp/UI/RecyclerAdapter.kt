@@ -13,7 +13,6 @@ import com.example.badeapp.R
 import com.example.badeapp.models.BadestedSummary
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 private const val TAG = "ReyclerAdapter - DEBUG"
 
@@ -22,6 +21,7 @@ private const val TAG = "ReyclerAdapter - DEBUG"
 class RecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
+    var unFilterdList: List<BadestedSummary>? = null
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedSummary>() {
 
@@ -67,6 +67,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     fun submitList(list: List<BadestedSummary>) {
         Log.d(TAG, "Submitting list new list")
         differ.submitList(list)
+        unFilterdList = list
     }
 
     class RVElement
@@ -129,31 +130,31 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     override fun getFilter(): Filter { //TODO figure this out
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
+
+                val filteredBadestedList: List<BadestedSummary>?
+
                 Log.d(TAG, "performFiltering: $constraint")
                 val charSearch = constraint.toString()
                 if (charSearch.isEmpty()) {
                     // No filter implemented we return the whole list
                     Log.d(TAG, "performFiltering: input is empty")
-                    filteredBadestedList = badesteder
+                    filteredBadestedList = unFilterdList
                 }
                 else {
-                    val resultList = badesteder.filter {
-                        val name: CharSequence = it.name.toUpperCase(Locale.ROOT)
+                    filteredBadestedList = unFilterdList?.filter {
+                        val name: CharSequence = it.badested.name.toUpperCase(Locale.ROOT)
                         name.contains(charSearch.toUpperCase(Locale.ROOT))
                     }
-                    filteredBadestedList = resultList
                 }
                 val results = FilterResults()
                 results.values = filteredBadestedList
-                results.count = filteredBadestedList.size
+                results.count = filteredBadestedList?.size ?: 0
                 return results
             }
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredBadestedList = results?.values as List<Badested> 
-                notifyDataSetChanged()
-                differ.submitList(list)
+                differ.submitList(results?.values as List<BadestedSummary>?)
             }
         }
     }

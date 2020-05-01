@@ -3,8 +3,8 @@ package com.example.badeapp.UI
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity(),
             recyclerAdapter.submitList(it)
         })
 
-        viewModel.updateData()
 
     }
 
