@@ -11,7 +11,6 @@ import com.example.badeapp.R
 import com.example.badeapp.repository.Badested
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 private const val TAG = "DEBUG - Adapter"
 
@@ -94,6 +93,7 @@ class RecyclerAdapter(
                 interaction?.onItemSelected(adapterPosition, sted)
             }
             drawData()
+            findImage()
         }
 
         fun drawData() {
@@ -112,6 +112,35 @@ class RecyclerAdapter(
                 }
             }
 
+            itemView.ImageView_badested_image.clipToOutline = true
+        }
+
+        private fun findImage() {
+            val images = arrayOf(
+                R.drawable.badeBilder_hovedoya,
+                R.drawable.badeBilder_sorenga,
+                R.drawable.badeBilder_paradisbukta,
+                R.drawable.badeBilder_huk,
+                R.drawable.badeBilder_bekkelagsbadet,
+                R.drawable.badeBilder_bekkensten,
+                R.drawable.badeBilder_bestemorstranda,
+                R.drawable.badeBilder_bygdoy,
+                R.drawable.badeBilder_fiskevollbukta,
+                R.drawable.badeBilder_gressholmen,
+                R.drawable.badeBilder_rambergoya,
+                R.drawable.badeBilder_hvervenbukta,
+                R.drawable.badeBilder_haaoybukta,
+                R.drawable.badeBilder_taajebukta,
+                R.drawable.badeBilder_ingierstrand,
+                R.drawable.badeBilder_katten,
+                R.drawable.badeBilder_langoeyene,
+                R.drawable.badeBilder_nordstrandbad,
+                R.drawable.badeBilder_sollerudstranda,
+                R.drawable.badeBilder_solvikbukta,
+                R.drawable.badeBilder_ulvoya
+            )
+
+            itemView.ImageView_badested_image.setImageResource(images[badested?.imgPos!!])
             itemView.ImageView_badested_image.clipToOutline = true
         }
     }
