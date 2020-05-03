@@ -117,27 +117,27 @@ class RecyclerAdapter(
 
         private fun findImage() {
             val images = arrayOf(
-                R.drawable.badeBilder_hovedoya,
-                R.drawable.badeBilder_sorenga,
-                R.drawable.badeBilder_paradisbukta,
-                R.drawable.badeBilder_huk,
-                R.drawable.badeBilder_bekkelagsbadet,
-                R.drawable.badeBilder_bekkensten,
-                R.drawable.badeBilder_bestemorstranda,
-                R.drawable.badeBilder_bygdoy,
-                R.drawable.badeBilder_fiskevollbukta,
-                R.drawable.badeBilder_gressholmen,
-                R.drawable.badeBilder_rambergoya,
-                R.drawable.badeBilder_hvervenbukta,
-                R.drawable.badeBilder_haaoybukta,
-                R.drawable.badeBilder_taajebukta,
-                R.drawable.badeBilder_ingierstrand,
-                R.drawable.badeBilder_katten,
-                R.drawable.badeBilder_langoeyene,
-                R.drawable.badeBilder_nordstrandbad,
-                R.drawable.badeBilder_sollerudstranda,
-                R.drawable.badeBilder_solvikbukta,
-                R.drawable.badeBilder_ulvoya
+                R.drawable.badebilder_hovedoya,
+                R.drawable.badebilder_sorenga,
+                R.drawable.badebilder_paradisbukta,
+                R.drawable.badebilder_huk,
+                R.drawable.badebilder_bekkelagsbadet,
+                R.drawable.badebilder_bekkensten,
+                R.drawable.badebilder_bestemorstranda,
+                R.drawable.badebilder_bygdoy,
+                R.drawable.badebilder_fiskevollbukta,
+                R.drawable.badebilder_gressholmen,
+                R.drawable.badebilder_rambergoya,
+                R.drawable.badebilder_hvervenbukta,
+                R.drawable.badebilder_haaoybukta,
+                R.drawable.badebilder_taajebukta,
+                R.drawable.badebilder_ingierstrand,
+                R.drawable.badebilder_katten,
+                R.drawable.badebilder_langoeyene,
+                R.drawable.badebilder_nordstrandbad,
+                R.drawable.badebilder_sollerudstranda,
+                R.drawable.badebilder_solvikbukta,
+                R.drawable.badebilder_ulvoya
             )
 
             itemView.ImageView_badested_image.setImageResource(images[badested?.imgPos!!])
