@@ -93,7 +93,7 @@ class RecyclerAdapter(
                 interaction?.onItemSelected(adapterPosition, sted)
             }
             drawData()
-            findImage()
+            setImage()
         }
 
         fun drawData() {
@@ -115,7 +115,7 @@ class RecyclerAdapter(
             itemView.ImageView_badested_image.clipToOutline = true
         }
 
-        private fun findImage() {
+        private fun setImage() {
             val images = arrayOf(
                 R.drawable.badebilder_hovedoya,
                 R.drawable.badebilder_sorenga,
