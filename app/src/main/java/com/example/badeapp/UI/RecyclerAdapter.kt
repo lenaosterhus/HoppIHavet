@@ -119,6 +119,7 @@ class RecyclerAdapter(
             val images = arrayOf(
                 R.drawable.badebilder_hovedoya,
                 R.drawable.badebilder_sorenga,
+                R.drawable.badebilder_tjuvholmen,
                 R.drawable.badebilder_paradisbukta,
                 R.drawable.badebilder_huk,
                 R.drawable.badebilder_bekkelagsbadet,
