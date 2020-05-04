@@ -1,7 +1,8 @@
 package com.example.badeapp.api.LocationForecastTest
 
 import android.util.Log
-import com.example.badeapp.repository.Badested
+import com.example.badeapp.models.Gressholmen
+import com.example.badeapp.models.Hovedoya
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -12,19 +13,16 @@ class SimpleRequestTest {
     val TAG = "SR-TEST"
     val SESSION = "SimpleRequestTest"
 
-    val badesteder = Badested::class.nestedClasses.map {
-        it.objectInstance as Badested
-    }
+
 
     @Test
     fun simpleRequest() {
 
-        val sted = badesteder.find { badested -> badested.name.toLowerCase() == "hovedøya" }!!
+        val sted = Hovedoya
 
         runBlocking {
             val responseRaw = RequestManager.requestRaw(
-                sted.lat,
-                sted.lon,
+                sted,
                 SESSION
             )
             if (!responseRaw.isSuccessful) {
@@ -40,15 +38,14 @@ class SimpleRequestTest {
      */
     @Test
     fun badResponse() {
-        val sted = badesteder.find { badested -> badested.name.toLowerCase() == "gressholmen" }!!
+        val sted = Gressholmen
 
         runBlocking {
             try {
                 //We get a reponse containing '{{}'. This is not valid json and should not be
                 //possible to parse.
                 val responseRaw = RequestManager.requestRaw(
-                    sted.lat,
-                    sted.lon,
+                    sted,
                     SESSION
                 )
 
@@ -56,8 +53,7 @@ class SimpleRequestTest {
 
                 //Tries to parse the response "{{}", that should not result in anything
                 val response = RequestManager.request(
-                    sted.lat,
-                    sted.lon,
+                    sted,
                     SESSION,
                     "",
                     false,

@@ -2,7 +2,8 @@ package com.example.badeapp.api.LocationForecast
 
 
 import android.util.Log
-import com.example.badeapp.models.LocationForecastInfo
+import com.example.badeapp.models.Badested
+import com.example.badeapp.models.LocationForecast
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.minBetween
 import com.example.badeapp.util.toGmtIsoString
@@ -11,6 +12,7 @@ import com.google.gson.annotations.SerializedName
 
 private const val TAG = "DEBUG - LFRFormat"
 private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
+
 
 // // created = når data ble hentet ISO
 internal data class ResponseFormat(
@@ -24,15 +26,16 @@ internal data class ResponseFormat(
      * request new forecasts (for this location), and a list of LocationForecastInfo.Forecasts.
      * The forecasts are a summary of this class's Time objects, containing the
      */
-    fun summarise(): LocationForecastInfo? {
-
+    fun summarise(badested: Badested): List<LocationForecast>? {
 
         //Set next issue time to the given time or at NEXT_UPDATE... time (20 min)
         val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
         val timeList =
-            getHourlyForecasts()?.map { time -> time.summarise() }?.toMutableList() ?: return null
+            getHourlyForecasts()?.map { time -> time.summarise(badested, nextIssue) }
+                ?.toMutableList()
+                ?: return null
 
         /*
         Now there are some forecasts that overlap. One forecast goes from 11 -> 12, while the other
@@ -46,9 +49,11 @@ internal data class ResponseFormat(
         for ((index, value) in oneHourSpan.withIndex()) {
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
-                    oneHourSpan[index] = LocationForecastInfo.Forecast(
+                    oneHourSpan[index] = LocationForecast(
+                        badested,
                         value.from,
                         value.to,
+                        nextIssue,
                         value.airTempC ?: other.airTempC,
                         value.symbol ?: other.symbol
                     )
@@ -57,8 +62,9 @@ internal data class ResponseFormat(
             }
         }
 
+        if (oneHourSpan.isNullOrEmpty()) return null
 
-        return LocationForecastInfo(nextIssue, oneHourSpan)
+        return oneHourSpan
 
     }
 
@@ -102,10 +108,10 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise(): LocationForecastInfo.Forecast {
+    fun summarise(badestedName: Badested, nextIssue: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
-        return LocationForecastInfo.Forecast(from, to, airTempC, symbol)
+        return LocationForecast(badestedName, from, to, nextIssue, airTempC, symbol)
     }
 
 

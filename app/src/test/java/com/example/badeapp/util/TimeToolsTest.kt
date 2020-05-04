@@ -2,6 +2,7 @@ package com.example.badeapp.util
 
 import org.junit.Assert.*
 import org.junit.Test
+import java.lang.Math.abs
 
 class TimeToolsTest {
 
@@ -124,6 +125,14 @@ class TimeToolsTest {
         assertNotNull(onePass)
         assertEquals(now.toGmtIsoString(),onePass!!.toGmtIsoString())
 
+    }
+
+    @Test
+    fun testAddOneHour() {
+        val now = inTheFutureFromNow(0)
+        val future = inTheFutureFromNow(60)
+
+        assertTrue(abs(future.time - now.addOneHour().time) < 1000)
     }
 
 
