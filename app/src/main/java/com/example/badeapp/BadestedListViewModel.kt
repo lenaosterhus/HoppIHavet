@@ -13,9 +13,9 @@ import com.example.badeapp.repository.LocationForecastRepo
 import com.example.badeapp.repository.OceanForecastRepo
 
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class BadestedListViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val TAG = "DEBUG - MainViewModel"
+    private val TAG = "DEBUG - BadestedListVM"
 
     val hasHalted = MediatorLiveData<Boolean>().also {
         it.addSource(MIThrottler.hasHalted, Observer { hasHalted ->

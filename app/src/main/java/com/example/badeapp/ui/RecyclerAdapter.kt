@@ -1,4 +1,4 @@
-package com.example.badeapp.UI
+package com.example.badeapp.ui
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
 import com.example.badeapp.models.BadestedSummary
+import kotlinx.android.synthetic.main.activity_badested.view.*
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
 
@@ -88,31 +89,28 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
         fun draw() {
             with(itemView) {
 
-                TextView_badested_name.text = summary?.badested?.name
+                TextView_element_name.text = summary?.badested?.name
 
                 if (summary?.airTempC != null) {
-                    TextView_badested_air_temp.text = summary!!.airTempC.toString() + "°"
+                    TextView_element_air_temp.text = summary!!.airTempC.toString() + "°"
                 } else {
-                    TextView_badested_air_temp.text = ""
+                    TextView_element_air_temp.text = ""
                 }
 
                 if (summary?.waterTempC != null) {
-                    TextView_badested_water_temp.text = summary!!.waterTempC.toString() + "°"
+                    TextView_element_water_temp.text = summary!!.waterTempC.toString() + "°"
                 } else {
-                    TextView_badested_water_temp.text = ""
+                    TextView_element_water_temp.text = ""
                 }
 
                 val icon = summary?.getIcon()
 
                 if (icon != null) {
-                    itemView.symbol_weather.setImageResource(icon)
+                    itemView.ImageView_element_symbol.setImageResource(icon)
                 } else {
-                    itemView.symbol_weather.setImageDrawable(null)
+                    itemView.ImageView_element_symbol.setImageDrawable(null)
                 }
-
-
             }
-
         }
     }
 

@@ -1,11 +1,14 @@
 package com.example.badeapp.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Summary_Table")
 data class BadestedSummary(
     val badested: Badested,
@@ -14,7 +17,8 @@ data class BadestedSummary(
     val waterTempC: Double?,
     val airTempC: Double?,
     val symbol: Int?   // Symbol
-) {
+) : Parcelable {
+
     /**
      * Returns the resource id of the icon that best summarises the LocationForecast
      */

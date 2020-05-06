@@ -1,15 +1,18 @@
 package com.example.badeapp.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.TypeConverter
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @Entity(primaryKeys = ["lat", "lon"], tableName = "Badested_Table")
 data class Badested(
     val lat: String,
     val lon: String,
     val name: String,
     val info: String
-) {
+) : Parcelable{
 
     override fun toString(): String {
         return "{lat=$lat,lon=$lon,name=$name,info=...}"
