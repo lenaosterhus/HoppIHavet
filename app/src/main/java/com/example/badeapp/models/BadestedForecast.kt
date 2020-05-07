@@ -4,13 +4,14 @@ import android.os.Parcelable
 import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.getHour
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Summary_Table")
-data class BadestedSummary(
+@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Forecast_Table")
+data class BadestedForecast(
     val badested: Badested,
     val from: String,
     val to: String,
@@ -141,35 +142,47 @@ data class BadestedSummary(
         return null
 
     }
+
+    fun getDisplayedBadested() : DisplayedBadested {
+        return DisplayedBadested(
+            name = badested.name,
+            info = badested.info,
+            waterTempC =  waterTempC ?: 0.0,
+            airTempC =  airTempC ?: 0.0,
+            icon = getIcon(),
+            to = getHour(to)
+        )
+    }
 }
 
 
+
 /**
- * Takes a list of BadestedSummary and lets us find the current Air Temp (if present)
+ * Takes a list of BadestedForecast and lets us find the current Air Temp (if present)
  */
-fun List<BadestedSummary>.getCurrentAirTempCForBadestedSummary(): Double? {
-    return this.getCurrentForecastForBadestedSummary()?.airTempC
+fun List<BadestedForecast>.getCurrentAirTempCForBadestedForecast(): Double? {
+    return this.getCurrentForecastForBadestedForecast()?.airTempC
 }
 
 /**
- * Takes a list of BadestedSummary and lets us find the current Symbol (if present)
+ * Takes a list of BadestedForecast and lets us find the current Symbol (if present)
  */
-//fun List<BadestedSummary>.getCurrentIcon(): Int? {
+//fun List<BadestedForecast>.getCurrentIcon(): Int? {
 //   return this.getCurrentForecast()?.getIcon()
 //}
 
 /**
  * Takes a list of LocationForecast and lets us find the current Air Temp (if present)
  */
-fun List<BadestedSummary>.getCurrentWaterTempCForBadestedSummary(): Double? {
-    return this.getCurrentForecastForBadestedSummary()?.waterTempC
+fun List<BadestedForecast>.getCurrentWaterTempCForBadestedForecast(): Double? {
+    return this.getCurrentForecastForBadestedForecast()?.waterTempC
 }
 
 
 /**
- * Takes a list of BadestedSummarys and returns the one representing now, if that would be applicable
+ * Takes a list of BadestedForecasts and returns the one representing now, if that would be applicable
  */
-fun List<BadestedSummary>.getCurrentForecastForBadestedSummary(): BadestedSummary? {
+fun List<BadestedForecast>.getCurrentForecastForBadestedForecast(): BadestedForecast? {
     val now = currentTime()
     return this.find { hour ->
         now.liesBetweneInclusive(

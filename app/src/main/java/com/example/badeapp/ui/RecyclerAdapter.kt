@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
-import com.example.badeapp.models.BadestedSummary
+import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.activity_badested.view.*
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
@@ -22,17 +22,17 @@ private const val TAG = "ReyclerAdapter - DEBUG"
 class RecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
-    var unFilterdList: List<BadestedSummary>? = null
+    var unFilterdList: List<BadestedForecast>? = null
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedSummary>() {
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedForecast>() {
 
-        override fun areItemsTheSame(oldItem: BadestedSummary, newItem: BadestedSummary): Boolean {
+        override fun areItemsTheSame(oldItem: BadestedForecast, newItem: BadestedForecast): Boolean {
             return oldItem.badested == newItem.badested
         }
 
         override fun areContentsTheSame(
-            oldItem: BadestedSummary,
-            newItem: BadestedSummary
+            oldItem: BadestedForecast,
+            newItem: BadestedForecast
         ): Boolean {
             return oldItem.waterTempC == newItem.waterTempC && oldItem.symbol == newItem.symbol &&
                     oldItem.airTempC == newItem.airTempC
@@ -65,7 +65,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
         return differ.currentList.size
     }
 
-    fun submitList(list: List<BadestedSummary>) {
+    fun submitList(list: List<BadestedForecast>) {
         Log.d(TAG, "Submitting list new list")
         differ.submitList(list)
         unFilterdList = list
@@ -76,9 +76,9 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
         itemView: View,
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
-        var summary: BadestedSummary? = null
+        var summary: BadestedForecast? = null
 
-        fun bind(item: BadestedSummary) {
+        fun bind(item: BadestedForecast) {
             itemView.setOnClickListener {
                 interaction?.onItemSelected(adapterPosition, item)
             }
@@ -107,6 +107,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
 
                 if (icon != null) {
                     itemView.ImageView_element_symbol.setImageResource(icon)
+
                 } else {
                     itemView.ImageView_element_symbol.setImageDrawable(null)
                 }
@@ -115,7 +116,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     }
 
     interface Interaction {
-        fun onItemSelected(position: Int, item: BadestedSummary)
+        fun onItemSelected(position: Int, item: BadestedForecast)
     }
 
 
@@ -129,7 +130,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
 
-                val filteredBadestedList: List<BadestedSummary>?
+                val filteredBadestedList: List<BadestedForecast>?
 
                 Log.d(TAG, "performFiltering: $constraint")
                 val charSearch = constraint.toString()
@@ -152,7 +153,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                differ.submitList(results?.values as List<BadestedSummary>?)
+                differ.submitList(results?.values as List<BadestedForecast>?)
             }
         }
     }

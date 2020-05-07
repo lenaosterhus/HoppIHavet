@@ -8,6 +8,7 @@
     <string name="badestednavn">Badestednavn</string>
     <string name="temp_air">Temperatur luft:</string>
     <string name="temp_water">Temperatur vann:</string>
+    <string name="valid_to">Varselet gjelder til kl.</string>
     <string name="description_title">Beskrivelse:</string>
     <string name="description_placeholder">Dette er en beskrivelse av et badested. Her kommer det masse nyttig informasjon om badestedet.\nKanskje må vi skrolle for å se alt?\n\n\nTittei</string>
     <string name="facilities">Fasiliteter</string>

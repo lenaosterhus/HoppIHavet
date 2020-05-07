@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.badeapp.BadestedListViewModel
 import com.example.badeapp.R
-import com.example.badeapp.models.BadestedSummary
+import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.activity_badested_list.*
 
 /**
@@ -82,7 +82,7 @@ class BadestedListActivity : BaseActivity(),
     }
 
 
-    override fun onItemSelected(position: Int, item: BadestedSummary) {
+    override fun onItemSelected(position: Int, item: BadestedForecast) {
         Log.d(TAG, "onItemSelected: CLICKED: $position")
         Log.d(TAG, "onItemSelected: CLICKED: $item")
 

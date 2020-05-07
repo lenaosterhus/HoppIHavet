@@ -102,17 +102,39 @@
                 android:id="@+id/TextView_badested_water_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_water_temp_desc"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintLeft_toRightOf="@+id/TextView_badested_water_temp_desc" />
 
+            <TextView
+                android:id="@+id/TextView_badested_valid_to_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/valid_to"
+                android:textColor="@color/textColor"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/TextView_badested_water_temp_desc"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/TextView_badested_valid_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/textColor"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintLeft_toRightOf="@+id/TextView_badested_valid_to_desc" />
+
             <ImageView
                 android:id="@+id/ImageView_badested_symbol"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:contentDescription="@string/symbol_for_weather"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -176,7 +198,7 @@
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/badested_background_cyan"
             android:padding="20dp"
@@ -194,7 +216,7 @@
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="15dp"
             android:background="@drawable/badested_background_orange"
             android:padding="20dp"

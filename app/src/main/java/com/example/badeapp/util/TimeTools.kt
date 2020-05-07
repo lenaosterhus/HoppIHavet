@@ -4,6 +4,9 @@ import androidx.room.TypeConverter
 import java.text.SimpleDateFormat
 import java.util.*
 
+fun getHour(date: String) : String? {
+    return date.parseAsGmtIsoDate()?.toHourString()
+}
 
 /*
  * When working with our data source from MI, we get time in ISO8601 GMT time, and we need
@@ -66,6 +69,13 @@ fun currentTime(): Date {
 fun Date.toGmtIsoString(): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
+    }
+    return dateFormat.format(this)
+}
+
+fun Date.toHourString(): String {
+    val dateFormat = SimpleDateFormat("HH:mm", Locale("no", "NO")).also {
+        it.timeZone = TimeZone.getTimeZone("Europe/Oslo")
     }
     return dateFormat.format(this)
 }
