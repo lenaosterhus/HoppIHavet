@@ -3,6 +3,7 @@ package com.example.badeapp.models
 import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.daylightInOslo
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 
@@ -19,7 +20,7 @@ data class BadestedSummary(
      * Returns the resource id of the icon that best summarises the LocationForecast
      */
     fun getIcon(): Int? {
-        val isDay = true //@TODO figure out if it is daytime aka is the sun up?
+        val isDay = currentTime().daylightInOslo()
 
         if (isDay) {
             when (symbol) {
