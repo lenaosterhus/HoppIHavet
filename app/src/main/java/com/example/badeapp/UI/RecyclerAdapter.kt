@@ -6,36 +6,42 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
-import com.example.badeapp.repository.Badested
+import com.example.badeapp.models.BadestedSummary
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
 
-private const val TAG = "DEBUG - Adapter"
+private const val TAG = "ReyclerAdapter - DEBUG"
 
-class RecyclerAdapter(
-    private val badesteder: List<Badested>,
-    private val interaction: Interaction? = null
-) :
+
+
+class RecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
-    internal var filteredBadestedList = badesteder
+    var unFilterdList: List<BadestedSummary>? = null
 
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedSummary>() {
 
+        override fun areItemsTheSame(oldItem: BadestedSummary, newItem: BadestedSummary): Boolean {
+            return oldItem.badested == newItem.badested
+        }
 
-    /**
-     * This value maps a badested to the ViewHolder that it is present in.
-     * If the badested is not present in the map, then it is not visible
-     * on screen.
-     */
-    private val visible = mutableMapOf<Badested, ElementView>()
+        override fun areContentsTheSame(
+            oldItem: BadestedSummary,
+            newItem: BadestedSummary
+        ): Boolean {
+            return oldItem.waterTempC == newItem.waterTempC && oldItem.symbol == newItem.symbol &&
+                    oldItem.airTempC == newItem.airTempC
+        }
+    }
+    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
 
-    // .................................
-    // Recycler adapter methods
-    //---------------------------------
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return ElementView(
+
+        return RVElement(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.rv_element,
                 parent,
@@ -47,70 +53,62 @@ class RecyclerAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ElementView -> {
-
-                holder.badested?.let {
-                    visible -= it
-                }
-                visible[filteredBadestedList[position]] = holder
-                holder.bind(filteredBadestedList[position])
+            is RVElement -> {
+                holder.bind(differ.currentList.get(position))
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return filteredBadestedList.size
+        //return filteredBadestedList.size @TODO figure out
+        return differ.currentList.size
     }
 
-
-    // ........................................
-    // Methods for keeping shown data updated
-    //-----------------------------------------
-    fun notifyChangeFor(badested: Badested) {
-        visible[badested]?.drawData()
+    fun submitList(list: List<BadestedSummary>) {
+        Log.d(TAG, "Submitting list new list")
+        differ.submitList(list)
+        unFilterdList = list
     }
 
-    fun updateRecyclerAdapter() {
-        visible.entries.forEach {
-            it.value.drawData()
-        }
-    }
-
-
-    // ..........................................
-    // The RV element containing the information
-    //-------------------------------------------
-    class ElementView(
+    class RVElement
+    constructor(
         itemView: View,
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
+        var summary: BadestedSummary? = null
 
-        var badested: Badested? = null
-
-        fun bind(sted: Badested) = with(itemView) {
-            badested = sted
+        fun bind(item: BadestedSummary) {
             itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, sted)
+                interaction?.onItemSelected(adapterPosition, item)
             }
-            drawData()
-            setImage()
+            summary = item
+            draw()
         }
 
-        fun drawData() {
-            //@TODO flytte strengene inn i resources.
-            itemView.TextView_badested_name.text = badested?.name ?: ""
-            itemView.TextView_badested_water_temp.text =
-                badested?.forecast?.value?.waterTempC?.toString() + "°"
-            itemView.TextView_badested_air_temp.text =
-                badested?.forecast?.value?.airTempC?.toString() + "°"
+        fun draw() {
+            with(itemView) {
 
-            val symbol = badested?.forecast?.value?.symbol.let {
-                if (it == null) {
-                    itemView.symbol_water.setImageDrawable(null)
+                TextView_badested_name.text = summary?.badested?.name
+
+                if (summary?.airTempC != null) {
+                    TextView_badested_air_temp.text = summary!!.airTempC.toString() + "°"
                 } else {
-                    itemView.symbol_weather.setImageResource(it)
+                    TextView_badested_air_temp.text = ""
                 }
-            }
+
+                if (summary?.waterTempC != null) {
+                    TextView_badested_water_temp.text = summary!!.waterTempC.toString() + "°"
+                } else {
+                    TextView_badested_water_temp.text = ""
+                }
+
+                val icon = summary?.getIcon()
+
+                if (icon != null) {
+                    itemView.symbol_weather.setImageResource(icon)
+                } else {
+                    itemView.symbol_weather.setImageDrawable(null)
+                }
 
             itemView.ImageView_badested_image.clipToOutline = true
         }
@@ -146,10 +144,15 @@ class RecyclerAdapter(
         }
     }
 
+            }
+
+        }
+    }
 
     interface Interaction {
-        fun onItemSelected(position: Int, item: Badested)
+        fun onItemSelected(position: Int, item: BadestedSummary)
     }
+
 
     /**
      * Returns a filter that can be used to constrain data with a filtering
@@ -157,34 +160,36 @@ class RecyclerAdapter(
      *
      * @return a filter used to constrain data
      */
-    override fun getFilter(): Filter {
+    override fun getFilter(): Filter { //TODO figure this out
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
+
+                val filteredBadestedList: List<BadestedSummary>?
+
                 Log.d(TAG, "performFiltering: $constraint")
                 val charSearch = constraint.toString()
                 if (charSearch.isEmpty()) {
                     // No filter implemented we return the whole list
                     Log.d(TAG, "performFiltering: input is empty")
-                    filteredBadestedList = badesteder
+                    filteredBadestedList = unFilterdList
                 }
                 else {
-                    val resultList = badesteder.filter {
-                        val name: CharSequence = it.name.toUpperCase(Locale.ROOT)
+                    filteredBadestedList = unFilterdList?.filter {
+                        val name: CharSequence = it.badested.name.toUpperCase(Locale.ROOT)
                         name.contains(charSearch.toUpperCase(Locale.ROOT))
                     }
-                    filteredBadestedList = resultList
                 }
                 val results = FilterResults()
                 results.values = filteredBadestedList
-                results.count = filteredBadestedList.size
+                results.count = filteredBadestedList?.size ?: 0
                 return results
             }
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredBadestedList = results?.values as List<Badested>
-                notifyDataSetChanged()
+                differ.submitList(results?.values as List<BadestedSummary>?)
             }
         }
     }
 }
+

@@ -1,76 +1,37 @@
 package com.example.badeapp.models
 
-import android.util.Log
+import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.liesBetweneInclusive
-import com.example.badeapp.util.minBetween
 import com.example.badeapp.util.parseAsGmtIsoDate
 
-
-private const val TAG = "DEBUG - LocationInfo"
-
-data class LocationForecastInfo(val nextIssue: String, private val forecasts: List<Forecast>) {
-
-    data class Forecast(val from : String, val to: String, val airTempC: Double?, val symbol: Int?)
-
-    fun isOutdated(): Boolean {
-        return minUntilOutdated() < 0L
-    }
-
-    fun minUntilOutdated(): Long {
-        return minBetween(currentTime(), nextIssue)!!
-    }
-
-
-    fun getCurrentAirTempC() : Double? {
-        val now = currentTime()
-        return forecasts
-            .find { forecast ->
-                now.liesBetweneInclusive(
-                    forecast.from.parseAsGmtIsoDate()!!,
-                    forecast.to.parseAsGmtIsoDate()!!
-                )
-            }
-            ?.airTempC
-    }
-
+@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Summary_Table")
+data class BadestedSummary(
+    val badested: Badested,
+    val from: String,
+    val to: String,
+    val waterTempC: Double?,
+    val airTempC: Double?,
+    val symbol: Int?   // Symbol
+) {
     /**
-     * Returns the symbol that best represents the weather prediction for the next hour.
+     * Returns the resource id of the icon that best summarises the LocationForecast
      */
-    fun getCurrentSymbol(): Int? {
-        val now = currentTime()
-        return forecasts
-            .find { hour ->
-                now.liesBetweneInclusive(
-                    hour.from.parseAsGmtIsoDate()!!,
-                    hour.to.parseAsGmtIsoDate()!!
-                )
-            }
-            ?.symbol
-    }
-
-    /*
-    *  This function looks at the weather data to determine what little icon best summarises
-    *  the weather. It returns the symbol that best summarises the current weather forecast.
-    */
     fun getIcon(): Int? {
-
         val isDay = true //@TODO figure out if it is daytime aka is the sun up?
-
-        val symbol = getCurrentSymbol()
 
         if (isDay) {
             when (symbol) {
                 1 -> return R.mipmap.wic_day_1 //Sun
                 2 -> return R.mipmap.wic_day_2 //LightCloud
-                3  -> return R.mipmap.wic_day_3 //PartlyCloud
-                4  -> return R.mipmap.wic_day_4 //Cloud
-                5  -> return R.mipmap.wic_day_5 //LightRainSun
-                6  -> return R.mipmap.wic_day_6 //LightRainThunderSun
-                7  -> return R.mipmap.wic_day_7 //SleetSun
-                8  -> return R.mipmap.wic_day_8 //SnowSun
-                9  -> return R.mipmap.wic_day_9 //LightRain
+                3 -> return R.mipmap.wic_day_3 //PartlyCloud
+                4 -> return R.mipmap.wic_day_4 //Cloud
+                5 -> return R.mipmap.wic_day_5 //LightRainSun
+                6 -> return R.mipmap.wic_day_6 //LightRainThunderSun
+                7 -> return R.mipmap.wic_day_7 //SleetSun
+                8 -> return R.mipmap.wic_day_8 //SnowSun
+                9 -> return R.mipmap.wic_day_9 //LightRain
                 10 -> return R.mipmap.wic_day_10 //Rain
                 11 -> return R.mipmap.wic_day_11 //RainThunder
                 12 -> return R.mipmap.wic_day_12 //Sleet
@@ -106,15 +67,15 @@ data class LocationForecastInfo(val nextIssue: String, private val forecasts: Li
             }
         } else {
             when (symbol) {
-                1  -> return R.mipmap.wic_night_1 //Sun
-                2  -> return R.mipmap.wic_night_2 //LightCloud
-                3  -> return R.mipmap.wic_night_3 //PartlyCloud
-                4  -> return R.mipmap.wic_night_4 //Cloud
-                5  -> return R.mipmap.wic_night_5 //LightRainSun
-                6  -> return R.mipmap.wic_night_6 //LightRainThunderSun
-                7  -> return R.mipmap.wic_night_7 //SleetSun
-                8  -> return R.mipmap.wic_night_8 //SnowSun
-                9  -> return R.mipmap.wic_night_9 //LightRain
+                1 -> return R.mipmap.wic_night_1 //Sun
+                2 -> return R.mipmap.wic_night_2 //LightCloud
+                3 -> return R.mipmap.wic_night_3 //PartlyCloud
+                4 -> return R.mipmap.wic_night_4 //Cloud
+                5 -> return R.mipmap.wic_night_5 //LightRainSun
+                6 -> return R.mipmap.wic_night_6 //LightRainThunderSun
+                7 -> return R.mipmap.wic_night_7 //SleetSun
+                8 -> return R.mipmap.wic_night_8 //SnowSun
+                9 -> return R.mipmap.wic_night_9 //LightRain
                 10 -> return R.mipmap.wic_night_10 //Rain
                 11 -> return R.mipmap.wic_night_11 //RainThunder
                 12 -> return R.mipmap.wic_night_12 //Sleet
@@ -172,8 +133,44 @@ data class LocationForecastInfo(val nextIssue: String, private val forecasts: Li
             }
         }
 
-        Log.w(TAG,"The given symbol $symbol is not mapped to a image!")
+        //Log.w(TAG,"The given symbol $symbol is not mapped to a image!")
         return null
 
+    }
+}
+
+
+/**
+ * Takes a list of BadestedSummary and lets us find the current Air Temp (if present)
+ */
+fun List<BadestedSummary>.getCurrentAirTempCForBadestedSummary(): Double? {
+    return this.getCurrentForecastForBadestedSummary()?.airTempC
+}
+
+/**
+ * Takes a list of BadestedSummary and lets us find the current Symbol (if present)
+ */
+//fun List<BadestedSummary>.getCurrentIcon(): Int? {
+//   return this.getCurrentForecast()?.getIcon()
+//}
+
+/**
+ * Takes a list of LocationForecast and lets us find the current Air Temp (if present)
+ */
+fun List<BadestedSummary>.getCurrentWaterTempCForBadestedSummary(): Double? {
+    return this.getCurrentForecastForBadestedSummary()?.waterTempC
+}
+
+
+/**
+ * Takes a list of BadestedSummarys and returns the one representing now, if that would be applicable
+ */
+fun List<BadestedSummary>.getCurrentForecastForBadestedSummary(): BadestedSummary? {
+    val now = currentTime()
+    return this.find { hour ->
+        now.liesBetweneInclusive(
+            hour.from.parseAsGmtIsoDate()!!,
+            hour.to.parseAsGmtIsoDate()!!
+        )
     }
 }

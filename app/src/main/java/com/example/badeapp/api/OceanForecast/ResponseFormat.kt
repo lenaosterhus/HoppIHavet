@@ -1,11 +1,18 @@
 package com.example.badeapp.api.OceanForecast
 
-import com.example.badeapp.models.OceanForecastInfo
+import android.util.Log
+import com.example.badeapp.models.Badested
+import com.example.badeapp.models.OceanForecast
+import com.example.badeapp.util.inTheFutureFromNow
+import com.example.badeapp.util.parseAsGmtIsoDate
+import com.example.badeapp.util.subOneHour
+import com.example.badeapp.util.toGmtIsoString
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.text.SimpleDateFormat
-import java.util.*
 
+
+private const val TAG = "OCEAN-RESPONSE-FORMAT"
+private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
 
 internal data class ResponseFormat(
     @Expose @SerializedName("mox:forecastPoint") val forecastPoint: Point?,
@@ -14,21 +21,23 @@ internal data class ResponseFormat(
     @Expose @SerializedName("mox:forecast") val forecast: List<Forecast>? // Objektene har ikke navn...?
 ) {
 
-    fun summarize(): OceanForecastInfo {
+    fun summarize(badested: Badested): List<OceanForecast>? {
 
-        val NEXT_UPDATE_WHEN_NO_NEXTISSUE = 20 * 60000
-        //@TODO ikke bare ta første ellement
-        val vannTempC = forecast?.get(0)?.forecast?.seaTemperature?.content?.toDouble()
 
-        var nextIssue: String? = nextIssueTime?.timeInstant?.timePosition
-        if (nextIssue == null) {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY)
-            dateFormat.timeZone = TimeZone.getTimeZone("GMT")
-            nextIssue =
-                dateFormat.format(Date(System.currentTimeMillis() + NEXT_UPDATE_WHEN_NO_NEXTISSUE))
-        }
+        val nextIssue: String = nextIssueTime?.timeInstant?.timePosition ?: inTheFutureFromNow(
+            NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
+        ).toGmtIsoString()
 
-        return OceanForecastInfo(vannTempC, nextIssue!!)
+        val forecasts = forecast?.map { it ->
+            it.summarise(badested, nextIssue)
+        }?.filterNotNull()
+
+        if (forecasts.isNullOrEmpty())
+            return null
+
+
+        return forecasts
+
     }
 
     data class Point(
@@ -56,6 +65,40 @@ internal data class ResponseFormat(
         // Nødvendig for å få god utskrift til logcat
         override fun toString(): String {
             return "\nForecast(forecast=$forecast)"
+        }
+
+        fun summarise(badested: Badested, nextIssue: String): OceanForecast? {
+
+            val from = forecast?.validTime?.timePeriod?.begin
+            val to = forecast?.validTime?.timePeriod?.end
+            val waterTempC = forecast?.seaTemperature?.content?.toDouble()
+
+            when {
+                from == null && to == null -> {
+                    Log.e(TAG, "Failed to get 'from'  and 'to' for the ocean forecast")
+                    return null
+                }
+
+
+                waterTempC == null -> {
+                    Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast")
+                }
+
+                from != to && to != null -> {
+                    /**
+                     * The ocean forecast api looks like it only shows the data for a instance.
+                     * So we expect from == to.
+                     */
+                    Log.e(TAG, "'from' != 'to'    $from != $to")
+                    return OceanForecast(badested, from!!, to, nextIssue, waterTempC)
+                }
+            }
+
+            val instance = to ?: from
+            val newFrom = instance!!.parseAsGmtIsoDate()!!.subOneHour().toGmtIsoString()
+
+            //val newTo = from!!.parseAsGmtIsoDate()?.addOneHour()?.toGmtIsoString()!!
+            return OceanForecast(badested, newFrom, to!!, nextIssue, waterTempC)
         }
     }
 
