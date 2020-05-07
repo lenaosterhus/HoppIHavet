@@ -49,11 +49,7 @@ class BadestedListActivity : BaseActivity(),
             viewModel.printRawDBQuerry() //@TODO remove
             recyclerAdapter.submitList(it)
         })
-
-
     }
-
-
 
     // Search bar
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

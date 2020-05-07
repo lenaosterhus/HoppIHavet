@@ -1,4 +1,4 @@
-package com.example.badeapp.api.LocationForecast
+package com.example.badeapp.api.locationForecast
 
 /**
  * This file contains all the code needed to do http request to Meteorology Institute

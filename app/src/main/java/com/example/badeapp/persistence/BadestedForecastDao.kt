@@ -13,7 +13,11 @@ private const val GET_SUMMARYS = """
             ${LF_TABLE}.[to] as 'to',
             waterTempC,
             ${LF_TABLE}.airTempC,
-            ${LF_TABLE}.symbol
+            ${LF_TABLE}.symbol,
+            ${LF_TABLE}.precipitation,
+            ${LF_TABLE}.windDirection,
+            ${LF_TABLE}.windSpeedMps,
+            ${LF_TABLE}.windSpeedName
         FROM $LF_TABLE
             JOIN $OF_TABLE ON 
                     ${OF_TABLE}.badested = ${LF_TABLE}.badested

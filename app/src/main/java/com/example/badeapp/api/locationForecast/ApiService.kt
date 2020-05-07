@@ -1,4 +1,4 @@
-package com.example.badeapp.api.LocationForecast
+package com.example.badeapp.api.locationForecast
 
 import retrofit2.Response
 import retrofit2.http.GET

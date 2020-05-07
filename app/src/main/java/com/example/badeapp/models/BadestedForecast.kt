@@ -1,6 +1,8 @@
 package com.example.badeapp.models
 
+import android.content.res.Resources
 import android.os.Parcelable
+import android.util.Log
 import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
@@ -8,6 +10,8 @@ import com.example.badeapp.util.getHour
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
+
+private const val TAG = "DEBUG -BadestedForecast"
 
 @Parcelize
 @Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Forecast_Table")
@@ -17,7 +21,12 @@ data class BadestedForecast(
     val to: String,
     val waterTempC: Double?,
     val airTempC: Double?,
-    val symbol: Int?   // Symbol
+    val symbol: Int?,   // Symbol
+
+    val precipitation: Double?,
+    val windDirection: String?,
+    val windSpeedMps: Double?,
+    val windSpeedName: String?
 ) : Parcelable {
 
     /**
@@ -144,14 +153,40 @@ data class BadestedForecast(
     }
 
     fun getDisplayedBadested() : DisplayedBadested {
+
         return DisplayedBadested(
             name = badested.name,
             info = badested.info,
-            waterTempC =  waterTempC ?: 0.0,
-            airTempC =  airTempC ?: 0.0,
+            waterTempC =  waterTempC.toString() + "°",
+            airTempC =  airTempC.toString() + "°",
+            precipitation = precipitation?.toInt().toString() + " mm",
+            wind = getWindDescription(),
             icon = getIcon(),
-            to = getHour(to)
+            to = "Varselet gjelder til kl. " + getHour(to)
         )
+    }
+
+    fun getWindDescription() : String {
+        val windDirectionLongString =
+            when (windDirection) {
+                "N" -> "nord"
+                "E" -> "øst"
+                "S" -> "sør"
+                "V" -> "vest"
+
+                "NE" -> "nordøst"
+                "SE" -> "sørøst"
+                "SV" -> "sørvest"
+                "NV" -> "nordvest"
+
+                else ->  {
+                    Log.e(TAG, "getWindDescription: not found: $windDirection")
+                    "ukjent retning"
+                }
+            }
+
+        // "Svak vind, 2 m/s fra nordvest"
+        return windSpeedName + ", " + windSpeedMps?.toInt().toString() + " m/s fra " + windDirectionLongString
     }
 }
 

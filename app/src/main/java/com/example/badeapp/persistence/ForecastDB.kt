@@ -24,7 +24,7 @@ abstract class ForecastDB : RoomDatabase() {
 
     abstract fun oceanForecastDao(): OceanForecastDao
     abstract fun locationForecastDao(): LocationForecastDao
-    abstract fun BadestedForecastDao(): BadestedForecastDao
+    abstract fun badestedForecastDao(): BadestedForecastDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the same time.

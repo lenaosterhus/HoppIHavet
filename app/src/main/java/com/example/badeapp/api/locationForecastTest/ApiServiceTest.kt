@@ -1,7 +1,7 @@
-package com.example.badeapp.api.LocationForecastTest
+package com.example.badeapp.api.locationForecastTest
 
 
-import com.example.badeapp.api.LocationForecast.ResponseFormat
+import com.example.badeapp.api.locationForecast.ResponseFormat
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers

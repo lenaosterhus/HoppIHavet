@@ -25,7 +25,7 @@ class BadestedForecastRepo(val application: Application) {
 
     private val DB = ForecastDB.getDatabase(application)
 
-    val summaries = DB.BadestedForecastDao().getAllCurrent()
+    val summaries = DB.badestedForecastDao().getAllCurrent()
 
 
     fun printRawDBQuerry() {
@@ -33,7 +33,7 @@ class BadestedForecastRepo(val application: Application) {
         CoroutineScope(Dispatchers.IO).launch {
 
             Log.d(TAG, "Raw querry Inside IO thread")
-            val res = DB.BadestedForecastDao().getAllCurrentRaw()
+            val res = DB.badestedForecastDao().getAllCurrentRaw()
             if (res.isEmpty()) {
                 Log.d(TAG, "WTF  its empty!")
             } else {

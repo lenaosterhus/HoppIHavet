@@ -1,4 +1,4 @@
-package com.example.badeapp.api.OceanForecast
+package com.example.badeapp.api.oceanForecast
 
 import android.util.Log
 import com.example.badeapp.models.Badested

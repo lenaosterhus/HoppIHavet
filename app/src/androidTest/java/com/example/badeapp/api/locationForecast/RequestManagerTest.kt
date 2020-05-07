@@ -1,4 +1,4 @@
-package com.example.badeapp.api.LocationForecast
+package com.example.badeapp.api.locationForecast
 
 
 import com.example.badeapp.models.Hovedoya

@@ -36,9 +36,11 @@ class BadestedActivity : BaseActivity() {
 
         TextView_badested_name.text = badestedInView.name
 
-        TextView_badested_air_temp.text = badestedInView.airTempC.toString() + "°"
-        TextView_badested_water_temp.text = badestedInView.waterTempC.toString() + "°"
-        TextView_badested_valid_to_desc.text = TextView_badested_valid_to_desc.text.toString() + " " + badestedInView.to
+        TextView_badested_air_temp.text = badestedInView.airTempC
+        TextView_badested_water_temp.text = badestedInView.waterTempC
+        TextView_badested_precipitation.text = badestedInView.precipitation
+        TextView_badested_wind.text = badestedInView.wind
+        TextView_badested_valid_to.text = badestedInView.to
 
         val icon = badestedInView.icon
 
