@@ -110,7 +110,11 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                     itemView.ImageView_element_symbol.setImageDrawable(null)
                 }
 
-
+                if (summary?.badested?.image != null) {
+                    ImageView_element_image.setImageResource(summary?.badested?.image!!)
+                } else {
+                    ImageView_element_image.setImageDrawable(null)
+                }
             }
 
         }
