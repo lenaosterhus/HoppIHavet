@@ -1,43 +1,23 @@
 package com.example.badeapp.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.TypeConverter
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @Entity(primaryKeys = ["lat", "lon"], tableName = "Badested_Table")
 data class Badested(
     val lat: String,
     val lon: String,
     val name: String,
     val info: String
-) {
+) : Parcelable{
 
     override fun toString(): String {
         return "{lat=$lat,lon=$lon,name=$name,info=...}"
     }
-
-
 }
-
-class BadestedConverter {
-
-    @TypeConverter
-    fun toBadested(value: String?): Badested? {
-        val values = value?.split(' ') ?: return null
-        if (values.size != 2) return null
-        return alleBadesteder.find { it -> it.lat == values[0] && it.lon == values[1] }
-    }
-
-    @TypeConverter
-    fun toInternal(value: Badested?): String? {
-        if (value != null) {
-            return "${value.lat} ${value.lon}"
-        } else {
-            return null
-        }
-    }
-
-}
-
 
 // Info fra Oslo Kommune og https://www.oslofjorden.com/badesteder/
 

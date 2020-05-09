@@ -1,20 +1,34 @@
 package com.example.badeapp.models
 
+import android.content.res.Resources
+import android.os.Parcelable
+import android.util.Log
 import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.getHour
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
+import kotlinx.android.parcel.Parcelize
 
-@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Summary_Table")
-data class BadestedSummary(
+private const val TAG = "DEBUG -BadestedForecast"
+
+@Parcelize
+@Entity(primaryKeys = ["badested", "from", "to"], tableName = "Badested_Forecast_Table")
+data class BadestedForecast(
     val badested: Badested,
     val from: String,
     val to: String,
     val waterTempC: Double?,
     val airTempC: Double?,
-    val symbol: Int?   // Symbol
-) {
+    val symbol: Int?,   // Symbol
+
+    val precipitation: Double?,
+    val windDirection: String?,
+    val windSpeedMps: Double?,
+    val windSpeedName: String?
+) : Parcelable {
+
     /**
      * Returns the resource id of the icon that best summarises the LocationForecast
      */
@@ -137,35 +151,73 @@ data class BadestedSummary(
         return null
 
     }
+
+    fun getDisplayedBadested() : DisplayedBadested {
+
+        return DisplayedBadested(
+            name = badested.name,
+            info = badested.info,
+            waterTempC =  waterTempC.toString() + "°",
+            airTempC =  airTempC.toString() + "°",
+            precipitation = precipitation?.toInt().toString() + " mm",
+            wind = getWindDescription(),
+            icon = getIcon(),
+            to = "Varselet gjelder til kl. " + getHour(to)
+        )
+    }
+
+    fun getWindDescription() : String {
+        val windDirectionLongString =
+            when (windDirection) {
+                "N" -> "nord"
+                "E" -> "øst"
+                "S" -> "sør"
+                "V" -> "vest"
+
+                "NE" -> "nordøst"
+                "SE" -> "sørøst"
+                "SV" -> "sørvest"
+                "NV" -> "nordvest"
+
+                else ->  {
+                    Log.e(TAG, "getWindDescription: not found: $windDirection")
+                    "ukjent retning"
+                }
+            }
+
+        // "Svak vind, 2 m/s fra nordvest"
+        return windSpeedName + ", " + windSpeedMps?.toInt().toString() + " m/s fra " + windDirectionLongString
+    }
 }
 
 
+
 /**
- * Takes a list of BadestedSummary and lets us find the current Air Temp (if present)
+ * Takes a list of BadestedForecast and lets us find the current Air Temp (if present)
  */
-fun List<BadestedSummary>.getCurrentAirTempCForBadestedSummary(): Double? {
-    return this.getCurrentForecastForBadestedSummary()?.airTempC
+fun List<BadestedForecast>.getCurrentAirTempCForBadestedForecast(): Double? {
+    return this.getCurrentForecastForBadestedForecast()?.airTempC
 }
 
 /**
- * Takes a list of BadestedSummary and lets us find the current Symbol (if present)
+ * Takes a list of BadestedForecast and lets us find the current Symbol (if present)
  */
-//fun List<BadestedSummary>.getCurrentIcon(): Int? {
+//fun List<BadestedForecast>.getCurrentIcon(): Int? {
 //   return this.getCurrentForecast()?.getIcon()
 //}
 
 /**
  * Takes a list of LocationForecast and lets us find the current Air Temp (if present)
  */
-fun List<BadestedSummary>.getCurrentWaterTempCForBadestedSummary(): Double? {
-    return this.getCurrentForecastForBadestedSummary()?.waterTempC
+fun List<BadestedForecast>.getCurrentWaterTempCForBadestedForecast(): Double? {
+    return this.getCurrentForecastForBadestedForecast()?.waterTempC
 }
 
 
 /**
- * Takes a list of BadestedSummarys and returns the one representing now, if that would be applicable
+ * Takes a list of BadestedForecasts and returns the one representing now, if that would be applicable
  */
-fun List<BadestedSummary>.getCurrentForecastForBadestedSummary(): BadestedSummary? {
+fun List<BadestedForecast>.getCurrentForecastForBadestedForecast(): BadestedForecast? {
     val now = currentTime()
     return this.find { hour ->
         now.liesBetweneInclusive(

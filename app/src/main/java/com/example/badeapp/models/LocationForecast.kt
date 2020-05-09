@@ -13,7 +13,12 @@ data class LocationForecast(
     val to: String,
     val nextIssue: String,
     val airTempC: Double?,
-    val symbol: Int?
+    val symbol: Int?,
+
+    val precipitation: Double?,
+    val windDirection: String?,
+    val windSpeedMps: Double?,
+    val windSpeedName: String?
 ) {
 
     /**

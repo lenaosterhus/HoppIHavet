@@ -5,4 +5,13 @@
     <string name="symbol_for_water">Symbol for vanntemperatur</string>
     <string name="symbol_for_weather">Symbol for vær</string>
     <string name="temp_placeholder">"    "</string>
+    <string name="badestednavn">Badestednavn</string>
+    <string name="temp_air">Temperatur luft:</string>
+    <string name="temp_water">Temperatur vann:</string>
+    <string name="precipitation">Nedbør:</string>
+    <string name="description_title">Beskrivelse:</string>
+    <string name="description_placeholder">Dette er en beskrivelse av et badested. Her kommer det masse nyttig informasjon om badestedet.\nKanskje må vi skrolle for å se alt?\n\n\nTittei</string>
+    <string name="facilities">Fasiliteter</string>
+    <string name="show_map">Vis i kart</string>
+    <string name="wind">Vind:</string>
 </resources>

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.example.badeapp.models.Badested
-import com.example.badeapp.models.BadestedSummary
+import com.example.badeapp.models.BadestedForecast
 
 private const val GET_SUMMARYS = """
     SELECT 
@@ -13,7 +13,11 @@ private const val GET_SUMMARYS = """
             ${LF_TABLE}.[to] as 'to',
             waterTempC,
             ${LF_TABLE}.airTempC,
-            ${LF_TABLE}.symbol
+            ${LF_TABLE}.symbol,
+            ${LF_TABLE}.precipitation,
+            ${LF_TABLE}.windDirection,
+            ${LF_TABLE}.windSpeedMps,
+            ${LF_TABLE}.windSpeedName
         FROM $LF_TABLE
             JOIN $OF_TABLE ON 
                     ${OF_TABLE}.badested = ${LF_TABLE}.badested
@@ -28,22 +32,22 @@ private const val GET_SUMMARIES_MANY = GET_SUMMARYS + " WHERE \n" +
 
 
 @Dao
-interface BadestedSummaryDao {
+interface BadestedForecastDao {
 
 
     @Query(GET_SUMMARYS_FOR_ONE)
-    fun getAll(badested: Badested): LiveData<List<BadestedSummary>>
+    fun getAll(badested: Badested): LiveData<List<BadestedForecast>>
 
     @Query(GET_SUMMARYS_FOR_ONE)
-    fun getAllRaw(badested: Badested): List<BadestedSummary>
+    fun getAllRaw(badested: Badested): List<BadestedForecast>
 
 
     @Query(GET_SUMMARIES_MANY)
-    fun getAllCurrent(): LiveData<List<BadestedSummary>>
+    fun getAllCurrent(): LiveData<List<BadestedForecast>>
 
 
     @Query(GET_SUMMARIES_MANY)
-    fun getAllCurrentRaw(): List<BadestedSummary>
+    fun getAllCurrentRaw(): List<BadestedForecast>
 
 
 }

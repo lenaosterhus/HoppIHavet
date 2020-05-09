@@ -2,7 +2,7 @@ package com.example.badeapp.repository
 
 import android.app.Application
 import android.util.Log
-import com.example.badeapp.api.LocationForecast.RequestManager
+import com.example.badeapp.api.locationForecast.RequestManager
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDB

@@ -6,7 +6,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.badeapp.models.Hovedoya
-import com.example.badeapp.persistence.ForecastDB
 import com.example.badeapp.util.getOrAwaitValue
 import junit.framework.TestCase.*
 import kotlinx.coroutines.runBlocking
@@ -14,8 +13,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import com.example.badeapp.api.LocationForecast.RequestManager as LFRM
-import com.example.badeapp.api.OceanForecast.RequestManager as OFRM
+import com.example.badeapp.api.locationForecast.RequestManager as LFRM
+import com.example.badeapp.api.oceanForecast.RequestManager as OFRM
 
 class BadestedSummaryRealDataTest {
 
@@ -79,7 +78,7 @@ class BadestedSummaryRealDataTest {
         assertEquals(lcur.to, ocur.to)
 
 
-        val scurs = DB!!.badestedSummaryDao().getAllCurrentRaw()
+        val scurs = DB!!.badestedForecastDao().getAllCurrentRaw()
         assertEquals(1, scurs.size)
         val scur = scurs.find { it -> it.badested == Hovedoya }
         assertNotNull(scur)

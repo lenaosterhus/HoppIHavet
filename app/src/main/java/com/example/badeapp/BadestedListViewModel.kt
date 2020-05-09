@@ -7,15 +7,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import com.example.badeapp.api.MIThrottler
-import com.example.badeapp.models.BadestedSummary
-import com.example.badeapp.repository.BadestedSummaryRepo
+import com.example.badeapp.models.BadestedForecast
+import com.example.badeapp.repository.BadestedForecastRepo
 import com.example.badeapp.repository.LocationForecastRepo
 import com.example.badeapp.repository.OceanForecastRepo
 
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class BadestedListViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val TAG = "DEBUG - MainViewModel"
+    private val TAG = "DEBUG - BadestedListVM"
 
     val hasHalted = MediatorLiveData<Boolean>().also {
         it.addSource(MIThrottler.hasHalted, Observer { hasHalted ->
@@ -27,15 +27,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val locationForecastRepo = LocationForecastRepo(application)
     private val oceanForecastRepo = OceanForecastRepo(application)
-    private val badestedSummaryRepo = BadestedSummaryRepo(application)
+    private val badestedForecastRepo = BadestedForecastRepo(application)
 
 
-    val summaries: LiveData<List<BadestedSummary>> = badestedSummaryRepo.summaries
+    val summaries: LiveData<List<BadestedForecast>> = badestedForecastRepo.summaries
 
 
     fun init() {
         Log.d(TAG, "init: initializing...")
-        badestedSummaryRepo.printRawDBQuerry() //@TODO remove
+        badestedForecastRepo.printRawDBQuerry() //@TODO remove
     }
 
 
@@ -53,6 +53,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     //@TODO remove
     fun printRawDBQuerry() {
-        badestedSummaryRepo.printRawDBQuerry()
+        badestedForecastRepo.printRawDBQuerry()
     }
 }

@@ -1,4 +1,4 @@
-package com.example.badeapp.api.OceanForecast
+package com.example.badeapp.api.oceanForecast
 
 
 import retrofit2.Response

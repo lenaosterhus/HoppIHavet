@@ -87,7 +87,7 @@ class OceanForecastRepo(val application: Application) {
         CoroutineScope(Dispatchers.IO).launch {
 
             val newData = try {
-                com.example.badeapp.api.OceanForecast.RequestManager.request(badested)
+                com.example.badeapp.api.oceanForecast.RequestManager.request(badested)
             } catch (ex: Exception) {
                 //The updating of data failed, now this can have several reasons,
                 // like no internet connection, bad response from the server etc..

@@ -1,4 +1,4 @@
-package com.example.badeapp.api.LocationForecast
+package com.example.badeapp.api.locationForecast
 
 
 import android.util.Log
@@ -55,7 +55,11 @@ internal data class ResponseFormat(
                         value.to,
                         nextIssue,
                         value.airTempC ?: other.airTempC,
-                        value.symbol ?: other.symbol
+                        value.symbol ?: other.symbol,
+                        value.precipitation ?: other.precipitation,
+                        value.windDirection ?: other.windDirection,
+                        value.windSpeedMps ?: other.windSpeedMps,
+                        value.windSpeedName ?: other.windSpeedName
                     )
                     break
                 }
@@ -111,7 +115,23 @@ internal data class Time(
     fun summarise(badestedName: Badested, nextIssue: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
-        return LocationForecast(badestedName, from, to, nextIssue, airTempC, symbol)
+        val precipitationMm = location?.precipitation?.value
+        val windDirection = location?.windDirection?.name
+        val windSpeedMps = location?.windSpeed?.mps
+        val windSpeedName = location?.windSpeed?.name
+
+        return LocationForecast(
+            badestedName,
+            from,
+            to,
+            nextIssue,
+            airTempC,
+            symbol,
+            precipitationMm,
+            windDirection,
+            windSpeedMps,
+            windSpeedName
+        )
     }
 
 
@@ -242,6 +262,7 @@ internal data class Location(
 
         return null
     }
+
 }
 
 // id er optional
@@ -256,7 +277,7 @@ internal data class Temperature(
 // Oppgis enten i baufort (0-12 egen skala med navn og virkning på sjo) eller mps
 internal data class WindSpeed(
     @Expose @SerializedName("beaufort") val beaufort: String?,
-    @Expose @SerializedName("mps") val mps: String?,
+    @Expose @SerializedName("mps") val mps: Double?,
     @Expose @SerializedName("name") val name: String?,
     @Expose @SerializedName("id") val id: String?
 )
@@ -309,7 +330,7 @@ internal data class MediumClouds(
 internal data class Precipitation(
     @Expose @SerializedName("unit") val unit: String?,
     @Expose @SerializedName("maxvalue") val maxvalue: String?,
-    @Expose @SerializedName("value") val value: String?,
+    @Expose @SerializedName("value") val value: Double?,
     @Expose @SerializedName("minvalue") val minvalue: String?
 )
 

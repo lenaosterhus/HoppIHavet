@@ -1,4 +1,4 @@
-package com.example.badeapp.api.LocationForecastTest
+package com.example.badeapp.api.locationForecastTest
 
 import android.util.Log
 import com.example.badeapp.models.Gressholmen

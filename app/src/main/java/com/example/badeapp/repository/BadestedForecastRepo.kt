@@ -2,7 +2,7 @@ package com.example.badeapp.repository
 
 import android.app.Application
 import android.util.Log
-import com.example.badeapp.models.BadestedSummary
+import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.persistence.ForecastDB
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,16 +16,16 @@ import kotlinx.coroutines.launch
  *
  */
 
-private const val TAG = "BadestedSummaryRepo"
+private const val TAG = "BadestedForecastRepo"
 
 
-class BadestedSummaryRepo(val application: Application) {
+class BadestedForecastRepo(val application: Application) {
 
-    private var lst: List<BadestedSummary>? = null
+    private var lst: List<BadestedForecast>? = null
 
     private val DB = ForecastDB.getDatabase(application)
 
-    val summaries = DB.badestedSummaryDao().getAllCurrent()
+    val summaries = DB.badestedForecastDao().getAllCurrent()
 
 
     fun printRawDBQuerry() {
@@ -33,7 +33,7 @@ class BadestedSummaryRepo(val application: Application) {
         CoroutineScope(Dispatchers.IO).launch {
 
             Log.d(TAG, "Raw querry Inside IO thread")
-            val res = DB.badestedSummaryDao().getAllCurrentRaw()
+            val res = DB.badestedForecastDao().getAllCurrentRaw()
             if (res.isEmpty()) {
                 Log.d(TAG, "WTF  its empty!")
             } else {
