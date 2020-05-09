@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.badeapp.R
 import com.example.badeapp.models.BadestedForecast
-import kotlinx.android.synthetic.main.activity_badested.view.*
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
 
@@ -106,7 +105,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                 val icon = summary?.getIcon()
 
                 if (icon != null) {
-                    itemView.symbol_weather.setImageResource(icon)
+                    itemView.ImageView_element_symbol.setImageResource(icon)
                 } else {
                     itemView.ImageView_element_symbol.setImageDrawable(null)
                 }
