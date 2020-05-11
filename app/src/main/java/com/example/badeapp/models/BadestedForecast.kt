@@ -154,6 +154,7 @@ data class BadestedForecast(
 
     fun getDisplayedBadested() : DisplayedBadested {
 
+        // TODO: Gjør null-check
         return DisplayedBadested(
             name = badested.name,
             info = badested.info,
@@ -162,7 +163,8 @@ data class BadestedForecast(
             precipitation = precipitation?.toInt().toString() + " mm",
             wind = getWindDescription(),
             icon = getIcon(),
-            to = "Varselet gjelder til kl. " + getHour(to)
+            to = "Varselet gjelder til kl. " + getHour(to),
+            image = badested.image
         )
     }
 

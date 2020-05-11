@@ -8,5 +8,6 @@ data class DisplayedBadested(
     val precipitation: String,
     val wind: String,
     val icon: Int?,
-    val to: String?
+    val to: String?,
+    val image: Int
 )
