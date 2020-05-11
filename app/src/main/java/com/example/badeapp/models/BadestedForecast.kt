@@ -154,15 +154,18 @@ data class BadestedForecast(
 
     fun getDisplayedBadested() : DisplayedBadested {
 
+        // TODO: Gjør null-check
         return DisplayedBadested(
             name = badested.name,
             info = badested.info,
+            facilities = badested.facilities,
             waterTempC =  waterTempC.toString() + "°",
             airTempC =  airTempC.toString() + "°",
             precipitation = precipitation?.toInt().toString() + " mm",
             wind = getWindDescription(),
             icon = getIcon(),
-            to = "Varselet gjelder til kl. " + getHour(to)
+            to = "Varselet gjelder til kl. " + getHour(to),
+            image = badested.image
         )
     }
 
@@ -177,7 +180,7 @@ data class BadestedForecast(
                 "NE" -> "nordøst"
                 "SE" -> "sørøst"
                 "SV" -> "sørvest"
-                "NV" -> "nordvest"
+                "NW" -> "nordvest"
 
                 else ->  {
                     Log.e(TAG, "getWindDescription: not found: $windDirection")
