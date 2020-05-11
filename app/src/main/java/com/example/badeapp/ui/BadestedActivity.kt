@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.view.View
 import com.example.badeapp.R
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
@@ -54,6 +55,9 @@ class BadestedActivity : BaseActivity() {
         TextView_badested_description.text = badestedInView.info
         TextView_badested_description.movementMethod = ScrollingMovementMethod()
 
+        Log.d(TAG, "setView: setter fasiliteter: ${badestedForecast.badested.facilities}")
+        TextView_badested_facilities.text = badestedForecast.badested.facilities
+
 
 
         // Foreløpig løsning: Søker etter navnet i Google Maps, med lat og lon som utgangspunkt
@@ -68,6 +72,12 @@ class BadestedActivity : BaseActivity() {
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
             mapIntent.setPackage("com.google.android.apps.maps")
             startActivity(mapIntent)
+        }
+
+        // Viser fasilitetene og skjuler knappen
+        Button_badested_facilities.setOnClickListener {
+            container_facilities.visibility = View.VISIBLE
+            Button_badested_facilities.visibility = View.INVISIBLE
         }
 
 

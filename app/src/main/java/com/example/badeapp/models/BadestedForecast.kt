@@ -179,7 +179,7 @@ data class BadestedForecast(
                 "NE" -> "nordøst"
                 "SE" -> "sørøst"
                 "SV" -> "sørvest"
-                "NV" -> "nordvest"
+                "NW" -> "nordvest"
 
                 else ->  {
                     Log.e(TAG, "getWindDescription: not found: $windDirection")
