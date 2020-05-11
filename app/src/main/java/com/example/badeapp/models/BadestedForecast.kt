@@ -158,6 +158,7 @@ data class BadestedForecast(
         return DisplayedBadested(
             name = badested.name,
             info = badested.info,
+            facilities = badested.facilities,
             waterTempC =  waterTempC.toString() + "°",
             airTempC =  airTempC.toString() + "°",
             precipitation = precipitation?.toInt().toString() + " mm",

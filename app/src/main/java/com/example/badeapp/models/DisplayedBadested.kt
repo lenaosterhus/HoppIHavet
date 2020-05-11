@@ -3,6 +3,7 @@ package com.example.badeapp.models
 data class DisplayedBadested(
     val name: String,
     val info: String,
+    val facilities: String,
     val waterTempC: String,
     val airTempC: String,
     val precipitation: String,

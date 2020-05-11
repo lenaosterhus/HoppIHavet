@@ -56,7 +56,7 @@ class BadestedActivity : BaseActivity() {
         TextView_badested_description.movementMethod = ScrollingMovementMethod()
 
         Log.d(TAG, "setView: setter fasiliteter: ${badestedForecast.badested.facilities}")
-        TextView_badested_facilities.text = badestedForecast.badested.facilities
+        TextView_badested_facilities.text = badestedInView.facilities
 
 
 
