@@ -139,15 +139,15 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
 
                 Log.d(TAG, "performFiltering: $constraint")
                 val charSearch = constraint.toString()
-                if (charSearch.isEmpty()) {
+                filteredBadestedList = if (charSearch.isEmpty()) {
                     // No filter implemented we return the whole list
                     Log.d(TAG, "performFiltering: input is empty")
-                    filteredBadestedList = unFilterdList
-                }
-                else {
-                    filteredBadestedList = unFilterdList?.filter {
+                    unFilterdList
+                } else {
+                    unFilterdList?.filter {
                         val name: CharSequence = it.badested.name.toUpperCase(Locale.ROOT)
-                        name.contains(charSearch.toUpperCase(Locale.ROOT))
+                        val place: CharSequence = it.badested.place.toUpperCase(Locale.ROOT)
+                        name.contains(charSearch.toUpperCase(Locale.ROOT)) || place.contains(charSearch.toUpperCase(Locale.ROOT))
                     }
                 }
                 val results = FilterResults()
