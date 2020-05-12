@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D0EFFB"
+    android:background="#ADD7ED"
     android:backgroundTintMode="add"
     android:orientation="vertical"
     tools:context=".ui.BadestedListActivity">
