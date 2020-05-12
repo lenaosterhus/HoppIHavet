@@ -291,6 +291,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/badested_background_cyan"
+            android:drawableEnd="@drawable/ic_facilities_icon"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/show_facilities"
