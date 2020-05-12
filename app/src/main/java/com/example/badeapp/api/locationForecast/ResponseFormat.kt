@@ -50,7 +50,7 @@ internal data class ResponseFormat(
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
                     oneHourSpan[index] = LocationForecast(
-                        badested,
+                        badested.id,
                         value.from,
                         value.to,
                         nextIssue,
@@ -112,7 +112,7 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise(badestedName: Badested, nextIssue: String): LocationForecast {
+    fun summarise(badested: Badested, nextIssue: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
         val precipitationMm = location?.precipitation?.value
@@ -121,7 +121,7 @@ internal data class Time(
         val windSpeedName = location?.windSpeed?.name
 
         return LocationForecast(
-            badestedName,
+            badested.id,
             from,
             to,
             nextIssue,

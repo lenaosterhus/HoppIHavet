@@ -46,7 +46,6 @@ class BadestedListActivity : BaseActivity(),
         // Subscribe observers
         viewModel.summaries.observe(this, Observer {
             Log.d(TAG, "Submitting list $it")
-            viewModel.printRawDBQuerry() //@TODO remove
             recyclerAdapter.submitList(it)
         })
     }

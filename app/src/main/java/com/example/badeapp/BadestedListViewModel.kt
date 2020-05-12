@@ -9,8 +9,6 @@ import androidx.lifecycle.Observer
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.repository.BadestedForecastRepo
-import com.example.badeapp.repository.LocationForecastRepo
-import com.example.badeapp.repository.OceanForecastRepo
 
 
 class BadestedListViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,8 +23,6 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
         })
     }
 
-    private val locationForecastRepo = LocationForecastRepo(application)
-    private val oceanForecastRepo = OceanForecastRepo(application)
     private val badestedForecastRepo = BadestedForecastRepo(application)
 
 
@@ -35,24 +31,18 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
 
     fun init() {
         Log.d(TAG, "init: initializing...")
-        badestedForecastRepo.printRawDBQuerry() //@TODO remove
     }
 
 
     fun updateData() {
         Log.d(TAG, "updateData: ...")
         // Setter Location- og OceanForecast for alle badestedene
-        locationForecastRepo.updateForecasts()
-        oceanForecastRepo.updateForecasts()
+        badestedForecastRepo.updateForecasts()
     }
 
     fun cancelRequests() {
-        locationForecastRepo.haltUpdates()
-        oceanForecastRepo.haltUpdates()
+        //@TODO
     }
 
-    //@TODO remove
-    fun printRawDBQuerry() {
-        badestedForecastRepo.printRawDBQuerry()
-    }
+
 }

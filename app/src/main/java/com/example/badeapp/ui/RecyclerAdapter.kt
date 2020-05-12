@@ -33,8 +33,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
             oldItem: BadestedForecast,
             newItem: BadestedForecast
         ): Boolean {
-            return oldItem.waterTempC == newItem.waterTempC && oldItem.symbol == newItem.symbol &&
-                    oldItem.airTempC == newItem.airTempC
+            return oldItem.sameContentAs(newItem)
         }
     }
     private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
@@ -90,14 +89,14 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
 
                 TextView_element_name.text = summary?.badested?.name
 
-                if (summary?.airTempC != null) {
-                    TextView_element_air_temp.text = summary!!.airTempC.toString() + "°"
+                if (summary?.forecast?.airTempC != null) {
+                    TextView_element_air_temp.text = summary!!.forecast?.airTempC.toString() + "°"
                 } else {
                     TextView_element_air_temp.text = ""
                 }
 
-                if (summary?.waterTempC != null) {
-                    TextView_element_water_temp.text = summary!!.waterTempC.toString() + "°"
+                if (summary?.forecast?.waterTempC != null) {
+                    TextView_element_water_temp.text = summary!!.forecast?.waterTempC.toString() + "°"
                 } else {
                     TextView_element_water_temp.text = ""
                 }
