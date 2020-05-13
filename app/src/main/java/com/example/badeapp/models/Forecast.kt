@@ -159,21 +159,18 @@ data class Forecast(
 
     }
 
-    fun isOceanForecastOutdated(): Boolean {
-        if(nextIssueOcean == null) {
-            return true;
-        }
 
-        return nextIssueOcean.parseAsGmtIsoDate()!!.before(currentTime()) ?: true
+    fun isOceanForecastOutdated(): Boolean {
+        return nextIssueOcean?.parseAsGmtIsoDate()?.before(currentTime()) ?: true
     }
 
     fun isLocationForecastOutdated(): Boolean {
-        if(nextIssueLocation == null) {
-            return true;
-        }
-        return nextIssueLocation.parseAsGmtIsoDate()!!.before(currentTime()) ?: true
+        return nextIssueLocation?.parseAsGmtIsoDate()?.before(currentTime()) ?: true
     }
 
+    /**
+     * The following methods are used tto get prettified versions of data in the Forecast
+     */
 
     fun getWindDescription() : String {
         val windDirectionLongString =
@@ -181,24 +178,41 @@ data class Forecast(
                 "N" -> "nord"
                 "E" -> "øst"
                 "S" -> "sør"
-                "V" -> "vest"
+                "W" -> "vest"
 
                 "NE" -> "nordøst"
                 "SE" -> "sørøst"
-                "SV" -> "sørvest"
+                "SW" -> "sørvest"
                 "NW" -> "nordvest"
 
-                else -> {
+                else ->  {
                     Log.e(TAG, "getWindDescription: not found: $windDirection")
-                    "ukjent retning"
+                    return windSpeedName + ", " + windSpeedMps?.toInt().toString() + " m/s"
                 }
             }
 
         // "Svak vind, 2 m/s fra nordvest"
-        return windSpeedName + ", " + windSpeedMps?.toInt()
-            .toString() + " m/s fra " + windDirectionLongString
+        return windSpeedName + ", " + windSpeedMps?.toInt().toString() + " m/s fra " + windDirectionLongString
     }
 
+    fun getAirTempCDescription() : String {
+        if(airTempC == null) return ""
+        return "$airTempC°"
+    }
+
+    fun getWaterTempCDescription() : String {
+        if(waterTempC == null) return ""
+        return "$waterTempC°"
+    }
+
+    fun getPrecipitationDescription() : String {
+        if(precipitation == null) return ""
+        return precipitation.toInt().toString() + " mm"
+    }
+    
+    fun getValidToDescription() : String {
+        return "Varselet gjelder til kl. " + getHour(to)
+    }
 
 }
 

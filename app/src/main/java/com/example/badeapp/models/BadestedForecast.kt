@@ -23,32 +23,40 @@ data class BadestedForecast(
         entityColumn = "badestedId"
     )
     val forecast : Forecast?
-) : Parcelable {
+)
+    : Parcelable
+{
+
+    val name : String
+        get() = badested.name
+
+    val info : String
+        get() = badested.info
+
+    val facilities: String
+        get() = badested.facilities
+
+    val image : Int
+        get() = badested.image
+
+    fun getWindDescription() = forecast?.getWindDescription() ?: ""
+
+
+    fun getAirTempCDescription() = forecast?.getAirTempCDescription() ?: ""
+
+    fun getWaterTempCDescription() = forecast?.getWaterTempCDescription() ?: ""
+
+    fun getPrecipitationDescription() = forecast?.getPrecipitationDescription() ?: ""
+
+    fun getValidToDescription() = forecast?.getValidToDescription() ?: ""
+
 
     /**
      * Returns the resource id of the icon that best summarises the LocationForecast
      */
-    fun getIcon(): Int? {
-        return forecast?.getIcon()
-    }
+    fun getIcon(): Int? = forecast?.getIcon()
 
 
-    fun getDisplayedBadested() : DisplayedBadested {
-
-        // TODO: Gjør null-check
-        return DisplayedBadested(
-            name = badested.name,
-            info = badested.info,
-            facilities = badested.facilities,
-            waterTempC =  forecast?.waterTempC.toString() + "°",
-            airTempC =  forecast?.airTempC.toString() + "°",
-            precipitation = forecast?.precipitation?.toInt().toString() + " mm",
-            wind = forecast?.getWindDescription() ?: "",
-            icon = getIcon(),
-            to = "Varselet gjelder til kl. " + getHour(forecast?.to ?: ""),
-            image = badested.image
-        )
-    }
 
     fun sameContentAs(newItem: BadestedForecast): Boolean {
         //@TODO

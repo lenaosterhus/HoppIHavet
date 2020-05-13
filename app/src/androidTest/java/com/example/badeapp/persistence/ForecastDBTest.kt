@@ -8,6 +8,7 @@ import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.toGmtIsoString
+import junit.framework.Assert.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +31,6 @@ class ForecastDBTest {
     fun startDB() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         DB = Room.inMemoryDatabaseBuilder(context, ForecastDB::class.java).build()
-        DB.oceanForecastDao().insert(OF1)
     }
 
 
@@ -42,7 +42,12 @@ class ForecastDBTest {
 
 
     @Test
-    fun locationForecastDao() {
+    fun insertOceanData() {
+        DB.forecastDao().newOceanForecast(listOf(OF1));
+        val forecast = DB.forecastDao().getAllRaw();
+        assertTrue(forecast != null)
+        assertTrue(forecast.size == 1)
+        assertTrue(forecast[0].contains(OF1))
     }
 
     @Test

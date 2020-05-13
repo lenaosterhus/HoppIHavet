@@ -21,11 +21,9 @@ private const val DATABASE_NAME = "Forecasts.db"
     version = 1,
     exportSchema = false
 )
-@TypeConverters(BadestedConverter::class)
+
 abstract class ForecastDB : RoomDatabase() {
 
-
-    abstract fun badestedForecastDao(): BadestedForecastDao
     abstract fun forecastDao(): ForecastDao
 
     companion object {
@@ -50,17 +48,7 @@ abstract class ForecastDB : RoomDatabase() {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val DB = getDatabase(context);
                                 alleBadesteder.forEach {
-                                    DB.badestedForecastDao().putBadested(it)
-                                }
-                            }
-                        }
-
-                        override fun onOpen(db: SupportSQLiteDatabase) {
-                            super.onOpen(db)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val DB = getDatabase(context);
-                                alleBadesteder.forEach {
-                                    DB.badestedForecastDao().putBadested(it)
+                                    DB.forecastDao().putBadested(it)
                                 }
                             }
                         }

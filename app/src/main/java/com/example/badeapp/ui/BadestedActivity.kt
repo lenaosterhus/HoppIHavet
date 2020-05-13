@@ -9,7 +9,6 @@ import android.view.View
 import com.example.badeapp.R
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
-import com.example.badeapp.models.DisplayedBadested
 import kotlinx.android.synthetic.main.activity_badested.*
 
 
@@ -17,7 +16,7 @@ private const val TAG = "DEBUG -BadestedActivity"
 
 class BadestedActivity : BaseActivity() {
 
-    private lateinit var badestedInView: DisplayedBadested
+    private lateinit var badestedInView: BadestedForecast
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,25 +25,24 @@ class BadestedActivity : BaseActivity() {
         if (intent.hasExtra("badested")) {
             val badestedForecast = intent.getParcelableExtra<BadestedForecast>("badested")
             Log.d(TAG, "onCreate: $badestedForecast")
-            badestedForecast?.let {
-                badestedInView = badestedForecast.getDisplayedBadested()
-                setView(badestedForecast)
-            }
+            badestedInView = badestedForecast!!
         }
+        setView()
     }
 
-    private fun setView(badestedForecast: BadestedForecast) {
-        ImageView_badested_image.setImageResource(badestedInView.image)
+    private fun setView() {
 
+        ImageView_badested_image.setImageResource(badestedInView.image)
+        Log.d(TAG,badestedInView.name)
         TextView_badested_name.text = badestedInView.name
 
-        TextView_badested_air_temp.text = badestedInView.airTempC
-        TextView_badested_water_temp.text = badestedInView.waterTempC
-        TextView_badested_precipitation.text = badestedInView.precipitation
-        TextView_badested_wind.text = badestedInView.wind
-        TextView_badested_valid_to.text = badestedInView.to
+        TextView_badested_air_temp.text = badestedInView.getAirTempCDescription()
+        TextView_badested_water_temp.text = badestedInView.getWaterTempCDescription()
+        TextView_badested_precipitation.text = badestedInView.getPrecipitationDescription()
+        TextView_badested_wind.text = badestedInView.getWindDescription()
+        TextView_badested_valid_to.text = badestedInView.getValidToDescription()
 
-        val icon = badestedInView.icon
+        val icon = badestedInView.getIcon()
 
         if (icon != null) {
             ImageView_badested_symbol.setImageResource(icon)
@@ -55,7 +53,7 @@ class BadestedActivity : BaseActivity() {
         TextView_badested_description.text = badestedInView.info
         TextView_badested_description.movementMethod = ScrollingMovementMethod()
 
-        Log.d(TAG, "setView: setter fasiliteter: ${badestedForecast.badested.facilities}")
+        Log.d(TAG, "setView: setter fasiliteter: ${badestedInView.facilities}")
         TextView_badested_facilities.text = badestedInView.facilities
 
 
@@ -63,11 +61,11 @@ class BadestedActivity : BaseActivity() {
         // Foreløpig løsning: Søker etter navnet i Google Maps, med lat og lon som utgangspunkt
         // Ikke optimalt for Solvikbukta
         Button_badested_show_on_map.setOnClickListener {
-            val gmmIntentUri: Uri = if (badestedForecast.badested.name == "Solvikbukta") {
+            val gmmIntentUri: Uri = if (badestedInView.name == "Solvikbukta") {
                 // Må korrigere søkeordet for at Google Maps skal finne stedet
-                Uri.parse("geo:${badestedForecast.badested.lat},${badestedForecast.badested.lon}?q=Solviks venner")
+                Uri.parse("geo:${badestedInView.badested.lat},${badestedInView.badested.lon}?q=Solviks venner")
             } else {
-                Uri.parse("geo:${badestedForecast.badested.lat},${badestedForecast.badested.lon}?q=${badestedForecast.badested.name}")
+                Uri.parse("geo:${badestedInView.badested.lat},${badestedInView.badested.lon}?q=${badestedInView.badested.name}")
             }
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
             mapIntent.setPackage("com.google.android.apps.maps")
@@ -84,7 +82,7 @@ class BadestedActivity : BaseActivity() {
         // Alternativ: Søke på lat + lon
         // Burde legge til egne lat + lon for maps-visning, nå viser noen plassering langt uti sjøen
 //        Button_badested_show_on_map.setOnClickListener {
-//            val gmmIntentUri: Uri = Uri.parse("geo:${badestedForecast.badested.lat},${badestedForecast.badested.lon}?q=${badestedForecast.badested.lat},${badestedForecast.badested.lon}")
+//            val gmmIntentUri: Uri = Uri.parse("geo:${badestedInView.badested.lat},${badestedInView.badested.lon}?q=${badestedInView.badested.lat},${badestedInView.badested.lon}")
 //            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
 //            mapIntent.setPackage("com.google.android.apps.maps")
 //            startActivity(mapIntent)

@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 private const val TAG = "BadestedForecastRepo"
 
 
-
 class BadestedForecastRepo(val application: Application) {
 
     private var lst: List<BadestedForecast>? = null
@@ -35,7 +34,7 @@ class BadestedForecastRepo(val application: Application) {
     val _summaries = MutableLiveData<List<BadestedForecast>>()
     val summaries : LiveData<List<BadestedForecast>> = _summaries
 
-    val db_summaries = DB.badestedForecastDao().getAllCurrent().also {
+    val db_summaries = DB.forecastDao().getAllCurrent().also {
         it.observeForever{ forecasts ->
             _summaries.value = forecasts;
         }
@@ -44,18 +43,16 @@ class BadestedForecastRepo(val application: Application) {
     fun updateForecasts() {
         CoroutineScope(Dispatchers.IO).launch {
 
-
                 //1) Check what ocean forecast and location forecasts needs to be updated
-                val forecasts = DB.badestedForecastDao().getAllCurrentRaw()
+                val forecasts = DB.forecastDao().getAllCurrentRaw()
 
                 if (forecasts.isNullOrEmpty()) {
                     //Then no data is stored at all. We need to update all badesteder
-                    CoroutineScope(Dispatchers.IO).launch {
-                        alleBadesteder.forEach {
-                            updateLocationData(it)
-                            updateOceanData(it)
-                        }
+                    alleBadesteder.forEach {
+                        updateLocationData(it)
+                        updateOceanData(it)
                     }
+                    Log.d(TAG,"Forecasts was empty")
                     return@launch
                 }
 
@@ -71,7 +68,7 @@ class BadestedForecastRepo(val application: Application) {
 
                 }
 
-            _summaries.postValue(DB.badestedForecastDao().getAllCurrentRaw())
+            _summaries.postValue(DB.forecastDao().getAllCurrentRaw())
         }
     }
 

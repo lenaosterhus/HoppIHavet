@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_badested_list.*
  * live data, og endrer på data etter behov.
  */
 
-private const val TAG = "DEBUG - MainActivity"
+private const val TAG = "D-BadeListActivity"
 
 class BadestedListActivity : BaseActivity(),
     RecyclerAdapter.Interaction {
@@ -45,7 +45,7 @@ class BadestedListActivity : BaseActivity(),
 
         // Subscribe observers
         viewModel.summaries.observe(this, Observer {
-            Log.d(TAG, "Submitting list $it")
+            //Log.d(TAG, "Submitting list $it")
             recyclerAdapter.submitList(it)
         })
     }
@@ -78,8 +78,8 @@ class BadestedListActivity : BaseActivity(),
 
 
     override fun onItemSelected(position: Int, item: BadestedForecast) {
-        Log.d(TAG, "onItemSelected: CLICKED: $position")
-        Log.d(TAG, "onItemSelected: CLICKED: $item")
+        //Log.d(TAG, "onItemSelected: CLICKED: $position")
+        //Log.d(TAG, "onItemSelected: CLICKED: $item")
 
         val intent = Intent(this, BadestedActivity::class.java)
         intent.putExtra("badested", item)
