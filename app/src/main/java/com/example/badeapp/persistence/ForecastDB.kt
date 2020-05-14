@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.badeapp.models.*
-import com.example.badeapp.util.BadestedConverter
+import com.example.badeapp.models.Badested
+import com.example.badeapp.models.Forecast
+import com.example.badeapp.models.alleBadesteder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +46,17 @@ abstract class ForecastDB : RoomDatabase() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
                             CoroutineScope(Dispatchers.IO).launch {
-                                val DB = getDatabase(context);
+                                val DB = getDatabase(context)
+                                alleBadesteder.forEach {
+                                    DB.forecastDao().putBadested(it)
+                                }
+                            }
+                        }
+
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val DB = getDatabase(context)
                                 alleBadesteder.forEach {
                                     DB.forecastDao().putBadested(it)
                                 }

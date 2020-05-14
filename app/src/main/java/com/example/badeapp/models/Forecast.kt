@@ -36,6 +36,7 @@ data class Forecast(
 
 
 
+
     /**
      * Returns the resource id of the icon that best summarises the Forecast
      */
@@ -212,6 +213,50 @@ data class Forecast(
     
     fun getValidToDescription() : String {
         return "Varselet gjelder til kl. " + getHour(to)
+    }
+
+    /**
+     * The following methods are used for testing.
+     */
+
+    fun contains(locationForecast: LocationForecast): Boolean {
+        return locationForecast.badestedId == badestedId
+                && locationForecast.from == from
+                && locationForecast.to == to
+                && locationForecast.nextIssueLocation == nextIssueLocation
+                && locationForecast.airTempC == airTempC
+                && locationForecast.symbol == symbol
+                && locationForecast.precipitation == precipitation
+                && locationForecast.windDirection == windDirection
+                && locationForecast.windSpeedMps == windSpeedMps
+                && locationForecast.windSpeedName == windSpeedName
+    }
+
+    fun contains(oceanForecast: OceanForecast): Boolean {
+        return oceanForecast.badestedId == badestedId
+                && oceanForecast.from == from
+                && oceanForecast.to == to
+                && oceanForecast.nextIssueOcean == nextIssueOcean
+                && oceanForecast.nextIssueOcean == nextIssueOcean
+    }
+
+    fun hasLocationData(): Boolean {
+        return nextIssueLocation != null && nextIssueLocation.isNotBlank()
+                && airTempC != null
+                && symbol != null
+                && precipitation != null
+                && windDirection != null
+                && windSpeedMps != null
+                && windSpeedName != null
+    }
+
+    fun hasOceanData(): Boolean {
+        return nextIssueOcean != null && nextIssueOcean.isNotBlank()
+                && waterTempC != null
+    }
+
+    override fun toString(): String {
+        return "Forecast(badestedId=$badestedId, from='$from', to='$to', nextIssueLocation=$nextIssueLocation, nextIssueOcean=$nextIssueOcean, airTempC=$airTempC, symbol=$symbol, precipitation=$precipitation, windDirection=$windDirection, windSpeedMps=$windSpeedMps, windSpeedName=$windSpeedName, waterTempC=$waterTempC)\n"
     }
 
 }

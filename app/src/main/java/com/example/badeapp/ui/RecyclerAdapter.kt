@@ -89,14 +89,15 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
 
                 TextView_element_name.text = summary?.badested?.name
 
-                if (summary?.forecast?.airTempC != null) {
-                    TextView_element_air_temp.text = summary!!.forecast?.airTempC.toString() + "°"
+                if (summary?.forecast?.get(0)?.airTempC != null) {
+                    TextView_element_air_temp.text = summary!!.forecast[0].airTempC.toString() + "°"
                 } else {
                     TextView_element_air_temp.text = ""
                 }
 
-                if (summary?.forecast?.waterTempC != null) {
-                    TextView_element_water_temp.text = summary!!.forecast?.waterTempC.toString() + "°"
+                if (summary?.forecast?.get(0)?.waterTempC != null) {
+                    TextView_element_water_temp.text =
+                        summary!!.forecast[0].waterTempC.toString() + "°"
                 } else {
                     TextView_element_water_temp.text = ""
                 }

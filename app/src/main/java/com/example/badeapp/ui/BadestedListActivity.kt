@@ -45,7 +45,7 @@ class BadestedListActivity : BaseActivity(),
 
         // Subscribe observers
         viewModel.summaries.observe(this, Observer {
-            //Log.d(TAG, "Submitting list $it")
+            Log.d(TAG, "Submitting list $it")
             recyclerAdapter.submitList(it)
         })
     }

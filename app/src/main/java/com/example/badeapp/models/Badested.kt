@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 @Entity(primaryKeys = ["lat", "lon"])
 data class Badested(
-    val id : Int,
+    val badestedId: Int,
     val lat: String,
     val lon: String,
     val name: String,
@@ -19,7 +19,7 @@ data class Badested(
 ) : Parcelable{
 
     override fun toString(): String {
-        return "{lat=$lat,lon=$lon,name=$name,info=...}"
+        return "{id=$badestedId, name=$name, info=...}"
     }
 }
 

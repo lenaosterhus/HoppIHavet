@@ -90,7 +90,7 @@ internal data class ResponseFormat(
                      * So we expect from == to.
                      */
                     Log.e(TAG, "'from' != 'to'    $from != $to")
-                    return OceanForecast(badested.id, from!!, to, nextIssue, waterTempC)
+                    return OceanForecast(badested.badestedId, from!!, to, nextIssue, waterTempC)
                 }
             }
 
@@ -98,7 +98,7 @@ internal data class ResponseFormat(
             val newFrom = instance!!.parseAsGmtIsoDate()!!.subOneHour().toGmtIsoString()
 
             //val newTo = from!!.parseAsGmtIsoDate()?.addOneHour()?.toGmtIsoString()!!
-            return OceanForecast(badested.id, newFrom, to!!, nextIssue, waterTempC)
+            return OceanForecast(badested.badestedId, newFrom, to!!, nextIssue, waterTempC)
         }
     }
 

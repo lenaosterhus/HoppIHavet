@@ -50,7 +50,7 @@ internal data class ResponseFormat(
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
                     oneHourSpan[index] = LocationForecast(
-                        badested.id,
+                        badested.badestedId,
                         value.from,
                         value.to,
                         nextIssue,
@@ -121,7 +121,7 @@ internal data class Time(
         val windSpeedName = location?.windSpeed?.name
 
         return LocationForecast(
-            badested.id,
+            badested.badestedId,
             from,
             to,
             nextIssue,

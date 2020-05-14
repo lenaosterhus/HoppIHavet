@@ -1,15 +1,12 @@
 package com.example.badeapp.repository
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
-import com.example.badeapp.persistence.ForecastDB
-import com.example.badeapp.util.currentTime
-import com.example.badeapp.util.parseAsGmtIsoDate
+import com.example.badeapp.persistence.ForecastDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,18 +22,16 @@ import kotlinx.coroutines.launch
 private const val TAG = "BadestedForecastRepo"
 
 
-class BadestedForecastRepo(val application: Application) {
+class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
     private var lst: List<BadestedForecast>? = null
-
-    private val DB = ForecastDB.getDatabase(application)
 
     val _summaries = MutableLiveData<List<BadestedForecast>>()
     val summaries : LiveData<List<BadestedForecast>> = _summaries
 
-    val db_summaries = DB.forecastDao().getAllCurrent().also {
+    val db_summaries = forecastDao.getAllCurrent().also {
         it.observeForever{ forecasts ->
-            _summaries.value = forecasts;
+            _summaries.value = forecasts
         }
     }
 
@@ -44,7 +39,7 @@ class BadestedForecastRepo(val application: Application) {
         CoroutineScope(Dispatchers.IO).launch {
 
                 //1) Check what ocean forecast and location forecasts needs to be updated
-                val forecasts = DB.forecastDao().getAllCurrentRaw()
+            val forecasts = forecastDao.getAllCurrentRaw()
 
                 if (forecasts.isNullOrEmpty()) {
                     //Then no data is stored at all. We need to update all badesteder
@@ -58,17 +53,19 @@ class BadestedForecastRepo(val application: Application) {
 
                 forecasts.forEach {
 
-                    if (it.forecast?.isOceanForecastOutdated() != false) {
+                    if (it.forecast.getOrNull(0)?.isOceanForecastOutdated() != false) {
                         updateOceanData(it.badested)
                     }
 
-                    if (it.forecast?.isLocationForecastOutdated() != false) {
+                    if (it.forecast.getOrNull(0)?.isLocationForecastOutdated() != false) {
                         updateLocationData(it.badested)
                     }
 
                 }
 
-            _summaries.postValue(DB.forecastDao().getAllCurrentRaw())
+
+
+            _summaries.postValue(forecastDao.getAllCurrentRaw())
         }
     }
 
@@ -85,7 +82,7 @@ class BadestedForecastRepo(val application: Application) {
         }
 
         if (!newData.isNullOrEmpty()) {
-            DB.forecastDao().newOceanForecast(newData)
+            forecastDao.newOceanForecast(newData)
         } else {
             Log.d(TAG, "newData was null!")
         }
@@ -107,7 +104,7 @@ class BadestedForecastRepo(val application: Application) {
             }
 
             if (!newData.isNullOrEmpty()) {
-                DB.forecastDao().newLocationForecast(newData)
+                forecastDao.newLocationForecast(newData)
             } else {
                 Log.d(TAG, "newData was null!")
             }

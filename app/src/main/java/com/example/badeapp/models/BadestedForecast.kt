@@ -1,16 +1,8 @@
 package com.example.badeapp.models
 
-import android.content.res.Resources
 import android.os.Parcelable
-import android.util.Log
 import androidx.room.Embedded
-import androidx.room.Entity
 import androidx.room.Relation
-import com.example.badeapp.R
-import com.example.badeapp.util.currentTime
-import com.example.badeapp.util.getHour
-import com.example.badeapp.util.liesBetweneInclusive
-import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
 
 private const val TAG = "DEBUG -BadestedForecast"
@@ -19,10 +11,10 @@ private const val TAG = "DEBUG -BadestedForecast"
 data class BadestedForecast(
     @Embedded val badested: Badested,
     @Relation(
-        parentColumn = "id",
+        parentColumn = "badestedId",
         entityColumn = "badestedId"
     )
-    val forecast : Forecast?
+    val forecast: List<Forecast>
 )
     : Parcelable
 {
@@ -39,28 +31,29 @@ data class BadestedForecast(
     val image : Int
         get() = badested.image
 
-    fun getWindDescription() = forecast?.getWindDescription() ?: ""
+    fun getWindDescription() = forecast.getOrNull(0)?.getWindDescription() ?: ""
 
+    fun getAirTempCDescription() = forecast.getOrNull(0)?.getAirTempCDescription() ?: ""
 
-    fun getAirTempCDescription() = forecast?.getAirTempCDescription() ?: ""
+    fun getWaterTempCDescription() = forecast.getOrNull(0)?.getWaterTempCDescription() ?: ""
 
-    fun getWaterTempCDescription() = forecast?.getWaterTempCDescription() ?: ""
+    fun getPrecipitationDescription() = forecast.getOrNull(0)?.getPrecipitationDescription() ?: ""
 
-    fun getPrecipitationDescription() = forecast?.getPrecipitationDescription() ?: ""
-
-    fun getValidToDescription() = forecast?.getValidToDescription() ?: ""
+    fun getValidToDescription() = forecast.getOrNull(0)?.getValidToDescription() ?: ""
 
 
     /**
      * Returns the resource id of the icon that best summarises the LocationForecast
      */
-    fun getIcon(): Int? = forecast?.getIcon()
+    fun getIcon(): Int? = forecast.getOrNull(0)?.getIcon()
 
 
+    fun sameContentAs(other: BadestedForecast): Boolean {
+        return badested == other.badested && forecast.getOrNull(0) == other.forecast.getOrNull(0)
+    }
 
-    fun sameContentAs(newItem: BadestedForecast): Boolean {
-        //@TODO
-        return false;
+    override fun toString(): String {
+        return "BadestedForecast(badested=${badested.name}, forecast=$forecast)"
     }
 
 

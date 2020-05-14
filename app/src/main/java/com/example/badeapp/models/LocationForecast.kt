@@ -15,8 +15,4 @@ data class LocationForecast( val badestedId : Int,
                              val windDirection: String?,
                              val windSpeedMps: Double?,
                              val windSpeedName: String?
-) {
-
-
-
-}
+)
