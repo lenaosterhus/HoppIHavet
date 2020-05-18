@@ -8,51 +8,39 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.BadestedForecast
+import com.example.badeapp.persistence.ForecastDB
 import com.example.badeapp.repository.BadestedForecastRepo
-import com.example.badeapp.repository.LocationForecastRepo
-import com.example.badeapp.repository.OceanForecastRepo
 
+private const val TAG = "BadestedListVM"
 
 class BadestedListViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val TAG = "DEBUG - BadestedListVM"
+    private val badestedForecastRepo =
+        BadestedForecastRepo(ForecastDB.getDatabase(application).forecastDao())
 
-    val hasHalted = MediatorLiveData<Boolean>().also {
-        it.addSource(MIThrottler.hasHalted, Observer { hasHalted ->
+    val isLoading = badestedForecastRepo.isLoading
+
+    val hasHalted = MediatorLiveData<Boolean>().apply {
+        addSource(MIThrottler.hasHalted) { hasHalted ->
             if (hasHalted) {
                 cancelRequests()
+                this.value = true
+            } else {
+                this.value = false
             }
-        })
+        }
     }
 
-    private val locationForecastRepo = LocationForecastRepo(application)
-    private val oceanForecastRepo = OceanForecastRepo(application)
-    private val badestedForecastRepo = BadestedForecastRepo(application)
-
-
-    val summaries: LiveData<List<BadestedForecast>> = badestedForecastRepo.summaries
-
-
-    fun init() {
-        Log.d(TAG, "init: initializing...")
-        badestedForecastRepo.printRawDBQuerry() //@TODO remove
-    }
+    val forecasts: LiveData<List<BadestedForecast>> = badestedForecastRepo.forecasts
 
 
     fun updateData() {
         Log.d(TAG, "updateData: ...")
         // Setter Location- og OceanForecast for alle badestedene
-        locationForecastRepo.updateForecasts()
-        oceanForecastRepo.updateForecasts()
+        badestedForecastRepo.updateForecasts()
     }
 
     fun cancelRequests() {
-        locationForecastRepo.haltUpdates()
-        oceanForecastRepo.haltUpdates()
-    }
-
-    //@TODO remove
-    fun printRawDBQuerry() {
-        badestedForecastRepo.printRawDBQuerry()
+        badestedForecastRepo.cancelRequests()
     }
 }

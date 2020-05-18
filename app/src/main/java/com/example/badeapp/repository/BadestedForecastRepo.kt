@@ -1,12 +1,15 @@
 package com.example.badeapp.repository
 
-import android.app.Application
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.badeapp.api.locationForecast.LocationRequestManager
+import com.example.badeapp.api.oceanForecast.OceanRequestManager
+import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
-import com.example.badeapp.persistence.ForecastDB
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.badeapp.models.alleBadesteder
+import com.example.badeapp.persistence.ForecastDao
+import kotlinx.coroutines.*
 
 
 /**
@@ -19,29 +22,100 @@ import kotlinx.coroutines.launch
 private const val TAG = "BadestedForecastRepo"
 
 
-class BadestedForecastRepo(val application: Application) {
+class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
+    private val _forecasts = MutableLiveData<List<BadestedForecast>>()
+    val forecasts : LiveData<List<BadestedForecast>> = _forecasts
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    // Hva skjer her?
+    val db_summaries = forecastDao.getAllCurrent().also {
+        it.observeForever{ forecasts ->
+            _forecasts.value = forecasts
+        }
+    }
+    // Hva skjer her?
     private var lst: List<BadestedForecast>? = null
 
-    private val DB = ForecastDB.getDatabase(application)
+    fun updateForecasts() {
+        Log.d(TAG, "updateForecasts: Setting isLoading to true")
+        _isLoading.value = true
 
-    val summaries = DB.badestedForecastDao().getAllCurrent()
-
-
-    fun printRawDBQuerry() {
-        Log.d(TAG, "Starting raw querry print")
         CoroutineScope(Dispatchers.IO).launch {
 
-            Log.d(TAG, "Raw querry Inside IO thread")
-            val res = DB.badestedForecastDao().getAllCurrentRaw()
-            if (res.isEmpty()) {
-                Log.d(TAG, "WTF  its empty!")
-            } else {
-                Log.d(TAG, "Halelulja")
-            }
-            Log.d(TAG, res.toString())
+            // 1) Check what ocean forecast and location forecasts needs to be updated
+            val forecasts = forecastDao.getAllCurrentRaw()
+
+                if (forecasts.isNullOrEmpty()) {
+                    // Then no data is stored at all. We need to update all badesteder
+                    alleBadesteder.forEach {
+                        updateLocationData(it)
+                        updateOceanData(it)
+                    }
+                    Log.d(TAG,"Forecasts was empty")
+                    return@launch
+                }
+
+                forecasts.forEach {
+
+                    if (it.forecast.getOrNull(0)?.isOceanForecastOutdated() != false) {
+                        updateOceanData(it.badested)
+                    }
+
+                    if (it.forecast.getOrNull(0)?.isLocationForecastOutdated() != false) {
+                        updateLocationData(it.badested)
+                    }
+                }
+            _forecasts.postValue(forecastDao.getAllCurrentRaw())
+            Log.d(TAG, "updateForecasts: Setting isLoading to false")
+            _isLoading.postValue(false)
         }
-        Log.d(TAG, "Stopping raw querry")
     }
 
+    private suspend fun updateOceanData(badested: Badested) {
+
+        val newData = try {
+            OceanRequestManager.request(badested)
+        } catch (ex: Exception) {
+            //The updating of data failed, now this can have several reasons,
+            // like no internet connection, bad response from the server etc..
+            Log.e(TAG,"Exception when getting ocean data: ${ex.message}")
+            //@TODO handle
+            null
+        }
+
+        if (!newData.isNullOrEmpty()) {
+            forecastDao.newOceanForecast(newData)
+        } else {
+            Log.d(TAG, "newData was null!")
+        }
+    }
+
+    private suspend fun updateLocationData(badested: Badested) {
+
+//        CoroutineScope(Dispatchers.IO).launch {
+
+            val newData = try {
+                LocationRequestManager.request(badested)
+            } catch (ex: Exception) {
+                //The updating of data failed, now this can have several reasons,
+                // like no internet connection, bad response from the server etc..
+                //@TODO handle
+                null
+            }
+
+            if (!newData.isNullOrEmpty()) {
+                forecastDao.newLocationForecast(newData)
+            } else {
+                Log.d(TAG, "newData was null!")
+            }
+//        }
+    }
+
+    fun cancelRequests() {
+        Log.d(TAG, "cancelRequests: called...")
+        (Dispatchers.IO).cancel()
+    }
 }

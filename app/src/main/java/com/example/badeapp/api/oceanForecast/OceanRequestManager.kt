@@ -1,19 +1,25 @@
 package com.example.badeapp.api.oceanForecast
 
 import android.util.Log
+import com.example.badeapp.api.ApiService
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.OceanForecast
+import com.example.badeapp.util.BASE_URL_OCEAN
+import com.example.badeapp.util.USER_HEADER
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Headers
 
-object RequestManager {
+/**
+ * This file contains all the code needed to do http request to Meteorology Institute
+ * location forecast service. It happens to use Retrofit, but that is just a implementation
+ * detail.
+ */
 
-    private const val TAG = "DEBUG - MyRetroBuilder"
-    private const val BASE_URL_OCEAN =
-        "https://in2000-apiproxy.ifi.uio.no/weatherapi/oceanforecast/0.9/"
-    private const val USER_HEADER = "GRUPPE-38"
+object OceanRequestManager {
+
+    private const val TAG = "OceanReqMngr"
 
     // lazy = only initialize once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {
@@ -32,13 +38,14 @@ object RequestManager {
 
     @Headers("User-Agent: $USER_HEADER")
     suspend fun request(badested: Badested): List<OceanForecast>? {
+
         if (!MIThrottler.hasStopped()) {
-            val response = apiService.getData(badested.lat, badested.lon)
+            Log.d(TAG, "request: API REQUEST ocean")
+            val response = apiService.getOceanData(badested.lat, badested.lon)
             MIThrottler.submitCode(response.code())
             if (response.isSuccessful)
-                return response.body()?.summarize(badested)
+                return response.body()?.summarise(badested)
         }
         return null
     }
-
 }

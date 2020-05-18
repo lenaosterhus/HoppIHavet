@@ -14,10 +14,10 @@ import java.util.*
  *
  */
 object MIThrottler {
-    val TAG = "MIThrottler"
 
+    private const val TAG = "MIThrottler"
 
-    private const val stoppTimeMin = 10L
+    private const val stopTimeMin = 10L
     private var stopUntil: Date? = null
 
     private val _hasHalted = MutableLiveData<Boolean>()
@@ -34,7 +34,7 @@ object MIThrottler {
 
 
     private fun halt() {
-        stopUntil = inTheFutureFromNow(stoppTimeMin)
+        stopUntil = inTheFutureFromNow(stopTimeMin)
         _hasHalted.value = true
     }
 
@@ -61,10 +61,6 @@ object MIThrottler {
             403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")
             //@TODO log if there was a 404, or any unknown response.
         }
-
-
     }
-
-
 }
 

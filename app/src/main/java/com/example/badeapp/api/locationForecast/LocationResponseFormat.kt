@@ -10,12 +10,11 @@ import com.example.badeapp.util.toGmtIsoString
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-private const val TAG = "DEBUG - LFRFormat"
+private const val TAG = "LFResponseFormat"
 private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
 
-
 // // created = når data ble hentet ISO
-internal data class ResponseFormat(
+internal data class LocationResponseFormat(
     @Expose @SerializedName("product") val product: Product?,
     @Expose @SerializedName("created") val created: String?,
     @Expose @SerializedName("meta") val meta: Meta?
@@ -32,10 +31,11 @@ internal data class ResponseFormat(
         val nextIssue: String = meta?.model?.nextrun ?: inTheFutureFromNow(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
-        val timeList =
-            getHourlyForecasts()?.map { time -> time.summarise(badested, nextIssue) }
-                ?.toMutableList()
-                ?: return null
+
+        // Get list of hourly or instant summarised forecasts
+        val timeList = getHourlyForecasts()?.map { time ->
+            time.summariseTime(badested, nextIssue)
+        }?.toMutableList() ?: return null
 
         /*
         Now there are some forecasts that overlap. One forecast goes from 11 -> 12, while the other
@@ -50,7 +50,7 @@ internal data class ResponseFormat(
             for (other in noTimeSpan) {
                 if (value.from == other.from || value.to == other.to) {
                     oneHourSpan[index] = LocationForecast(
-                        badested,
+                        badested.badestedId,
                         value.from,
                         value.to,
                         nextIssue,
@@ -65,11 +65,9 @@ internal data class ResponseFormat(
                 }
             }
         }
-
         if (oneHourSpan.isNullOrEmpty()) return null
 
         return oneHourSpan
-
     }
 
 
@@ -80,10 +78,9 @@ internal data class ResponseFormat(
         val returnedList = product?.time?.toMutableList() ?: return null
         return returnedList
             .filter {
-                it.durationMin() < 61L //Make sure only the ones that last a  hour are included
+                it.durationMin() < 61L // Make sure only the ones that last a hour are included
             }
     }
-
 }
 
 // ----- TOP LEVEL -----
@@ -112,7 +109,7 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summarise(badestedName: Badested, nextIssue: String): LocationForecast {
+    fun summariseTime(badested: Badested, nextIssue: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
         val precipitationMm = location?.precipitation?.value
@@ -121,7 +118,7 @@ internal data class Time(
         val windSpeedName = location?.windSpeed?.name
 
         return LocationForecast(
-            badestedName,
+            badested.badestedId,
             from,
             to,
             nextIssue,
@@ -140,9 +137,7 @@ internal data class Time(
         if (diff == null) {
             Log.e(TAG, "Tidsintervall diff ikke funnet for:\n\tTo:   $to,\n\tFrom: $from\n")
         } else if (diff < 0L) {
-            Log.e(
-                TAG,
-                "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n"
+            Log.e(TAG, "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n"
             )
         }
         return diff!!
@@ -159,7 +154,6 @@ internal data class Model(
     @Expose @SerializedName("to") val to: String?,
     @Expose @SerializedName("termin") val termin: String?,
     @Expose @SerializedName("runended") val runended: String?
-
 )
 
 // Værdata på location
@@ -210,11 +204,10 @@ internal data class Location(
     @Expose @SerializedName("symbol") val symbol: Symbol?,
     @Expose @SerializedName("forest-fire") val forestFire: UnitValue?,
     @Expose @SerializedName("symbolProbability") val symbolProbability: UnitValue?
-
 ) {
     // For logcat
     override fun toString(): String {
-        return "Location(temperature=$temperature, cloudiness=$cloudiness, windSpeed=$windSpeed, precipitation=$precipitation)"
+        return "Location(temperature=$temperature, windSpeed=$windSpeed, precipitation=$precipitation)"
     }
 
     /**
@@ -227,18 +220,13 @@ internal data class Location(
         weather?.symbol?.let { return it }
         symbol?.number?.let { return it }
 
-        // symbolProbability?.value  Hva er det denne verdien står for?
-
         return null
     }
 
     fun getAirTempC(): Double? {
 
-        //Log.d(TAG,this.toString())
-
         val unit = temperature?.unit
         val temp = temperature?.value?.toDouble()
-
 
         when {
             unit == "celsius" && temp != null -> {
@@ -247,9 +235,7 @@ internal data class Location(
             }
 
             unit != null -> {
-                Log.e(
-                    TAG,
-                    "The given unit for temperature was unexpected. $unit != expected, celsius"
+                Log.e(TAG, "The given unit for temperature was unexpected. $unit != expected, celsius"
                 )
             }
             temp != null -> {
@@ -257,12 +243,8 @@ internal data class Location(
                 return temp
             }
         }
-
-        //Log.d(TAG, "Returning null")
-
         return null
     }
-
 }
 
 // id er optional
