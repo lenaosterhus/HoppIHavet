@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.BadestedActivity" >
+        <activity android:name=".ui.BadestedActivity"
+            android:parentActivityName=".ui.BadestedListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.BadestedListActivity" />

@@ -5,7 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import kotlinx.android.parcel.Parcelize
 
-private const val TAG = "DEBUG -BadestedForecast"
+private const val TAG = "BadestedForecast"
 
 @Parcelize
 data class BadestedForecast(
