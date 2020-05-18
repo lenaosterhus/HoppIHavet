@@ -6,15 +6,16 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.badeapp.R
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.activity_badested.*
 
 
-private const val TAG = "DEBUG -BadestedActivity"
+private const val TAG = "BadestedActivity"
 
-class BadestedActivity : BaseActivity() {
+class BadestedActivity : AppCompatActivity() {
 
     private lateinit var badestedInView: BadestedForecast
 
@@ -22,8 +23,8 @@ class BadestedActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_badested)
 
-        if (intent.hasExtra("badested")) {
-            val badestedForecast = intent.getParcelableExtra<BadestedForecast>("badested")
+        if (intent.hasExtra("badestedForecast")) {
+            val badestedForecast = intent.getParcelableExtra<BadestedForecast>("badestedForecast")
             Log.d(TAG, "onCreate: $badestedForecast")
             badestedInView = badestedForecast!!
         }
@@ -32,8 +33,13 @@ class BadestedActivity : BaseActivity() {
 
     private fun setView() {
 
-        ImageView_badested_image.setImageResource(badestedInView.image)
         Log.d(TAG,badestedInView.name)
+
+        ImageView_badested_image.setImageResource(badestedInView.image)
+
+        /*
+         * Setting text fields
+         */
         TextView_badested_name.text = badestedInView.name
 
         TextView_badested_air_temp.text = badestedInView.getAirTempCDescription()
@@ -42,6 +48,15 @@ class BadestedActivity : BaseActivity() {
         TextView_badested_wind.text = badestedInView.getWindDescription()
         TextView_badested_valid_to.text = badestedInView.getValidToDescription()
 
+        TextView_badested_description.text = badestedInView.info
+        TextView_badested_description.movementMethod = ScrollingMovementMethod()
+
+        Log.d(TAG, "setView: setter fasiliteter: ${badestedInView.facilities}")
+        TextView_badested_facilities.text = badestedInView.facilities
+
+        /*
+         * Setting icon
+         */
         val icon = badestedInView.getIcon()
 
         if (icon != null) {
@@ -50,16 +65,10 @@ class BadestedActivity : BaseActivity() {
             ImageView_badested_symbol.setImageDrawable(null)
         }
 
-        TextView_badested_description.text = badestedInView.info
-        TextView_badested_description.movementMethod = ScrollingMovementMethod()
 
-        Log.d(TAG, "setView: setter fasiliteter: ${badestedInView.facilities}")
-        TextView_badested_facilities.text = badestedInView.facilities
-
-
-
-        // Foreløpig løsning: Søker etter navnet i Google Maps, med lat og lon som utgangspunkt
-        // Ikke optimalt for Solvikbukta
+        /*
+         * Setting actions for buttons
+         */
         Button_badested_show_on_map.setOnClickListener {
             val gmmIntentUri: Uri = if (badestedInView.name == "Solvikbukta") {
                 // Må korrigere søkeordet for at Google Maps skal finne stedet
@@ -77,15 +86,5 @@ class BadestedActivity : BaseActivity() {
             container_facilities.visibility = View.VISIBLE
             Button_badested_facilities.visibility = View.INVISIBLE
         }
-
-
-        // Alternativ: Søke på lat + lon
-        // Burde legge til egne lat + lon for maps-visning, nå viser noen plassering langt uti sjøen
-//        Button_badested_show_on_map.setOnClickListener {
-//            val gmmIntentUri: Uri = Uri.parse("geo:${badestedInView.badested.lat},${badestedInView.badested.lon}?q=${badestedInView.badested.lat},${badestedInView.badested.lon}")
-//            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-//            mapIntent.setPackage("com.google.android.apps.maps")
-//            startActivity(mapIntent)
-//        }
     }
 }

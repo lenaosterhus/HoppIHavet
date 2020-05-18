@@ -14,6 +14,7 @@ import com.example.badeapp.util.getHour
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
+import kotlin.math.roundToInt
 
 private const val TAG = "Forecast"
 
@@ -198,17 +199,17 @@ data class Forecast(
 
     fun getAirTempCDescription() : String {
         if(airTempC == null) return ""
-        return "$airTempC°"
+        return "${airTempC.roundToInt()}°"
     }
 
     fun getWaterTempCDescription() : String {
         if(waterTempC == null) return ""
-        return "$waterTempC°"
+        return "${waterTempC.roundToInt()}°"
     }
 
     fun getPrecipitationDescription() : String {
         if(precipitation == null) return ""
-        return precipitation.toInt().toString() + " mm"
+        return precipitation.roundToInt().toString() + " mm"
     }
     
     fun getValidToDescription() : String {
@@ -256,7 +257,7 @@ data class Forecast(
     }
 
     override fun toString(): String {
-        return "Forecast(badestedId=$badestedId, from='$from', to='$to', nextIssueLocation=$nextIssueLocation, nextIssueOcean=$nextIssueOcean, airTempC=$airTempC, symbol=$symbol, precipitation=$precipitation, windDirection=$windDirection, windSpeedMps=$windSpeedMps, windSpeedName=$windSpeedName, waterTempC=$waterTempC)\n"
+        return "\nForecast(badestedId=$badestedId, from='$from', to='$to', nextIssueLocation=$nextIssueLocation, nextIssueOcean=$nextIssueOcean, airTempC=$airTempC, symbol=$symbol, precipitation=$precipitation, windDirection=$windDirection, windSpeedMps=$windSpeedMps, windSpeedName=$windSpeedName, waterTempC=$waterTempC)"
     }
 
 }

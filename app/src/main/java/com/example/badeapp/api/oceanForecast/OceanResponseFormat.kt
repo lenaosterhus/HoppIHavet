@@ -14,14 +14,14 @@ import com.google.gson.annotations.SerializedName
 private const val TAG = "OCEAN-RESPONSE-FORMAT"
 private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
 
-internal data class ResponseFormat(
+internal data class OceanResponseFormat(
     @Expose @SerializedName("mox:forecastPoint") val forecastPoint: Point?,
     @Expose @SerializedName("mox:issueTime") val issueTime: IssueTime?,
     @Expose @SerializedName("mox:nextIssueTime") val nextIssueTime: NextIssueTime?,
-    @Expose @SerializedName("mox:forecast") val forecast: List<Forecast>? // Objektene har ikke navn...?
+    @Expose @SerializedName("mox:forecast") val forecast: List<Forecast>?
 ) {
 
-    fun summarize(badested: Badested): List<OceanForecast>? {
+    fun summarise(badested: Badested): List<OceanForecast>? {
 
 
         val nextIssue: String = nextIssueTime?.timeInstant?.timePosition ?: inTheFutureFromNow(
@@ -29,7 +29,7 @@ internal data class ResponseFormat(
         ).toGmtIsoString()
 
         val forecasts = forecast?.map { it ->
-            it.summarise(badested, nextIssue)
+            it.summariseForecast(badested, nextIssue)
         }?.filterNotNull()
 
         if (forecasts.isNullOrEmpty())
@@ -67,7 +67,7 @@ internal data class ResponseFormat(
             return "\nForecast(forecast=$forecast)"
         }
 
-        fun summarise(badested: Badested, nextIssue: String): OceanForecast? {
+        fun summariseForecast(badested: Badested, nextIssue: String): OceanForecast? {
 
             val from = forecast?.validTime?.timePeriod?.begin
             val to = forecast?.validTime?.timePeriod?.end

@@ -43,20 +43,30 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/ImageView_element_symbol"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ImageView_element_image">
 
             <TextView
                 android:id="@+id/TextView_element_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/badestednavn"
                 android:textColor="@color/textColor"
                 android:textSize="20sp"
                 android:textStyle="italic"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/TextView_element_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBaseline_toBaselineOf="@id/TextView_element_name"
+                app:layout_constraintLeft_toRightOf="@id/TextView_element_name" />
 
             <TextView
                 android:id="@+id/TextView_element_air_temp"
@@ -97,7 +107,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginStart="2dp"
+                android:layout_marginStart="1dp"
                 android:background="@drawable/symbol_water_foreground"
                 android:contentDescription="@string/symbol_for_water"
                 app:layout_constraintStart_toEndOf="@+id/TextView_element_water_temp"

@@ -5,6 +5,4 @@ data class OceanForecast( val badestedId : Int,
                              val to: String,
                              val nextIssueOcean: String,
                              val waterTempC: Double?
-) {
-
-}
+)

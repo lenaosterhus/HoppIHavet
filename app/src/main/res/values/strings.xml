@@ -15,5 +15,6 @@
     <string name="facilities_title">Fasiliteter:</string>
     <string name="show_map">Vis i kart</string>
     <string name="wind">Vind:</string>
+    <string name="hasHaltedError">Noe gikk galt. Prøv igjen om litt.</string>
     <string name="search">Søk</string>
 </resources>
