@@ -95,23 +95,20 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
     private suspend fun updateLocationData(badested: Badested) {
 
-//        CoroutineScope(Dispatchers.IO).launch {
+        val newData = try {
+            LocationRequestManager.request(badested)
+        } catch (ex: Exception) {
+            //The updating of data failed, now this can have several reasons,
+            // like no internet connection, bad response from the server etc..
+            //@TODO handle
+            null
+        }
 
-            val newData = try {
-                LocationRequestManager.request(badested)
-            } catch (ex: Exception) {
-                //The updating of data failed, now this can have several reasons,
-                // like no internet connection, bad response from the server etc..
-                //@TODO handle
-                null
-            }
-
-            if (!newData.isNullOrEmpty()) {
-                forecastDao.newLocationForecast(newData)
-            } else {
-                Log.d(TAG, "newData was null!")
-            }
-//        }
+        if (!newData.isNullOrEmpty()) {
+            forecastDao.newLocationForecast(newData)
+        } else {
+            Log.d(TAG, "newData was null!")
+        }
     }
 
     fun cancelRequests() {
