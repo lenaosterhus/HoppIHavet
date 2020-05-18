@@ -5,34 +5,33 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Observer
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.persistence.ForecastDB
 import com.example.badeapp.repository.BadestedForecastRepo
 
+private const val TAG = "BadestedListVM"
 
 class BadestedListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val TAG = "DEBUG - BadestedListVM"
-
-    val hasHalted = MediatorLiveData<Boolean>().also {
-        it.addSource(MIThrottler.hasHalted) { hasHalted ->
-            if (hasHalted) {
-                cancelRequests()
-            }
-        }
-    }
 
     private val badestedForecastRepo =
         BadestedForecastRepo(ForecastDB.getDatabase(application).forecastDao())
 
+    val isLoading = badestedForecastRepo.isLoading
 
-    val summaries: LiveData<List<BadestedForecast>> = badestedForecastRepo.summaries
-
-
-    fun init() {
-        Log.d(TAG, "init: initializing...")
+    val hasHalted = MediatorLiveData<Boolean>().apply {
+        addSource(MIThrottler.hasHalted) { hasHalted ->
+            if (hasHalted) {
+                cancelRequests()
+                this.value = true
+            } else {
+                this.value = false
+            }
+        }
     }
+
+    val forecasts: LiveData<List<BadestedForecast>> = badestedForecastRepo.forecasts
 
 
     fun updateData() {
@@ -44,6 +43,4 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
     fun cancelRequests() {
         //@TODO
     }
-
-
 }

@@ -309,8 +309,9 @@ val Ulvoya = Badested(
     R.drawable.badebilder_ulvoya
 )
 
+// Sortert etter nærhet til Oslo Sentrum
 val alleBadesteder = listOf(
-    Hovedoya, Sorenga, Tjuvholmen, Paradisbukta, Hukodden, Bekkensten,
-    Bestemorstranda, BygdoySjobad, Fiskevollbukta, Gressholmen, Rambergoya,
-    Taajebukta, Ingierstrand, Langoyene, Sollerudstranda, Solvikbukta, Ulvoya, Hvervenbukta
+    Tjuvholmen, Sorenga, Hovedoya, Gressholmen, Rambergoya, BygdoySjobad, Paradisbukta, Hukodden,
+    Langoyene, Sollerudstranda, Solvikbukta, Ulvoya, Fiskevollbukta, Hvervenbukta,
+    Bestemorstranda, Ingierstrand, Bekkensten, Taajebukta
 )

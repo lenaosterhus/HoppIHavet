@@ -3,12 +3,15 @@ package com.example.badeapp.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.badeapp.api.locationForecast.LocationRequestManager
+import com.example.badeapp.api.oceanForecast.OceanRequestManager
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -24,25 +27,32 @@ private const val TAG = "BadestedForecastRepo"
 
 class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
-    private var lst: List<BadestedForecast>? = null
+    private val _forecasts = MutableLiveData<List<BadestedForecast>>()
+    val forecasts : LiveData<List<BadestedForecast>> = _forecasts
 
-    val _summaries = MutableLiveData<List<BadestedForecast>>()
-    val summaries : LiveData<List<BadestedForecast>> = _summaries
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
+    // Hva skjer her?
     val db_summaries = forecastDao.getAllCurrent().also {
         it.observeForever{ forecasts ->
-            _summaries.value = forecasts
+            _forecasts.value = forecasts
         }
     }
+    // Hva skjer her?
+    private var lst: List<BadestedForecast>? = null
 
     fun updateForecasts() {
+        Log.d(TAG, "updateForecasts: Setting isLoading to true")
+        _isLoading.value = true
+
         CoroutineScope(Dispatchers.IO).launch {
 
-                //1) Check what ocean forecast and location forecasts needs to be updated
+            // 1) Check what ocean forecast and location forecasts needs to be updated
             val forecasts = forecastDao.getAllCurrentRaw()
 
                 if (forecasts.isNullOrEmpty()) {
-                    //Then no data is stored at all. We need to update all badesteder
+                    // Then no data is stored at all. We need to update all badesteder
                     alleBadesteder.forEach {
                         updateLocationData(it)
                         updateOceanData(it)
@@ -60,23 +70,21 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
                     if (it.forecast.getOrNull(0)?.isLocationForecastOutdated() != false) {
                         updateLocationData(it.badested)
                     }
-
                 }
-
-
-
-            _summaries.postValue(forecastDao.getAllCurrentRaw())
+            _forecasts.postValue(forecastDao.getAllCurrentRaw())
+            Log.d(TAG, "updateForecasts: Setting isLoading to false")
+            _isLoading.postValue(false)
         }
     }
 
     private suspend fun updateOceanData(badested: Badested) {
 
         val newData = try {
-            com.example.badeapp.api.oceanForecast.RequestManager.request(badested)
+            OceanRequestManager.request(badested)
         } catch (ex: Exception) {
             //The updating of data failed, now this can have several reasons,
             // like no internet connection, bad response from the server etc..
-            Log.d(TAG,"Exception when getting ocean data!")
+            Log.e(TAG,"Exception when getting ocean data: ${ex.message}")
             //@TODO handle
             null
         }
@@ -86,8 +94,6 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
         } else {
             Log.d(TAG, "newData was null!")
         }
-
-
     }
 
     private suspend fun updateLocationData(badested: Badested) {
@@ -95,7 +101,7 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
         CoroutineScope(Dispatchers.IO).launch {
 
             val newData = try {
-                com.example.badeapp.api.locationForecast.RequestManager.request(badested)
+                LocationRequestManager.request(badested)
             } catch (ex: Exception) {
                 //The updating of data failed, now this can have several reasons,
                 // like no internet connection, bad response from the server etc..
@@ -109,8 +115,5 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
                 Log.d(TAG, "newData was null!")
             }
         }
-
     }
-
-
 }

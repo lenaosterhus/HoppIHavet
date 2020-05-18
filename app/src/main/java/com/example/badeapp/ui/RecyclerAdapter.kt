@@ -14,16 +14,15 @@ import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
 
-private const val TAG = "ReyclerAdapter - DEBUG"
-
+private const val TAG = "RecyclerAdapter"
 
 
 class RecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
-    var unFilterdList: List<BadestedForecast>? = null
+    var unFilteredList: List<BadestedForecast>? = null
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedForecast>() {
+    private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedForecast>() {
 
         override fun areItemsTheSame(oldItem: BadestedForecast, newItem: BadestedForecast): Boolean {
             return oldItem.badested == newItem.badested
@@ -53,7 +52,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is RVElement -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -66,7 +65,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     fun submitList(list: List<BadestedForecast>) {
         Log.d(TAG, "Submitting list new list")
         differ.submitList(list)
-        unFilterdList = list
+        unFilteredList = list
     }
 
     class RVElement
@@ -74,35 +73,35 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
         itemView: View,
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
-        var summary: BadestedForecast? = null
+        private var forecast: BadestedForecast? = null
 
         fun bind(item: BadestedForecast) {
             itemView.setOnClickListener {
                 interaction?.onItemSelected(adapterPosition, item)
             }
-            summary = item
+            forecast = item
             draw()
         }
 
-        fun draw() {
+        private fun draw() {
             with(itemView) {
 
-                TextView_element_name.text = summary?.badested?.name
+                TextView_element_name.text = forecast?.badested?.name
 
-                if (summary?.forecast?.get(0)?.airTempC != null) {
-                    TextView_element_air_temp.text = summary!!.forecast[0].airTempC.toString() + "°"
+                if (forecast?.forecast?.getOrNull(0)?.airTempC != null) {
+                    TextView_element_air_temp.text = forecast!!.forecast[0].airTempC?.toInt().toString() + "°"
                 } else {
-                    TextView_element_air_temp.text = ""
+                    TextView_element_air_temp.text = "?"
                 }
 
-                if (summary?.forecast?.get(0)?.waterTempC != null) {
+                if (forecast?.forecast?.getOrNull(0)?.waterTempC != null) {
                     TextView_element_water_temp.text =
-                        summary!!.forecast[0].waterTempC.toString() + "°"
+                        forecast!!.forecast[0].waterTempC?.toInt().toString() + "°"
                 } else {
-                    TextView_element_water_temp.text = ""
+                    TextView_element_water_temp.text = "?"
                 }
 
-                val icon = summary?.getIcon()
+                val icon = forecast?.getIcon()
 
                 if (icon != null) {
                     itemView.ImageView_element_symbol.setImageResource(icon)
@@ -110,13 +109,12 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                     itemView.ImageView_element_symbol.setImageDrawable(null)
                 }
 
-                if (summary?.badested?.image != null) {
-                    ImageView_element_image.setImageResource(summary?.badested?.image!!)
+                if (forecast?.badested?.image != null) {
+                    ImageView_element_image.setImageResource(forecast?.badested?.image!!)
                 } else {
                     ImageView_element_image.setImageDrawable(null)
                 }
             }
-
         }
     }
 
@@ -139,13 +137,12 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
 
                 Log.d(TAG, "performFiltering: $constraint")
                 val charSearch = constraint.toString()
-                if (charSearch.isEmpty()) {
+                filteredBadestedList = if (charSearch.isEmpty()) {
                     // No filter implemented we return the whole list
                     Log.d(TAG, "performFiltering: input is empty")
-                    filteredBadestedList = unFilterdList
-                }
-                else {
-                    filteredBadestedList = unFilterdList?.filter {
+                    unFilteredList
+                } else {
+                    unFilteredList?.filter {
                         val name: CharSequence = it.badested.name.toUpperCase(Locale.ROOT)
                         name.contains(charSearch.toUpperCase(Locale.ROOT))
                     }

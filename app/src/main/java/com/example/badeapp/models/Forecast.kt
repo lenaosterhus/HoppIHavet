@@ -198,12 +198,12 @@ data class Forecast(
 
     fun getAirTempCDescription() : String {
         if(airTempC == null) return ""
-        return "$airTempC°"
+        return "${airTempC.toInt()}°"
     }
 
     fun getWaterTempCDescription() : String {
         if(waterTempC == null) return ""
-        return "$waterTempC°"
+        return "${waterTempC.toInt()}°"
     }
 
     fun getPrecipitationDescription() : String {
@@ -256,7 +256,7 @@ data class Forecast(
     }
 
     override fun toString(): String {
-        return "Forecast(badestedId=$badestedId, from='$from', to='$to', nextIssueLocation=$nextIssueLocation, nextIssueOcean=$nextIssueOcean, airTempC=$airTempC, symbol=$symbol, precipitation=$precipitation, windDirection=$windDirection, windSpeedMps=$windSpeedMps, windSpeedName=$windSpeedName, waterTempC=$waterTempC)\n"
+        return "\nForecast(badestedId=$badestedId, from='$from', to='$to', nextIssueLocation=$nextIssueLocation, nextIssueOcean=$nextIssueOcean, airTempC=$airTempC, symbol=$symbol, precipitation=$precipitation, windDirection=$windDirection, windSpeedMps=$windSpeedMps, windSpeedName=$windSpeedName, waterTempC=$waterTempC)"
     }
 
 }
