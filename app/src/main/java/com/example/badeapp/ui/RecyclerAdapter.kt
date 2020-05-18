@@ -145,8 +145,10 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                     unFilteredList
                 } else {
                     unFilteredList?.filter {
+
                         val name: CharSequence = it.badested.name.toUpperCase(Locale.ROOT)
-                        name.contains(charSearch.toUpperCase(Locale.ROOT))
+                        val place: CharSequence = it.badested.place.toUpperCase(Locale.ROOT)
+                        name.contains(charSearch.toUpperCase(Locale.ROOT)) || place.contains(charSearch.toUpperCase(Locale.ROOT))
                     }
                 }
                 val results = FilterResults()
