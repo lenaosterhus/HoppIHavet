@@ -6,8 +6,9 @@ import com.example.badeapp.R
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@Entity(primaryKeys = ["lat", "lon"], tableName = "Badested_Table")
+@Entity(primaryKeys = ["lat", "lon"])
 data class Badested(
+    val badestedId: Int,
     val lat: String,
     val lon: String,
     val name: String,
@@ -18,13 +19,14 @@ data class Badested(
 ) : Parcelable{
 
     override fun toString(): String {
-        return "{lat=$lat,lon=$lon,name=$name,info=...}"
+        return "{id=$badestedId, name=$name, info=...}"
     }
 }
 
 // Info fra Oslo Kommune og https://www.oslofjorden.com/badesteder/
 
 val Hovedoya = Badested(
+    1,
     "59.898397",
     "10.738595",
     "Hovedøya",
@@ -40,6 +42,7 @@ val Hovedoya = Badested(
 )
 
 val Sorenga = Badested(
+    2,
     "59.900069",
     "10.748954",
     "Sørenga Sjøbad",
@@ -57,6 +60,7 @@ val Sorenga = Badested(
 )
 
 val Tjuvholmen = Badested(
+    3,
     "59.906102",
     "10.720453",
     "Tjuvholmen Sjøbad",
@@ -69,6 +73,7 @@ val Tjuvholmen = Badested(
 )
 
 val Paradisbukta = Badested(
+    4,
     "59.901614",
     "10.665422",
     "Paradisbukta",
@@ -83,6 +88,7 @@ val Paradisbukta = Badested(
 )
 
 val Hukodden = Badested(
+    5,
     "59.894349",
     "10.674263",
     "Huk",
@@ -100,6 +106,7 @@ val Hukodden = Badested(
 
 //    val Bekkelagsbadet:  Badested("Bekkelagsbadet er en park som ligger på Søndre Bekkelaget. Parken består av badebrygge, stupetårn og et større grøntområde med sandvolleyballbane, parkour og flere andre aktiviteter.")
 val Bekkensten = Badested(
+    6,
     "59.791851",
     "10.731905",
     "Bekkensten",
@@ -116,6 +123,7 @@ val Bekkensten = Badested(
 )
 
 val Bestemorstranda = Badested(
+    7,
     "59.827157",
     "10.759095",
     "Bestemorstanda",
@@ -128,6 +136,7 @@ val Bestemorstranda = Badested(
 )
 
 val BygdoySjobad = Badested(
+    8,
     "59.908739",
     "10.663209",
     "Bygdøy Sjøbad",
@@ -141,6 +150,7 @@ val BygdoySjobad = Badested(
 )
 
 val Fiskevollbukta = Badested(
+    9,
     "59.842146",
     "10.773534",
     "Fiskevollbukta",
@@ -151,6 +161,7 @@ val Fiskevollbukta = Badested(
 )
 
 val Gressholmen = Badested(
+    10,
     "59.883348",
     "10.724997",
     "Gressholmen",
@@ -167,6 +178,7 @@ val Gressholmen = Badested(
 )
 
 val Rambergoya = Badested(
+    11,
     "59.878858",
     "10.714658",
     "Rambergøya",
@@ -178,6 +190,7 @@ val Rambergoya = Badested(
 )
 
 val Hvervenbukta = Badested(
+    12,
     "59.833008",
     "10.771047",
     "Hvervenbukta",
@@ -194,6 +207,7 @@ val Hvervenbukta = Badested(
 
 //    val Haaoybukta:      Badested("Håøya er den største av øyene i Indre Oslofjord, og ligger nordvest for Drøbak og Oscarsborg festning. Det er lov å telte inntil to døgn av gangen på øyas nordside. Søndre Håøya er naturreservat.\n" + "Et havørnpar hekker på sørøstre Håøya. Vi ber deg om ta ekstra hensyn i dette området. Havørn er svært sårbar for forstyrrelser i hekkeperioden. Dette er første gang på over 125 år at et havørnpar hekker ved Oslofjorden.\n" + "Søndre Håøya er naturreservat.\n" + "Alle planter er fredet i naturreservatet. Det er ikke tillatt å plukke blomster eller bryte greiner. Det er heller ikke lov å fjerne nedfall eller ved. Bær og matsopp kan du plukke på hele øyen. Også i naturreservatet.\n" + "På midtre og nordre Håøya har vi geiter som beitedyr fra mai til desember. Ta hensyn til beitedyra og hold hunden i bånd.")
 val Taajebukta = Badested(
+    13,
     "59.697676",
     "10.558484",
     "Tåjebukta",
@@ -207,6 +221,7 @@ val Taajebukta = Badested(
 )
 
 val Ingierstrand = Badested(
+    14,
     "59.818710",
     "10.749657",
     "Ingierstrand",
@@ -223,6 +238,7 @@ val Ingierstrand = Badested(
 //    val Katten:          Badested("59.855599", "10.782492")
 
 val Langoyene = Badested(
+    15,
     "59.870161",
     "10.716933",
     "Langøyene",
@@ -245,6 +261,7 @@ val Langoyene = Badested(
 //    val NordstrandBad:   Badested()
 
 val Sollerudstranda = Badested(
+    16,
     "59.911014",
     "10.648008",
     "Sollerudstranda",
@@ -257,6 +274,7 @@ val Sollerudstranda = Badested(
 )
 
 val Solvikbukta = Badested(
+    17,
     "59.864351",
     "10.749228",
     "Solvikbukta",
@@ -274,6 +292,7 @@ val Solvikbukta = Badested(
 )
 
 val Ulvoya = Badested(
+    18,
     "59.866607",
     "10.770682",
     "Sydstranda",

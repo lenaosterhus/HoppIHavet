@@ -44,12 +44,15 @@ object RequestManager {
     suspend fun request(
         badested: Badested
     ): List<LocationForecast>? {
-
+        Log.d(TAG, "$badested")
         if (!MIThrottler.hasStopped()) {
             val response = apiService.getWeatherData(badested.lat, badested.lon)
             MIThrottler.submitCode(response.code())
-            if (response.isSuccessful)
-                return response.body()?.summarise(badested)
+            if (response.isSuccessful) {
+                val res = response.body()?.summarise(badested)
+                Log.d(TAG, "$res\n\n")
+                return res
+            }
         }
         return null
     }
