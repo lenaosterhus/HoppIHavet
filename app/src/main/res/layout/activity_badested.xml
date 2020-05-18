@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ADD7ED"
+    android:background="@color/background"
     android:backgroundTintMode="add"
+    android:scrollbarThumbVertical="@color/orange"
+    android:scrollbarSize="3dp"
     tools:context=".ui.BadestedActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -99,11 +102,11 @@
                 android:id="@+id/TextView_badested_air_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
-                android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_air_temp_desc"
-                app:layout_constraintLeft_toLeftOf="@id/barrier"/>
+                app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
 
             <TextView
@@ -121,11 +124,11 @@
                 android:id="@+id/TextView_badested_water_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
-                android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_water_temp_desc"
-                app:layout_constraintLeft_toLeftOf="@id/barrier"/>
+                app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
 
             <TextView
@@ -143,9 +146,9 @@
                 android:id="@+id/TextView_badested_precipitation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
-                android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_precipitation_desc"
                 app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
@@ -164,11 +167,12 @@
                 android:id="@+id/TextView_badested_wind"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
-                android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_wind_desc"
                 app:layout_constraintLeft_toLeftOf="@id/barrier" />
+
             <TextView
                 android:id="@+id/TextView_badested_valid_to"
                 android:layout_width="wrap_content"
@@ -286,12 +290,11 @@
 
         <Button
             android:id="@+id/Button_badested_facilities"
-            android:layout_width="175dp"
+            android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
-            android:layout_marginEnd="5dp"
             android:background="@drawable/badested_background_cyan"
             android:drawableEnd="@drawable/_facilities_icon"
             android:paddingStart="20dp"
@@ -303,7 +306,6 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/Button_badested_show_on_map"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
@@ -311,12 +313,12 @@
 
         <Button
             android:id="@+id/Button_badested_show_on_map"
-            android:layout_width="175dp"
+            android:layout_width="0dp"
             android:layout_height="70dp"
-            android:layout_marginStart="5dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
             android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/badested_background_orange"
             android:drawableEnd="@android:drawable/ic_dialog_map"
             android:drawablePadding="10dp"
@@ -328,7 +330,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/Button_badested_facilities"
             app:layout_constraintTop_toBottomOf="@+id/container_facilities" />
