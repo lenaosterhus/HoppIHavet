@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,9 +17,12 @@
 
         <ImageView
             android:id="@+id/ImageView_element_image"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="113dp"
             android:layout_margin="15dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:adjustViewBounds="true"
             android:background="@drawable/round_outline_image"
             android:contentDescription="@string/badested"
@@ -38,22 +39,23 @@
             android:id="@+id/container_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/ImageView_element_symbol"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ImageView_element_image">
+            app:layout_constraintTop_toBottomOf="@id/ImageView_element_image"
+            app:layout_constraintVertical_bias="0.75">
 
             <TextView
                 android:id="@+id/TextView_element_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textColor"
-                android:textSize="20sp"
-                android:textStyle="italic"
+                android:textSize="22sp"
+                android:textStyle="bold|italic"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -88,7 +90,7 @@
                 android:baselineAlignBottom="true"
                 android:contentDescription="@string/symbol_for_air"
                 app:layout_constraintStart_toEndOf="@+id/TextView_element_air_temp"
-                app:layout_constraintTop_toBottomOf="@id/TextView_element_name"/>
+                app:layout_constraintTop_toBottomOf="@id/TextView_element_name" />
 
             <TextView
                 android:id="@+id/TextView_element_water_temp"
@@ -118,10 +120,10 @@
 
         <ImageView
             android:id="@+id/ImageView_element_symbol"
-            android:layout_width="58dp"
-            android:layout_height="58dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="15dp"
+            android:layout_width="72dp"
+            android:layout_height="63dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:contentDescription="@string/symbol_for_weather"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

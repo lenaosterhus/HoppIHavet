@@ -17,4 +17,5 @@
     <string name="wind">Vind:</string>
     <string name="hasHaltedError">Noe gikk galt. Prøv igjen om litt.</string>
     <string name="search">Søk</string>
+    <string name="bildeKilde">Bilde hentet fra www.oslofjorden.com</string>
 </resources>

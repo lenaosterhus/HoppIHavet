@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="#ADD7ED"
     android:backgroundTintMode="add"
     tools:context=".ui.BadestedActivity">
 
@@ -21,9 +20,11 @@
 
         <ImageView
             android:id="@+id/ImageView_badested_image"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
             android:layout_margin="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/badested"
             android:padding="0dp"
@@ -32,26 +33,50 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
+        <TextView
+            android:id="@+id/TextView_bilde_kilde"
+            android:layout_width="220dp"
+            android:layout_height="18dp"
+            android:layout_margin="7dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/bildeKilde"
+            android:textColor="#656464"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toTopOf="@+id/TextView_badested_name"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ImageView_badested_image"
+            app:layout_constraintVertical_bias="0.0" />
+
         <TextView
             android:id="@+id/TextView_badested_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="15dp"
             android:contentDescription="@string/badestednavn"
             android:textColor="@color/textColor"
-            android:textSize="20sp"
-            android:textStyle="italic"
+            android:textSize="22sp"
+            android:textStyle="bold|italic"
+            app:layout_constraintBottom_toTopOf="@+id/weather_container"
+            app:layout_constraintHorizontal_bias="0.466"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ImageView_badested_image" />
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/weather_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="128dp"
             android:layout_margin="15dp"
             android:layout_marginLeft="15dp"
+            android:layout_marginTop="16dp"
             android:layout_marginRight="15dp"
             android:background="@drawable/badested_background_grey"
             android:padding="2dp"
@@ -183,6 +208,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:background="@drawable/badested_background_grey"
             android:paddingBottom="5dp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -259,31 +286,32 @@
 
         <Button
             android:id="@+id/Button_badested_facilities"
-            android:layout_width="0dp"
+            android:layout_width="175dp"
             android:layout_height="70dp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="5dp"
+            android:background="@drawable/badested_background_cyan"
+            android:drawableEnd="@drawable/_facilities_icon"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:background="@drawable/badested_background_cyan"
             android:text="@string/show_facilities"
             android:textAllCaps="false"
             android:textColor="@color/textColor"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/Button_badested_show_on_map"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/container_facilities" />
 
         <Button
             android:id="@+id/Button_badested_show_on_map"
-            android:layout_width="0dp"
+            android:layout_width="175dp"
             android:layout_height="70dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="15dp"
@@ -296,12 +324,12 @@
             android:text="@string/show_map"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/Button_badested_facilities"
             app:layout_constraintTop_toBottomOf="@+id/container_facilities" />
 
