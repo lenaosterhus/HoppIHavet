@@ -30,10 +30,10 @@ val Hovedoya = Badested(
     "59.898397",
     "10.738595",
     "Hovedøya",
-    "Oslo",
+    "Osloøyene",
     "Hovedøya er Oslos nærmeste og største øy, rett utenfor Vippetangen. Her finner du store gressletter, ruiner etter et Cistercienserkloster, mange flotte stier og turveier og en sydvendt badeplass.",
     "- Sandstrand og svaberg\n" +
-            "- Fem toaletter og ett HC-toalett er åpne i sommersesongen\n" +
+            "- Seks toaletter, inkl. HC, er åpne i sommersesongen\n" +
             "- Tilrettelagt for bading og soling flere steder på øya\n" +
             "- Stor gresslette til lek og aktivitet\n" +
             "- Kulturminner, blant annet klosterruiner fra middelalderen\n" +
@@ -165,7 +165,7 @@ val Gressholmen = Badested(
     "59.883348",
     "10.724997",
     "Gressholmen",
-    "Oslo",
+    "Osloøyene",
     "Gressholmen tilbyr bademuligheter en kort båttur fra Rådhuskaia i Oslo sentrum.\n" + "Flere små bukter og områder med grov sand og ruglete svaberg.\n" + "Mat og drikke får du på Gressholmen kro.",
     "- Kiosk, kafé og restaurant på Gressholmen kro\n" +
             "- På Rambergøya badeplass er to utedoer åpne i sommersesongen\n" +
@@ -182,7 +182,7 @@ val Rambergoya = Badested(
     "59.878858",
     "10.714658",
     "Rambergøya",
-    "Oslo",
+    "Osloøyene",
     "Flere bademuligheter på sørsiden av Rambergøya.\n" + "Rambergøya henger sammen med Gressholmen med en steinfylling.",
     "- Ruglete svaberg og finkornet grusstrand\n" +
             "- Utedo",
@@ -242,7 +242,7 @@ val Langoyene = Badested(
     "59.870161",
     "10.716933",
     "Langøyene",
-    "Nesodden",
+    "Osloøyene",
     "Langøyene har en familievennlig og lang sandstrand. Nord på øya er det mulig å telte.\n\n" + "På grunn av opprydnings- og anleggsarbeid er Langøyene stengt for publikum ut 2021.",
     "- Stor badestrand, badebrygger og badeflåte\n" +
             "- Toalett, inkl. HC, åpent i sommersesongen\n" +

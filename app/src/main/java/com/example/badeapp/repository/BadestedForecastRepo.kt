@@ -9,10 +9,7 @@ import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 /**
@@ -98,7 +95,7 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
     private suspend fun updateLocationData(badested: Badested) {
 
-        CoroutineScope(Dispatchers.IO).launch {
+//        CoroutineScope(Dispatchers.IO).launch {
 
             val newData = try {
                 LocationRequestManager.request(badested)
@@ -114,6 +111,11 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
             } else {
                 Log.d(TAG, "newData was null!")
             }
-        }
+//        }
+    }
+
+    fun cancelRequests() {
+        Log.d(TAG, "cancelRequests: called...")
+        (Dispatchers.IO).cancel()
     }
 }

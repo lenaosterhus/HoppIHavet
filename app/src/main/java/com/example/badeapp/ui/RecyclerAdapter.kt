@@ -13,6 +13,7 @@ import com.example.badeapp.R
 import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
+import kotlin.math.roundToInt
 
 private const val TAG = "RecyclerAdapter"
 
@@ -87,18 +88,19 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
             with(itemView) {
 
                 TextView_element_name.text = forecast?.badested?.name
+                TextView_element_place.text = forecast?.badested?.place
 
                 if (forecast?.forecast?.getOrNull(0)?.airTempC != null) {
-                    TextView_element_air_temp.text = forecast!!.forecast[0].airTempC?.toInt().toString() + "°"
+                    TextView_element_air_temp.text = forecast!!.forecast[0].getAirTempCDescription()
                 } else {
-                    TextView_element_air_temp.text = "?"
+                    TextView_element_air_temp.text = ""
                 }
 
                 if (forecast?.forecast?.getOrNull(0)?.waterTempC != null) {
                     TextView_element_water_temp.text =
-                        forecast!!.forecast[0].waterTempC?.toInt().toString() + "°"
+                        forecast!!.forecast[0].getWaterTempCDescription()
                 } else {
-                    TextView_element_water_temp.text = "?"
+                    TextView_element_water_temp.text = ""
                 }
 
                 val icon = forecast?.getIcon()

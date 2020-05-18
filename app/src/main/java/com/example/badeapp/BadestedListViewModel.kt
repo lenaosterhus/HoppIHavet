@@ -41,6 +41,6 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun cancelRequests() {
-        //@TODO
+        badestedForecastRepo.cancelRequests()
     }
 }

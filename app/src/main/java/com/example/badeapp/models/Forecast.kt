@@ -14,6 +14,7 @@ import com.example.badeapp.util.getHour
 import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
+import kotlin.math.roundToInt
 
 private const val TAG = "Forecast"
 
@@ -198,17 +199,17 @@ data class Forecast(
 
     fun getAirTempCDescription() : String {
         if(airTempC == null) return ""
-        return "${airTempC.toInt()}°"
+        return "${airTempC.roundToInt()}°"
     }
 
     fun getWaterTempCDescription() : String {
         if(waterTempC == null) return ""
-        return "${waterTempC.toInt()}°"
+        return "${waterTempC.roundToInt()}°"
     }
 
     fun getPrecipitationDescription() : String {
         if(precipitation == null) return ""
-        return precipitation.toInt().toString() + " mm"
+        return precipitation.roundToInt().toString() + " mm"
     }
     
     fun getValidToDescription() : String {
