@@ -89,15 +89,16 @@ class ForecastDBRealDataTest {
             })
         }
 
+
         //Check that every badested forecast has forecast data and ocean data
         val noLocationData = forecasts.filter {
-            !it.forecast.hasLocationData()
+            it.forecast?.hasLocationData() != true
         }
         assertEquals(listOf<BadestedForecast>(), noLocationData)
         assertTrue(noLocationData.isEmpty())
 
         val noOceanData = forecasts.filter {
-            !it.forecast.hasOceanData()
+            it.forecast?.hasOceanData() != true
         }
         assertEquals(listOf<BadestedForecast>(), noOceanData)
         assertTrue(noOceanData.isEmpty())

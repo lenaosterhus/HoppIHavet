@@ -10,8 +10,7 @@ import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.toGmtIsoString
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -80,8 +79,9 @@ class ForecastDBTest {
         val forecast = DB.forecastDao().getAllRaw()
         Log.d(TAG, forecast.size.toString())
         assertTrue(forecast.size == 1)
-        assertTrue(forecast[0].forecast.contains(OF1))
-        assertTrue(forecast[0].forecast.hasOceanData())
+        assertNotNull(forecast[0].forecast)
+        assertTrue(forecast[0].forecast!!.contains(OF1))
+        assertTrue(forecast[0].forecast!!.hasOceanData())
     }
 
     @Test
@@ -90,8 +90,9 @@ class ForecastDBTest {
         DB.forecastDao().putBadested(Hovedoya)
         val forecast = DB.forecastDao().getAllRaw()
         assertTrue(forecast.size == 1)
-        assertTrue(forecast[0].forecast.contains(LF1))
-        assertTrue(forecast[0].forecast.hasLocationData())
+        assertNotNull(forecast[0].forecast)
+        assertTrue(forecast[0].forecast!!.contains(LF1))
+        assertTrue(forecast[0].forecast!!.hasLocationData())
     }
 
     @Test
@@ -101,10 +102,11 @@ class ForecastDBTest {
         DB.forecastDao().putBadested(Hovedoya)
         val forecast = DB.forecastDao().getAllRaw()
         assertTrue(forecast.size == 1)
-        assertTrue(forecast[0].forecast.contains(LF1))
-        assertTrue(forecast[0].forecast.contains(OF1))
-        assertTrue(forecast[0].forecast.hasLocationData())
-        assertTrue(forecast[0].forecast.hasOceanData())
+        assertNotNull(forecast[0].forecast)
+        assertTrue(forecast[0].forecast!!.contains(LF1))
+        assertTrue(forecast[0].forecast!!.contains(OF1))
+        assertTrue(forecast[0].forecast!!.hasLocationData())
+        assertTrue(forecast[0].forecast!!.hasOceanData())
     }
 
     @Test
@@ -114,9 +116,10 @@ class ForecastDBTest {
         DB.forecastDao().putBadested(Hovedoya)
         val forecast = DB.forecastDao().getAllRaw()
         assertTrue(forecast.size == 1)
-        assertFalse(forecast[0].forecast.contains(LF1))
-        assertTrue(forecast[0].forecast.contains(LF1_2))
-        assertTrue(forecast[0].forecast.hasLocationData())
+        assertNotNull(forecast[0].forecast)
+        assertFalse(forecast[0].forecast!!.contains(LF1))
+        assertTrue(forecast[0].forecast!!.contains(LF1_2))
+        assertTrue(forecast[0].forecast!!.hasLocationData())
     }
 
 
