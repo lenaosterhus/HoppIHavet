@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.badeapp.models.Badested
+import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.Forecast
 import com.example.badeapp.models.alleBadesteder
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +19,7 @@ private const val DATABASE_NAME = "Forecasts.db"
 // Annotates class to be a Room Database with a table (entity)
 @Database(
     entities = [Badested::class,Forecast::class],
+    views = [BadestedForecast::class],
     version = 1,
     exportSchema = false
 )

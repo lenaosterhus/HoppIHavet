@@ -60,11 +60,11 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
                 forecasts.forEach {
 
-                    if (it.forecast.getOrNull(0)?.isOceanForecastOutdated() != false) {
+                    if (it.forecast?.isOceanForecastOutdated() != false) {
                         updateOceanData(it.badested)
                     }
 
-                    if (it.forecast.getOrNull(0)?.isLocationForecastOutdated() != false) {
+                    if (it.forecast?.isLocationForecastOutdated() != false) {
                         updateLocationData(it.badested)
                     }
                 }

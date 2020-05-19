@@ -8,6 +8,7 @@ badestedForecast
 import android.os.Parcelable
 import android.util.Log
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.getHour
@@ -19,7 +20,9 @@ import kotlin.math.roundToInt
 private const val TAG = "Forecast"
 
 @Parcelize
-@Entity(primaryKeys = ["badestedId", "from", "to"])
+@Entity(
+    primaryKeys = ["badestedId", "from", "to"]
+)
 data class Forecast(
     val badestedId : Int,
     val from: String,

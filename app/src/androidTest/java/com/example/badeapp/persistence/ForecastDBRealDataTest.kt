@@ -5,10 +5,7 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.example.badeapp.models.Badested
-import com.example.badeapp.models.LocationForecast
-import com.example.badeapp.models.OceanForecast
-import com.example.badeapp.models.alleBadesteder
+import com.example.badeapp.models.*
 import junit.framework.TestCase.*
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -68,12 +65,12 @@ class ForecastDBRealDataTest {
     @Test
     fun testRequestValidity() {
         val missingLocal = alleBadesteder.filter { badested ->
-            lfl.find { it.badestedId == badested.badestedId } == null
+            lfl.find { it.badestedId == badested.id } == null
         }
         assertEquals(emptyList<Badested>(), missingLocal)
 
         val missingOcean = alleBadesteder.filter { badested ->
-            ofl.find { it.badestedId == badested.badestedId } == null
+            ofl.find { it.badestedId == badested.id } == null
         }
         assertEquals(emptyList<Badested>(), missingOcean)
     }
@@ -88,46 +85,22 @@ class ForecastDBRealDataTest {
         assertEquals(alleBadesteder.size, forecasts.size)
         alleBadesteder.forEach { badested ->
             assertTrue(forecasts.any {
-                it.badested.badestedId == badested.badestedId
+                it.badested.id == badested.id
             })
         }
 
-        //Check that every badested forecast has forecast data
-        forecasts.forEach {
-            println("BadestedForecast-Test-Real-Data $it")
+        //Check that every badested forecast has forecast data and ocean data
+        val noLocationData = forecasts.filter {
+            !it.forecast.hasLocationData()
         }
+        assertEquals(listOf<BadestedForecast>(), noLocationData)
+        assertTrue(noLocationData.isEmpty())
 
-        forecasts.forEach { forecast ->
-            assertNotNull(forecast.forecast)
-            if (!forecast.forecast[0].hasLocationData()) {
-                println("FAILED: ${forecast}")
-
-                val locResponse = lfl.find {
-                    it.badestedId == forecast.badested.badestedId
-                }
-                val oceanResponse = ofl.find {
-                    it.badestedId == forecast.badested.badestedId
-                }
-
-                if (locResponse == null) {
-                    println("Location reponse is missing!")
-                } else {
-                    println("$locResponse")
-                }
-
-                if (oceanResponse == null) {
-                    println("Ocean reponse is missing!")
-                } else {
-                    println("$oceanResponse")
-                }
-                println("-----------------------------------------\n\n")
-            } else {
-                println("Succsess!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            }
-            //assertTrue(it.forecast!!.hasOceanData())
-            //assertTrue(it.forecast!!.hasLocationData())
-
+        val noOceanData = forecasts.filter {
+            !it.forecast.hasOceanData()
         }
+        assertEquals(listOf<BadestedForecast>(), noOceanData)
+        assertTrue(noOceanData.isEmpty())
 
     }
 

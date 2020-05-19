@@ -58,19 +58,19 @@ interface ForecastDao {
     }
 
     @Transaction
-    @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.badestedId = Forecast.badestedId AND DATETIME('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    @Query("SELECT * FROM BadestedForecast")
     fun getAllCurrent(): LiveData<List<BadestedForecast>>
 
     @Transaction
-    @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.badestedId = Forecast.badestedId AND DATETIME('now') BETWEEN DATETIME([from]) AND DATETIME([to])")
+    @Query("SELECT * FROM BadestedForecast")
     fun getAllCurrentRaw(): List<BadestedForecast>
 
     @Transaction
-    @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.badestedId = Forecast.badestedId")
+    @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId")
     fun getAll(): LiveData<List<BadestedForecast>>
 
     @Transaction
-    @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.badestedId = Forecast.badestedId")
+    @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId")
     fun getAllRaw(): List<BadestedForecast>
 
 

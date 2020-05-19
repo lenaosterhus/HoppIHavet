@@ -1,6 +1,7 @@
 package com.example.badeapp.models
 
 import android.os.Parcelable
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Relation
 import kotlinx.android.parcel.Parcelize
@@ -8,13 +9,12 @@ import kotlinx.android.parcel.Parcelize
 private const val TAG = "BadestedForecast"
 
 @Parcelize
+@DatabaseView(
+    "SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId WHERE DATETIME('now') BETWEEN DATETIME([from]) AND DATETIME([to])"
+)
 data class BadestedForecast(
     @Embedded val badested: Badested,
-    @Relation(
-        parentColumn = "badestedId",
-        entityColumn = "badestedId"
-    )
-    val forecast: List<Forecast>
+    @Embedded val forecast: Forecast?
 )
     : Parcelable
 {
@@ -31,25 +31,25 @@ data class BadestedForecast(
     val image : Int
         get() = badested.image
 
-    fun getWindDescription() = forecast.getOrNull(0)?.getWindDescription() ?: ""
+    fun getWindDescription() = forecast?.getWindDescription() ?: ""
 
-    fun getAirTempCDescription() = forecast.getOrNull(0)?.getAirTempCDescription() ?: ""
+    fun getAirTempCDescription() = forecast?.getAirTempCDescription() ?: ""
 
-    fun getWaterTempCDescription() = forecast.getOrNull(0)?.getWaterTempCDescription() ?: ""
+    fun getWaterTempCDescription() = forecast?.getWaterTempCDescription() ?: ""
 
-    fun getPrecipitationDescription() = forecast.getOrNull(0)?.getPrecipitationDescription() ?: ""
+    fun getPrecipitationDescription() = forecast?.getPrecipitationDescription() ?: ""
 
-    fun getValidToDescription() = forecast.getOrNull(0)?.getValidToDescription() ?: ""
+    fun getValidToDescription() = forecast?.getValidToDescription() ?: ""
 
 
     /**
      * Returns the resource id of the icon that best summarises the LocationForecast
      */
-    fun getIcon(): Int? = forecast.getOrNull(0)?.getIcon()
+    fun getIcon(): Int? = forecast?.getIcon()
 
 
     fun sameContentAs(other: BadestedForecast): Boolean {
-        return badested == other.badested && forecast.getOrNull(0) == other.forecast.getOrNull(0)
+        return badested == other.badested && forecast == other.forecast
     }
 
     override fun toString(): String {
