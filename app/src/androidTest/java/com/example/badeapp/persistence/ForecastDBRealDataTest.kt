@@ -15,8 +15,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import com.example.badeapp.api.locationForecast.RequestManager as LFRM
-import com.example.badeapp.api.oceanForecast.RequestManager as OFRM
+import com.example.badeapp.api.locationForecast.LocationRequestManager as LFRM
+import com.example.badeapp.api.oceanForecast.OceanRequestManager as OFRM
 
 class ForecastDBRealDataTest {
 
