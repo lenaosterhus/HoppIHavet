@@ -47,7 +47,7 @@ data class BadestedForecast(
      */
     fun getIcon(): Int? = forecast?.getIcon()
 
-    fun getIconDescription(): Int? = forecast.getOrNull(0)?.getIconDescription()
+    fun getIconDescription(): Int? = forecast?.getIconDescription()
 
 
     fun sameContentAs(other: BadestedForecast): Boolean {
