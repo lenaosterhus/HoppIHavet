@@ -16,7 +16,10 @@ import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.persistence.ForecastDB
 import com.example.badeapp.repository.BadestedForecastRepo
+import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.isInternetAvailable
+import com.example.badeapp.util.parseAsGmtIsoDate
 
 private const val TAG = "BadestedListVM"
 
@@ -46,25 +49,43 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
         // Setter Location- og OceanForecast for alle badestedene som er utdatert
         badestedForecastRepo.updateForecasts()
 
-        //If no data is present in DB, and we don't have any internet show a toast to the user.
-        if((!isInternetAvailable(getApplication())) && forecasts.value.isNullOrEmpty()) {
-            Toast.makeText(
-                getApplication(),
-                getApplication<Application>().resources.getString(R.string.no_internett_toast),
-                Toast.LENGTH_LONG
-            ).show()
+
+        if(!isInternetAvailable(getApplication())) {
+
+            //If no data is present in DB, and we don't have any internet show a toast to the user.
+            if(forecasts.value.isNullOrEmpty()) {
+                Toast.makeText(
+                    getApplication(),
+                    getApplication<Application>().resources.getString(R.string.no_internett_toast),
+                    Toast.LENGTH_LONG
+                ).show()
+                //If no data is present in DB, and we don't have any internet show a toast to the user.
+            }
+
+            //If data is more then 3h outdated, and we don't have any internet show a toast to the user.
+            if(forecasts.value?.any{
+                    it.forecast?.createdLocation?.parseAsGmtIsoDate()!!.before(inTheFutureFromNow(-60*3))
+                } == true) {
+                Toast.makeText(
+                    getApplication(),
+                    getApplication<Application>().resources.getString(R.string.outdated_info_toast),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
 
             //Now we add a observer to network change, that tries to update once a network
             // connection is active. We can only do this in later versions of android sdk.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                addNetworkObserver()
+                addNetworkObserverToupdateOnAvailable()
             }
-
         }
+
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun addNetworkObserver() {
+    private fun addNetworkObserverToupdateOnAvailable() {
         val connectivityManager = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {

@@ -84,7 +84,6 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
             //The updating of data failed, now this can have several reasons,
             // like no internet connection, bad response from the server etc..
             Log.e(TAG,"Exception when getting ocean data: ${ex.message}")
-            //@TODO handle
             null
         }
 
@@ -102,7 +101,6 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
         } catch (ex: Exception) {
             //The updating of data failed, now this can have several reasons,
             // like no internet connection, bad response from the server etc..
-            //@TODO handle
             null
         }
 

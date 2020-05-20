@@ -61,4 +61,5 @@
     <string name="wic_49_desc"> Lett snø</string>
     <string name="wic_50_desc"> Kraftig snø</string>
     <string name="no_internett_toast">"Sjekk om du er koblet til internett. "</string>
+    <string name="outdated_info_toast">"Sjekk at du har internett. Værmeldingen kan være utdatert. "</string>
 </resources>

@@ -35,7 +35,9 @@ data class Forecast(
     val windDirection: String?,
     val windSpeedMps: Double?,
     val windSpeedName: String?,
-    val waterTempC : Double?
+    val waterTempC : Double?,
+    val createdLocation : String?,
+    val createdOcean : String?
 ) : Parcelable {
 
 

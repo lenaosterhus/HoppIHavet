@@ -4,6 +4,7 @@ package com.example.badeapp.api.locationForecast
 import android.util.Log
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.LocationForecast
+import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.minBetween
 import com.example.badeapp.util.toGmtIsoString
@@ -32,10 +33,15 @@ internal data class LocationResponseFormat(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
 
+        //Get when response was created
+        val createdLocation = created ?: currentTime().toGmtIsoString()
+
         // Get list of hourly or instant summarised forecasts
         val timeList = getHourlyForecasts()?.map { time ->
-            time.summariseTime(badested, nextIssue)
+            time.summariseTime(badested, nextIssue,createdLocation)
         }?.toMutableList() ?: return null
+
+
 
         /*
         Now there are some forecasts that overlap. One forecast goes from 11 -> 12, while the other
@@ -59,7 +65,8 @@ internal data class LocationResponseFormat(
                         value.precipitation ?: other.precipitation,
                         value.windDirection ?: other.windDirection,
                         value.windSpeedMps ?: other.windSpeedMps,
-                        value.windSpeedName ?: other.windSpeedName
+                        value.windSpeedName ?: other.windSpeedName,
+                        createdLocation
                     )
                     break
                 }
@@ -109,13 +116,14 @@ internal data class Time(
         return "\nTime(from=$from, to=$to, location=$location)"
     }
 
-    fun summariseTime(badested: Badested, nextIssue: String): LocationForecast {
+    fun summariseTime(badested: Badested, nextIssue: String, created: String): LocationForecast {
         val symbol = location?.getSymbol()
         val airTempC = location?.getAirTempC()
         val precipitationMm = location?.precipitation?.value
         val windDirection = location?.windDirection?.name
         val windSpeedMps = location?.windSpeed?.mps
         val windSpeedName = location?.windSpeed?.name
+
 
         return LocationForecast(
             badested.id,
@@ -127,7 +135,8 @@ internal data class Time(
             precipitationMm,
             windDirection,
             windSpeedMps,
-            windSpeedName
+            windSpeedName,
+            created
         )
     }
 
