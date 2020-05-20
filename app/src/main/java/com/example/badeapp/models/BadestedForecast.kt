@@ -10,7 +10,7 @@ private const val TAG = "BadestedForecast"
 
 @Parcelize
 @DatabaseView(
-    "SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId WHERE DATETIME('now') BETWEEN DATETIME([from]) AND DATETIME([to])"
+    "SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId WHERE  DATETIME('now','+5 minutes')  BETWEEN DATETIME([from]) AND DATETIME([to])"
 )
 data class BadestedForecast(
     @Embedded val badested: Badested,
@@ -47,7 +47,7 @@ data class BadestedForecast(
      */
     fun getIcon(): Int? = forecast?.getIcon()
 
-    fun getIconDescription(): Int? = forecast.getOrNull(0)?.getIconDescription()
+    fun getIconDescription(): Int? = forecast?.getIconDescription()
 
 
     fun sameContentAs(other: BadestedForecast): Boolean {

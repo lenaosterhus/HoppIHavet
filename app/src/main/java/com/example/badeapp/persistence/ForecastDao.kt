@@ -35,7 +35,6 @@ interface ForecastDao {
      * These are the insert methods for the dao
      */
 
-
     /**
      * All badesteder are inserted when the DB is created (see ForecastDB)
      */

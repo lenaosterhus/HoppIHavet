@@ -17,7 +17,7 @@ import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
 import kotlin.math.roundToInt
 
-private const val TAG = "Forecast"
+private const val TAG = "Forecast-Debug"
 
 @Parcelize
 @Entity(
@@ -217,6 +217,7 @@ data class Forecast(
     }
 
     fun isOceanForecastOutdated(): Boolean {
+        Log.d(TAG,"nexIssueOcean = $nextIssueOcean")
         return nextIssueOcean?.parseAsGmtIsoDate()?.before(currentTime()) ?: true
     }
 

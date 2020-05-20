@@ -10,6 +10,7 @@ import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
 import kotlinx.coroutines.*
+import kotlin.math.log
 
 
 /**
@@ -60,14 +61,21 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
 
                 forecasts.forEach {
 
+                    if(it.forecast == null){
+                        Log.d(TAG,"Forecast was null for ${it.badested}")
+                    }
+
                     if (it.forecast?.isOceanForecastOutdated() != false) {
+                        Log.d(TAG,"Ocean data outdated for  ${it.badested}")
                         updateOceanData(it.badested)
                     }
 
                     if (it.forecast?.isLocationForecastOutdated() != false) {
+                        Log.d(TAG,"Location data outdated for  ${it.badested}")
                         updateLocationData(it.badested)
                     }
                 }
+
             _forecasts.postValue(forecastDao.getAllCurrentRaw())
             Log.d(TAG, "updateForecasts: Setting isLoading to false")
             _isLoading.postValue(false)
