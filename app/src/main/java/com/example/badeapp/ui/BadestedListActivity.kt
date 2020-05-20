@@ -69,7 +69,7 @@ class BadestedListActivity : AppCompatActivity(),
                 Log.d(TAG, "subscribeObservers: HAS HALTED")
                 Toast.makeText(
                     this@BadestedListActivity,
-                    resources.getString(R.string.hasHaltedError),
+                    resources.getString(R.string.has_halted_error),
                     Toast.LENGTH_LONG
                 ).show()
             }

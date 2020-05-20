@@ -111,6 +111,12 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                     itemView.ImageView_element_symbol.setImageDrawable(null)
                 }
 
+                val iconDescription = forecast?.getIconDescription()
+                if (iconDescription != null) {
+                    itemView.ImageView_element_symbol.contentDescription =
+                        resources.getString(iconDescription)
+                }
+
                 if (forecast?.badested?.image != null) {
                     ImageView_element_image.setImageResource(forecast?.badested?.image!!)
                 } else {

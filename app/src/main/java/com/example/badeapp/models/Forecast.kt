@@ -164,6 +164,57 @@ data class Forecast(
 
     }
 
+    /**
+     * Returns the resource id of the icon description that best summarises the Forecast
+     */
+    fun getIconDescription(): Int? {
+        when (symbol) {
+            1 -> return R.string.wic_1_desc //Sun
+            2 -> return R.string.wic_2_desc //LightCloud
+            3 -> return R.string.wic_3_desc //PartlyCloud
+            4 -> return R.string.wic_4_desc //Cloud
+            5 -> return R.string.wic_5_desc //LightRainSun
+            6 -> return R.string.wic_6_desc //LightRainThunderSun
+            7 -> return R.string.wic_7_desc //SleetSun
+            8 -> return R.string.wic_8_desc //SnowSun
+            9 -> return R.string.wic_9_desc //LightRain
+            10 -> return R.string.wic_10_desc //Rain
+            11 -> return R.string.wic_11_desc //RainThunder
+            12 -> return R.string.wic_12_desc //Sleet
+            13 -> return R.string.wic_13_desc //Snow
+            14 -> return R.string.wic_14_desc //SnowThunder
+            15 -> return R.string.wic_15_desc //Fog
+            20 -> return R.string.wic_20_desc //SleetSunThunder
+            21 -> return R.string.wic_21_desc //SnowSunThunder
+            22 -> return R.string.wic_22_desc //LightRainThunder
+            23 -> return R.string.wic_23_desc //SleetThunder
+            24 -> return R.string.wic_24_desc //DrizzleThunderSun
+            25 -> return R.string.wic_25_desc //RainThunderSun
+            26 -> return R.string.wic_26_desc //LightSleetThunderSun
+            27 -> return R.string.wic_27_desc //HeavySleetThunderSun
+            28 -> return R.string.wic_28_desc //LightSnowThunderSun
+            29 -> return R.string.wic_29_desc //HeavySnowThunderSun
+            30 -> return R.string.wic_30_desc //DrizzleThunder
+            31 -> return R.string.wic_31_desc // LightSleetThunder
+            32 -> return R.string.wic_32_desc //HeavySleetThunder
+            33 -> return R.string.wic_33_desc //LightSnowThunder
+            34 -> return R.string.wic_34_desc //HeavySnowThunder
+            40 -> return R.string.wic_40_desc //DrizzleSun
+            41 -> return R.string.wic_41_desc //RainSun
+            42 -> return R.string.wic_42_desc //LightSleetSun
+            43 -> return R.string.wic_43_desc //HeavySleetSun
+            44 -> return R.string.wic_44_desc //LightSnowSun
+            45 -> return R.string.wic_45_desc //HeavysnowSun
+            46 -> return R.string.wic_46_desc //Drizzle
+            47 -> return R.string.wic_47_desc //LightSleet
+            48 -> return R.string.wic_48_desc //HeavySleet
+            49 -> return R.string.wic_49_desc //LightSnow
+            50 -> return R.string.wic_50_desc //HeavySnow
+        }
+
+        Log.w(TAG,"The given symbol $symbol is not mapped to a description!")
+        return null
+    }
 
     fun isOceanForecastOutdated(): Boolean {
         return nextIssueOcean?.parseAsGmtIsoDate()?.before(currentTime()) ?: true
