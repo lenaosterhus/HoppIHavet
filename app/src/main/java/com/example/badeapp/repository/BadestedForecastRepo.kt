@@ -32,6 +32,16 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
     val isLoading: LiveData<Boolean> = _isLoading
 
 
+    init {
+        //@TODO change to metdiator live data
+        forecastDao.getAllCurrent().observeForever{ forecasts ->
+            _forecasts.value = forecasts
+        }
+    }
+
+
+
+
     fun updateForecasts() {
         Log.d(TAG, "updateForecasts: Setting isLoading to true")
         _isLoading.postValue(true)
