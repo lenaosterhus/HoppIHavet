@@ -31,18 +31,10 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // Hva skjer her?
-    val db_summaries = forecastDao.getAllCurrent().also {
-        it.observeForever{ forecasts ->
-            _forecasts.value = forecasts
-        }
-    }
-    // Hva skjer her?
-    private var lst: List<BadestedForecast>? = null
 
     fun updateForecasts() {
         Log.d(TAG, "updateForecasts: Setting isLoading to true")
-        _isLoading.value = true
+        _isLoading.postValue(true)
 
         CoroutineScope(Dispatchers.IO).launch {
 

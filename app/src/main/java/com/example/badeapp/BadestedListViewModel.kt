@@ -1,8 +1,13 @@
 package com.example.badeapp
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -48,7 +53,25 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
                 getApplication<Application>().resources.getString(R.string.no_internett_toast),
                 Toast.LENGTH_LONG
             ).show()
+
+            //Now we add a observer to network change, that tries to update once a network
+            // connection is active. We can only do this in later versions of android sdk.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                addNetworkObserver()
+            }
+
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun addNetworkObserver() {
+        val connectivityManager = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                //take action when network connection is gained
+                updateData()
+            }
+        })
     }
 
     fun cancelRequests() {
