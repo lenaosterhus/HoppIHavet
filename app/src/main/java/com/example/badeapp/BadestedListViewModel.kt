@@ -76,7 +76,7 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
             //Now we add a observer to network change, that tries to update once a network
             // connection is active. We can only do this in later versions of android sdk.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                addNetworkObserverToupdateOnAvailable()
+                addNetworkObserverToUpdateOnAvailable()
             }
         }
 
@@ -85,7 +85,7 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun addNetworkObserverToupdateOnAvailable() {
+    private fun addNetworkObserverToUpdateOnAvailable() {
         val connectivityManager = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
