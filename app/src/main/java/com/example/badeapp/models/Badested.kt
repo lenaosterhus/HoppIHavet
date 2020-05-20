@@ -6,9 +6,9 @@ import com.example.badeapp.R
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@Entity(primaryKeys = ["lat", "lon"])
+@Entity(primaryKeys = ["id"])
 data class Badested(
-    val badestedId: Int,
+    val id: Int,
     val lat: String,
     val lon: String,
     val name: String,
@@ -19,7 +19,7 @@ data class Badested(
 ) : Parcelable{
 
     override fun toString(): String {
-        return "{id=$badestedId, name=$name, info=...}"
+        return "{id=$id, name=$name, info=...}"
     }
 }
 

@@ -90,15 +90,15 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                 TextView_element_name.text = forecast?.badested?.name
                 TextView_element_place.text = forecast?.badested?.place
 
-                if (forecast?.forecast?.getOrNull(0)?.airTempC != null) {
-                    TextView_element_air_temp.text = forecast!!.forecast[0].getAirTempCDescription()
+                if (forecast?.forecast?.airTempC != null) {
+                    TextView_element_air_temp.text = forecast!!.getAirTempCDescription()
                 } else {
                     TextView_element_air_temp.text = ""
                 }
 
-                if (forecast?.forecast?.getOrNull(0)?.waterTempC != null) {
+                if (forecast?.forecast?.waterTempC != null) {
                     TextView_element_water_temp.text =
-                        forecast!!.forecast[0].getWaterTempCDescription()
+                        forecast!!.getWaterTempCDescription()
                 } else {
                     TextView_element_water_temp.text = ""
                 }
