@@ -55,7 +55,7 @@ class BadestedActivity : AppCompatActivity() {
         TextView_badested_facilities.text = badestedInView.facilities
 
         /*
-         * Setting icon
+         * Setting icon and icon description
          */
         val icon = badestedInView.getIcon()
 
@@ -65,6 +65,13 @@ class BadestedActivity : AppCompatActivity() {
             ImageView_badested_symbol.setImageDrawable(null)
         }
 
+        val iconDescription = badestedInView.getIconDescription()
+
+        if (iconDescription != null) {
+            Log.d(TAG, "setView: iconDescription = ${resources.getString(iconDescription)}")
+            ImageView_badested_symbol.contentDescription =
+                resources.getString(iconDescription)
+        }
 
         /*
          * Setting actions for buttons

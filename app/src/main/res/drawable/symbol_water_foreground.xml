@@ -6,14 +6,16 @@
     <group android:translateX="7.907996"
         android:translateY="16.144495">
         <path
-            android:strokeWidth="1"
+            android:strokeWidth="2"
             android:pathData="M0.358,3.065S2.861,0.5 5.034,0.5s4.191,2.226 4.191,2.226a6.515,6.515 0,0 0,3.839 1.789,6.194 6.194,0 0,0 3.768,-1.811s2.254,-2.2 4.262,-2.2 4.015,2.565 4.015,2.565"
             android:fillColor="#00000000"
+            android:strokeLineCap="round"
             android:strokeColor="#212121"/>
         <path
-            android:strokeWidth="1"
+            android:strokeWidth="2"
             android:pathData="M0.358,7.08S2.861,4.515 5.034,4.515s4.191,2.226 4.191,2.226a6.515,6.515 0,0 0,3.839 1.789,6.194 6.194,0 0,0 3.768,-1.811s2.254,-2.2 4.262,-2.2 4.015,2.565 4.015,2.565"
             android:fillColor="#00000000"
-            android:strokeColor="#212121"/>
+            android:strokeLineCap="round"
+            android:strokeColor="#000000"/>
     </group>
 </vector>

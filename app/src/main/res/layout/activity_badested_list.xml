@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical"
         android:scrollbarThumbVertical="@color/orange"
-        android:scrollbarSize="3dp"
+        android:scrollbarSize="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
