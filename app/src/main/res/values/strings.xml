@@ -60,4 +60,5 @@
     <string name="wic_48_desc"> Kraftig sludd</string>
     <string name="wic_49_desc"> Lett snø</string>
     <string name="wic_50_desc"> Kraftig snø</string>
+    <string name="no_internett_toast">"Sjekk om du er koblet til internett. "</string>
 </resources>

@@ -56,6 +56,8 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
                         updateOceanData(it)
                     }
                     Log.d(TAG,"Forecasts was empty")
+                    Log.d(TAG, "updateForecasts: Setting isLoading to false")
+                    _isLoading.postValue(false)
                     return@launch
                 }
 
@@ -123,4 +125,6 @@ class BadestedForecastRepo(val forecastDao: ForecastDao) {
         Log.d(TAG, "cancelRequests: called...")
         (Dispatchers.IO).cancel()
     }
+
+
 }
