@@ -57,7 +57,8 @@ class BadestedListActivity : AppCompatActivity(),
 
         // Observing forecasts
         viewModel.forecasts.observe(this, Observer {
-            Log.d(TAG, "Submitting list $it")
+            Log.d(TAG, "subscribeObservers: forecastDao.getAllCurrent() CHANGED")
+//            Log.d(TAG, "Submitting list $it")
             recyclerAdapter.submitList(it)
         })
 

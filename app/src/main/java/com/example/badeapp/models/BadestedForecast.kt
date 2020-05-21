@@ -52,13 +52,12 @@ data class BadestedForecast(
 
     fun getIconDescription(): Int? = forecast?.getIconDescription()
 
-
     fun sameContentAs(other: BadestedForecast): Boolean {
         return badested == other.badested && forecast == other.forecast
     }
 
     override fun toString(): String {
-        return "BadestedForecast(badested=${badested.name}, forecast=$forecast)"
+        return "\nBadestedForecast(badested=${badested.name}, forecast=$forecast)"
     }
 
 

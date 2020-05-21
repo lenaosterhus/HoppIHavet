@@ -17,7 +17,7 @@ import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
 import kotlin.math.roundToInt
 
-private const val TAG = "Forecast-Debug"
+private const val TAG = "DEBUG-Forecast"
 
 @Parcelize
 @Entity(
@@ -219,7 +219,6 @@ data class Forecast(
     }
 
     fun isOceanForecastOutdated(): Boolean {
-        Log.d(TAG,"nexIssueOcean = $nextIssueOcean")
         return nextIssueOcean?.parseAsGmtIsoDate()?.before(currentTime()) ?: true
     }
 
@@ -228,7 +227,8 @@ data class Forecast(
     }
 
     /**
-     * The following methods are used tto get prettified versions of data in the Forecast
+     * --------------------------------------------------------------------------------------
+     * The following methods are used to get prettified versions of data in the Forecast
      */
 
     fun getWindDescription() : String {
@@ -250,7 +250,6 @@ data class Forecast(
                 }
             }
 
-        // "Svak vind, 2 m/s fra nordvest"
         return windSpeedName + ", " + windSpeedMps?.toInt().toString() + " m/s fra " + windDirectionLongString
     }
 
@@ -274,6 +273,7 @@ data class Forecast(
     }
 
     /**
+     * --------------------------------------------------------------------------------------
      * The following methods are used for testing.
      */
 
@@ -312,30 +312,13 @@ data class Forecast(
         return nextIssueOcean != null && nextIssueOcean.isNotBlank()
                 && waterTempC != null
     }
-
-    override fun toString(): String {
-        return "\nForecast(badestedId=$badestedId, from='$from', to='$to', nextIssueLocation=$nextIssueLocation, nextIssueOcean=$nextIssueOcean, airTempC=$airTempC, symbol=$symbol, precipitation=$precipitation, windDirection=$windDirection, windSpeedMps=$windSpeedMps, windSpeedName=$windSpeedName, waterTempC=$waterTempC)"
-    }
-
 }
 
 /**
- * Takes a list of Forecast and lets us find the current Air Temp (if present)
+ * --------------------------------------------------------------------------------------
+ * The following methods are used for testing.
  */
-fun List<Forecast>.getCurrentAirTempC(): Double? {
-    return this.getCurrentForecast()?.airTempC
-}
-
-/**
- * Takes a list of Forecast and lets us find the current Symbol (if present)
- */
-fun List<Forecast>.getCurrentIcon(): Int? {
-    return this.getCurrentForecast()?.getIcon()
-}
-
-/**
- * Takes a list of Forecasts and returns the one representing now, if that would be applicable
- */
+// Takes a list of Forecasts and returns the one representing now, if that would be applicable
 fun List<Forecast>.getCurrentForecast(): Forecast? {
     val now = currentTime()
     return this.find { hour ->
@@ -346,12 +329,17 @@ fun List<Forecast>.getCurrentForecast(): Forecast? {
     }
 }
 
+// Takes a list of Forecast and lets us find the current Air Temp (if present)
+fun List<Forecast>.getCurrentAirTempC(): Double? {
+    return this.getCurrentForecast()?.airTempC
+}
 
+// Takes a list of Forecast and lets us find the current Symbol (if present)
+fun List<Forecast>.getCurrentIcon(): Int? {
+    return this.getCurrentForecast()?.getIcon()
+}
+
+// Takes a list of Forecast and lets us find the current Water Temp (if present)
 fun List<Forecast>.getCurrentWaterTempC(): Double? {
     return this.getCurrentForecast()?.waterTempC
 }
-
-
-
-
-

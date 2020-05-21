@@ -80,7 +80,7 @@ internal data class OceanResponseFormat(
 
 
                 waterTempC == null -> {
-                    Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast")
+                    Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast ${badested.name}, from: $from, to: $to")
                 }
 
                 from != to && to != null -> {
