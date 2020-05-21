@@ -9,7 +9,10 @@ import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * This is the repository that handles the interactions to get the
@@ -22,7 +25,7 @@ private const val TAG = "BadestedForecastRepo"
 
 class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
-    val forecasts : LiveData<List<BadestedForecast>> = forecastDao.getAllCurrent()
+    val forecasts: LiveData<List<BadestedForecast>> = forecastDao.getAllCurrent()
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -40,8 +43,8 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
             if (rawForecasts.isNullOrEmpty()) {
                 // Then no data is stored at all. We need to update all badesteder
                 alleBadesteder.forEach {
-                        updateLocationData(it)
-                        updateOceanData(it)
+                    updateLocationData(it)
+                    updateOceanData(it)
                 }
                 Log.d(TAG,"Forecasts was empty")
                 Log.d(TAG, "updateForecasts: Setting isLoading to false")
@@ -56,12 +59,12 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
                     if (it.forecast?.isOceanForecastOutdated() != false) {
                         Log.d(TAG,"Ocean data outdated for  ${it.badested}")
-                            updateOceanData(it.badested)
+                        updateOceanData(it.badested)
                     }
 
                     if (it.forecast?.isLocationForecastOutdated() != false) {
                         Log.d(TAG,"Location data outdated for  ${it.badested}")
-                            updateLocationData(it.badested)
+                        updateLocationData(it.badested)
                     }
                 }
             }
