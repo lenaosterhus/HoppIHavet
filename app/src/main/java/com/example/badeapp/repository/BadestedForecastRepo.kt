@@ -10,6 +10,7 @@ import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
 import kotlinx.coroutines.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This is the repository that handles the interactions to get the
@@ -22,7 +23,10 @@ private const val TAG = "BadestedForecastRepo"
 
 class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
-    val forecasts : LiveData<List<BadestedForecast>> = forecastDao.getAllCurrent()
+    private val counterLoading = AtomicInteger()
+
+    private val _forecasts = MutableLiveData<List<BadestedForecast>>()
+    val forecasts : LiveData<List<BadestedForecast>> = _forecasts
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -32,7 +36,7 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         Log.d(TAG, "updateForecasts: Setting isLoading to true")
         _isLoading.postValue(true)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        val job = CoroutineScope(Dispatchers.IO).launch {
 
             // 1) Check what ocean forecast and location forecasts needs to be updated
             val rawForecasts = forecastDao.getAllCurrentRaw()
@@ -40,12 +44,14 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
             if (rawForecasts.isNullOrEmpty()) {
                 // Then no data is stored at all. We need to update all badesteder
                 alleBadesteder.forEach {
+                    launch {
                         updateLocationData(it)
+                    }
+                    launch {
                         updateOceanData(it)
+                    }
                 }
                 Log.d(TAG,"Forecasts was empty")
-                Log.d(TAG, "updateForecasts: Setting isLoading to false")
-                _isLoading.postValue(false)
 
             } else {
                 rawForecasts.forEach {
@@ -56,21 +62,32 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
                     if (it.forecast?.isOceanForecastOutdated() != false) {
                         Log.d(TAG,"Ocean data outdated for  ${it.badested}")
+                        launch {
                             updateOceanData(it.badested)
+                        }
                     }
 
                     if (it.forecast?.isLocationForecastOutdated() != false) {
                         Log.d(TAG,"Location data outdated for  ${it.badested}")
+                        launch {
                             updateLocationData(it.badested)
+                        }
                     }
                 }
             }
-            Log.d(TAG, "updateForecasts: Setting isLoading to false")
-            _isLoading.postValue(false)
         }
+
+//        _isLoading.postValue(false)
+
+//        if (job.isCompleted) {
+//            Log.d(TAG, "updateForecasts: Setting isLoading to false")
+//            _isLoading.postValue(false)
+//        }
     }
 
     private suspend fun updateOceanData(badested: Badested) {
+
+        counterLoading.incrementAndGet()
 
         val newData = try {
             OceanRequestManager.request(badested)
@@ -87,9 +104,18 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         } else {
             Log.d(TAG, "newData was null!")
         }
+
+        val currentCounter = counterLoading.getAndDecrement()
+        Log.d(TAG, "updateOceanData: currentCounter = $currentCounter")
+        if (currentCounter == 1) {
+            _forecasts.postValue(forecastDao.getAllCurrentRaw())
+            _isLoading.postValue(false)
+        }
     }
 
     private suspend fun updateLocationData(badested: Badested) {
+
+        counterLoading.incrementAndGet()
 
         val newData = try {
             LocationRequestManager.request(badested)
@@ -104,6 +130,13 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
             forecastDao.newLocationForecast(newData)
         } else {
             Log.d(TAG, "newData was null!")
+        }
+
+        val currentCounter = counterLoading.getAndDecrement()
+        Log.d(TAG, "updateLocationData: currentCounter = $currentCounter")
+        if (currentCounter == 1) {
+            _forecasts.postValue(forecastDao.getAllCurrentRaw())
+            _isLoading.postValue(false)
         }
     }
 
