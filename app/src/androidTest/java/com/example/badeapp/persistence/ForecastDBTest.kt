@@ -27,7 +27,8 @@ class ForecastDBTest {
         currentTime().toGmtIsoString(),
         inTheFutureFromNow(2).toGmtIsoString(),
         inTheFutureFromNow(10).toGmtIsoString(),
-        42.0
+        42.0,
+        createdOcean = currentTime().toGmtIsoString()
     )
 
     val LF1 = LocationForecast(
@@ -40,7 +41,8 @@ class ForecastDBTest {
         1123132123.0,
         windDirection = "N",
         windSpeedMps = 2123123.0,
-        windSpeedName = "Noe"
+        windSpeedName = "Noe",
+        createdLocation = currentTime().toGmtIsoString()
     )
 
     val LF1_2 = LocationForecast(
@@ -53,7 +55,8 @@ class ForecastDBTest {
         1123132123.0,
         windDirection = "N",
         windSpeedMps = 2123123.0,
-        windSpeedName = "Noe"
+        windSpeedName = "Noe",
+        createdLocation = currentTime().toGmtIsoString()
     )
 
 
