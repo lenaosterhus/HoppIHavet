@@ -25,10 +25,10 @@ interface ForecastDao {
     fun private_updateOceanForecast(entries: List<OceanForecast>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE,entity=Forecast::class)
-    fun private_setInnNewOceanForecasts(entries: List<OceanForecast>)
+    fun private_addNewOceanForecasts(entries: List<OceanForecast>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE,entity=Forecast::class)
-    fun private_setInnNewLocationForecasts(entries: List<LocationForecast>)
+    fun private_addNewLocationForecasts(entries: List<LocationForecast>)
 
 
     /**
@@ -41,11 +41,14 @@ interface ForecastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun putBadested(badested: Badested)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addAllBadesteder(badesteder: List<Badested>)
+
 
     @Transaction
     fun newLocationForecast(entries:List<LocationForecast>){
         private_deleteOutdated()
-        private_setInnNewLocationForecasts(entries)
+        private_addNewLocationForecasts(entries)
         private_updateLocationForecast(entries)
     }
 
@@ -53,7 +56,7 @@ interface ForecastDao {
     fun newOceanForecast(entries:List<OceanForecast>) {
         private_deleteOutdated()
         private_updateOceanForecast(entries)
-        private_setInnNewOceanForecasts(entries)
+        private_addNewOceanForecasts(entries)
     }
 
     @Transaction
@@ -71,6 +74,4 @@ interface ForecastDao {
     @Transaction
     @Query("SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId")
     fun getAllRaw(): List<BadestedForecast>
-
-
 }

@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.liesBetweneInclusive
+import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
 
 private const val TAG = "BadestedForecast"
@@ -49,14 +52,18 @@ data class BadestedForecast(
 
     fun getIconDescription(): Int? = forecast?.getIconDescription()
 
-
     fun sameContentAs(other: BadestedForecast): Boolean {
         return badested == other.badested && forecast == other.forecast
     }
 
     override fun toString(): String {
-        return "BadestedForecast(badested=${badested.name}, forecast=$forecast)"
+        return "\nBadestedForecast(badested=${badested.name}, forecast=$forecast)"
     }
+
+
+
+
+
 
 
 }

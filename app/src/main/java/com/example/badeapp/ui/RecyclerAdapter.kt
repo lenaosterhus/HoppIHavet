@@ -64,7 +64,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     }
 
     fun submitList(list: List<BadestedForecast>) {
-        Log.d(TAG, "Submitting list new list")
+        Log.d(TAG, "Submitting new list: $list")
         differ.submitList(list)
         unFilteredList = list
     }

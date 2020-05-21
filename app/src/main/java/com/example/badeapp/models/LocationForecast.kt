@@ -14,5 +14,6 @@ data class LocationForecast( val badestedId : Int,
                              val precipitation: Double?,
                              val windDirection: String?,
                              val windSpeedMps: Double?,
-                             val windSpeedName: String?
+                             val windSpeedName: String?,
+                             val createdLocation: String
 )

@@ -1,6 +1,7 @@
 package com.example.badeapp.persistence
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 
 private const val DATABASE_NAME = "Forecasts.db"
+private const val TAG = "ForecastDB"
 
 // Annotates class to be a Room Database with a table (entity)
 @Database(
@@ -48,20 +50,9 @@ abstract class ForecastDB : RoomDatabase() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
                             CoroutineScope(Dispatchers.IO).launch {
-                                val DB = getDatabase(context)
-                                alleBadesteder.forEach {
-                                    DB.forecastDao().putBadested(it)
-                                }
-                            }
-                        }
-
-                        override fun onOpen(db: SupportSQLiteDatabase) {
-                            super.onOpen(db)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val DB = getDatabase(context)
-                                alleBadesteder.forEach {
-                                    DB.forecastDao().putBadested(it)
-                                }
+                                val database = getDatabase(context)
+                                Log.d(TAG, "onCreate: Adding all badesteder to DB")
+                                database.forecastDao().addAllBadesteder(alleBadesteder)
                             }
                         }
                     }

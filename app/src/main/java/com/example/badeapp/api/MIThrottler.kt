@@ -59,7 +59,7 @@ object MIThrottler {
                 halt()
             }
             403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")
-            //@TODO log if there was a 404, or any unknown response.
+            else -> Log.i(TAG,"Got response code $code, that MIThrotteler.kt does not understand.")
         }
     }
 }

@@ -3,10 +3,7 @@ package com.example.badeapp.api.oceanForecast
 import android.util.Log
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.OceanForecast
-import com.example.badeapp.util.inTheFutureFromNow
-import com.example.badeapp.util.parseAsGmtIsoDate
-import com.example.badeapp.util.subOneHour
-import com.example.badeapp.util.toGmtIsoString
+import com.example.badeapp.util.*
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -28,8 +25,10 @@ internal data class OceanResponseFormat(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
 
+        val issue = issueTime?.timeInstant?.timePosition ?: currentTime().toGmtIsoString()
+
         val forecasts = forecast?.map { it ->
-            it.summariseForecast(badested, nextIssue)
+            it.summariseForecast(badested, nextIssue,issue)
         }?.filterNotNull()
 
         if (forecasts.isNullOrEmpty())
@@ -67,7 +66,7 @@ internal data class OceanResponseFormat(
             return "\nForecast(forecast=$forecast)"
         }
 
-        fun summariseForecast(badested: Badested, nextIssue: String): OceanForecast? {
+        fun summariseForecast(badested: Badested, nextIssue: String, issueTime: String): OceanForecast? {
 
             val from = forecast?.validTime?.timePeriod?.begin
             val to = forecast?.validTime?.timePeriod?.end
@@ -81,7 +80,7 @@ internal data class OceanResponseFormat(
 
 
                 waterTempC == null -> {
-                    Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast")
+                    Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast ${badested.name}, from: $from, to: $to")
                 }
 
                 from != to && to != null -> {
@@ -90,7 +89,7 @@ internal data class OceanResponseFormat(
                      * So we expect from == to.
                      */
                     Log.e(TAG, "'from' != 'to'    $from != $to")
-                    return OceanForecast(badested.id, from!!, to, nextIssue, waterTempC)
+                    return OceanForecast(badested.id, from!!, to, nextIssue, waterTempC,issueTime)
                 }
             }
 
@@ -98,7 +97,7 @@ internal data class OceanResponseFormat(
             val newFrom = instance!!.parseAsGmtIsoDate()!!.subOneHour().toGmtIsoString()
 
             //val newTo = from!!.parseAsGmtIsoDate()?.addOneHour()?.toGmtIsoString()!!
-            return OceanForecast(badested.id, newFrom, to!!, nextIssue, waterTempC)
+            return OceanForecast(badested.id, newFrom, to!!, nextIssue, waterTempC,issueTime)
         }
     }
 
