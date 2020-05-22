@@ -1,7 +1,6 @@
 package com.example.badeapp.persistence
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.badeapp.models.Hovedoya
@@ -10,7 +9,6 @@ import com.example.badeapp.models.OceanForecast
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.toGmtIsoString
-import junit.framework.TestCase
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
 import org.junit.After
@@ -27,7 +25,8 @@ class BadestedForecastTest {
         inTheFutureFromNow(4).toGmtIsoString(),
         inTheFutureFromNow(50).toGmtIsoString(),
         inTheFutureFromNow(60).toGmtIsoString(),
-        42.0
+        42.0,
+        currentTime().toGmtIsoString()
     )
 
     val LF1 = LocationForecast(
@@ -40,7 +39,8 @@ class BadestedForecastTest {
         1123132123.0,
         windDirection = "N",
         windSpeedMps = 2123123.0,
-        windSpeedName = "Noe"
+        windSpeedName = "Noe",
+        createdLocation = currentTime().toGmtIsoString()
     )
 
 

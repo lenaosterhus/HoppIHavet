@@ -20,9 +20,8 @@ object MIThrottler {
     const val stopTimeMin = 10L
     private var stopUntil: Date? = null
 
-    private val _hasHalted = MutableLiveData<Boolean>()
+    private val _hasHalted = MutableLiveData<Boolean>().also { it.postValue(false) }
     val hasHalted: LiveData<Boolean> = _hasHalted
-
 
     /**
      * This variable/function tells if the traffic has been requested to halt. This is used to
@@ -35,13 +34,13 @@ object MIThrottler {
 
     private fun halt() {
         stopUntil = inTheFutureFromNow(stopTimeMin)
-        _hasHalted.value = true
+        _hasHalted.postValue(true)
     }
 
     fun canResume() : Boolean {
         stopUntil?.let {
             if (it.before(currentTime())) {
-                _hasHalted.value = false
+                _hasHalted.postValue(false)
                 return true
             }
         }

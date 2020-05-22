@@ -19,7 +19,10 @@ import com.example.badeapp.repository.BadestedForecastRepo
 import com.example.badeapp.util.inTheFutureFromNow
 import com.example.badeapp.util.isInternetAvailable
 import com.example.badeapp.util.parseAsGmtIsoDate
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val TAG = "BadestedListVM"
 
@@ -51,9 +54,7 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
                 CoroutineScope(Dispatchers.IO).launch {
                     delay(stopTimeMin * 1001)
                     if (MIThrottler.canResume()) {
-                        withContext(Dispatchers.Main) {
-                            updateData()
-                        }
+                        updateData()
                     }
                 }
             } else {
