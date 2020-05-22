@@ -17,7 +17,7 @@ object MIThrottler {
 
     private const val TAG = "MIThrottler"
 
-    private const val stopTimeMin = 10L
+    const val stopTimeMin = 10L
     private var stopUntil: Date? = null
 
     private val _hasHalted = MutableLiveData<Boolean>()
@@ -26,7 +26,7 @@ object MIThrottler {
 
     /**
      * This variable/function tells if the traffic has been requested to halt. This is used to
-     * determine if requests COULD happen.
+     * determine if requests CAN happen.
      */
     fun hasStopped(): Boolean {
         return _hasHalted.value ?: false
@@ -38,10 +38,14 @@ object MIThrottler {
         _hasHalted.value = true
     }
 
-    fun tryToResume() {
+    fun canResume() : Boolean {
         stopUntil?.let {
-            _hasHalted.value = it.before(currentTime())
+            if (it.before(currentTime())) {
+                _hasHalted.value = false
+                return true
+            }
         }
+        return false
     }
 
 
@@ -53,11 +57,9 @@ object MIThrottler {
         require(code in 0..599)
 
         when (code) {
-            200 -> return     //All good
-            203 -> halt()     //Plz slow down
-            429 -> {          //If we dont stop now, we are banned
-                halt()
-            }
+            200 -> return     // All good
+            203 -> halt()     // Plz slow down
+            429 -> halt()     // If we dont stop now, we are banned
             403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")
             else -> Log.i(TAG,"Got response code $code, that MIThrotteler.kt does not understand.")
         }

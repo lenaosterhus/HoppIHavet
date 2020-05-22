@@ -1,6 +1,5 @@
 package com.example.badeapp.api.oceanForecast
 
-import android.util.Log
 import com.example.badeapp.api.ApiService
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.Badested
@@ -19,32 +18,32 @@ import retrofit2.http.Headers
 
 object OceanRequestManager {
 
-    private const val TAG = "OceanReqMngr"
+//    private const val TAG = "OceanReqMngr"
 
-    // lazy = only initialize once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {
-        Log.d(TAG, "building OCEAN...")
+//        Log.d(TAG, "building Retrofit...")
         Retrofit.Builder()
             .baseUrl(BASE_URL_OCEAN)
             .addConverterFactory(GsonConverterFactory.create())
     }
 
     private val apiService: ApiService by lazy {
-        Log.d(TAG, "building OCEAN apiService")
+//        Log.d(TAG, "building apiService")
         retrofitBuilder
             .build()
             .create(ApiService::class.java)
     }
 
+
     @Headers("User-Agent: $USER_HEADER")
     suspend fun request(badested: Badested): List<OceanForecast>? {
 
         if (!MIThrottler.hasStopped()) {
-            Log.d(TAG, "request: API REQUEST ocean")
+//            Log.d(TAG, "request: API REQUEST ocean")
             val response = apiService.getOceanData(badested.lat, badested.lon)
             MIThrottler.submitCode(response.code())
-            if (response.isSuccessful)
-                return response.body()?.summarise(badested)
+
+            if (response.isSuccessful) return response.body()?.summarise(badested)
         }
         return null
     }

@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.badeapp.R
-import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.activity_badested.*
 
@@ -48,10 +47,18 @@ class BadestedActivity : AppCompatActivity() {
         TextView_badested_wind.text = badestedInView.getWindDescription()
         TextView_badested_valid_to.text = badestedInView.getValidToDescription()
 
+        // Setting properties for the description TextView
         TextView_badested_description.text = badestedInView.info
         TextView_badested_description.movementMethod = ScrollingMovementMethod()
+        ScrollView_badested.setOnTouchListener { _, _ ->
+            TextView_badested_description.parent.requestDisallowInterceptTouchEvent(false)
+            false
+        }
+        TextView_badested_description.setOnTouchListener { _, _ ->
+            TextView_badested_description.parent.requestDisallowInterceptTouchEvent(true)
+            false
+        }
 
-        Log.d(TAG, "setView: setter fasiliteter: ${badestedInView.facilities}")
         TextView_badested_facilities.text = badestedInView.facilities
 
         /*
@@ -88,7 +95,7 @@ class BadestedActivity : AppCompatActivity() {
             startActivity(mapIntent)
         }
 
-        // Viser fasilitetene og skjuler knappen
+        // Shows facilities and hides button
         Button_badested_facilities.setOnClickListener {
             container_facilities.visibility = View.VISIBLE
             Button_badested_facilities.visibility = View.INVISIBLE

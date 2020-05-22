@@ -11,7 +11,7 @@ import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
@@ -30,12 +30,14 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private lateinit var job : Job
+
 
     fun updateForecasts() {
-        Log.d(TAG, "updateForecasts: Setting isLoading to true")
+//        Log.d(TAG, "updateForecasts: Setting isLoading to true")
         _isLoading.postValue(true)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.IO).launch {
 
             // 1) Check what ocean forecast and location forecasts needs to be updated
             val rawForecasts = forecastDao.getAllCurrentRaw()
@@ -43,13 +45,11 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
             if (rawForecasts.isNullOrEmpty()) {
                 // Then no data is stored at all. We need to update all badesteder
                 alleBadesteder.forEach {
-                    updateLocationData(it)
                     updateOceanData(it)
+                    updateLocationData(it)
                 }
-                Log.d(TAG,"Forecasts was empty")
-                Log.d(TAG, "updateForecasts: Setting isLoading to false")
-                _isLoading.postValue(false)
-
+//                Log.d(TAG,"Forecasts was empty")
+//                Log.d(TAG, "updateForecasts: Setting isLoading to false")
             } else {
                 rawForecasts.forEach {
 
@@ -58,17 +58,17 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
                     }
 
                     if (it.forecast?.isOceanForecastOutdated() != false) {
-                        Log.d(TAG,"Ocean data outdated for  ${it.badested}")
+//                        Log.d(TAG,"Ocean data outdated for  ${it.badested}")
                         updateOceanData(it.badested)
                     }
 
                     if (it.forecast?.isLocationForecastOutdated() != false) {
-                        Log.d(TAG,"Location data outdated for  ${it.badested}")
+//                        Log.d(TAG,"Location data outdated for  ${it.badested}")
                         updateLocationData(it.badested)
                     }
                 }
             }
-            Log.d(TAG, "updateForecasts: Setting isLoading to false")
+//            Log.d(TAG, "updateForecasts: Setting isLoading to false")
             _isLoading.postValue(false)
         }
     }
@@ -85,7 +85,7 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         }
 
         if (!newData.isNullOrEmpty()) {
-            Log.d(TAG, "updateOceanData: updating DB for id: ${newData[0].badestedId}")
+//            Log.d(TAG, "updateOceanData: updating DB for id: ${newData[0].badestedId}")
             forecastDao.newOceanForecast(newData)
         } else {
             Log.d(TAG, "newData was null!")
@@ -97,13 +97,13 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         val newData = try {
             LocationRequestManager.request(badested)
         } catch (ex: Exception) {
-            //The updating of data failed, now this can have several reasons,
+            // The updating of data failed, now this can have several reasons,
             // like no internet connection, bad response from the server etc..
             null
         }
 
         if (!newData.isNullOrEmpty()) {
-            Log.d(TAG, "updateLocationData: updating DB for id: ${newData[0].badestedId}")
+//            Log.d(TAG, "updateLocationData: updating DB for id: ${newData[0].badestedId}")
             forecastDao.newLocationForecast(newData)
         } else {
             Log.d(TAG, "newData was null!")
@@ -112,6 +112,6 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
     fun cancelRequests() {
         Log.d(TAG, "cancelRequests: called...")
-        (Dispatchers.IO).cancel()
+        job.cancel()
     }
 }
