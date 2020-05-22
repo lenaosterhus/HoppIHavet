@@ -5,9 +5,6 @@ import androidx.room.*
 import com.example.badeapp.models.*
 
 
-private const val TAG = "ForecastDao"
-
-
 @Dao
 interface ForecastDao {
 
@@ -35,14 +32,13 @@ interface ForecastDao {
      * These are the insert methods for the dao
      */
 
-    /**
-     * All badesteder are inserted when the DB is created (see ForecastDB)
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun putBadested(badested: Badested)
-
+    // All badesteder are inserted when the DB is created (see ForecastDB)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllBadesteder(badesteder: List<Badested>)
+
+    // For testing
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun putBadested(badested: Badested)
 
 
     @Transaction
@@ -58,6 +54,10 @@ interface ForecastDao {
         private_updateOceanForecast(entries)
         private_addNewOceanForecasts(entries)
     }
+
+    /**
+     * Getter methods
+     */
 
     @Transaction
     @Query("SELECT * FROM BadestedForecast")

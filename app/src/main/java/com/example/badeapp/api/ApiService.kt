@@ -18,14 +18,13 @@ internal interface ApiService {
         "User-Agent: $USER_HEADER"
     )
     @GET(".json")
-    suspend fun getWeatherData(
+    suspend fun getLocationData(
         @Query("lat") lat: String,
         @Query("lon") lon: String
     ): Response<LocationResponseFormat?>
 
 
     // https://in2000-apiproxy.ifi.uio.no/weatherapi/oceanforecast/0.9/.json?lat=59.9016&lon=10.665422
-    // Suspend fun --> called in coroutines
 
     @Headers(
         "Content-Type: $CONTENT_TYPE",
@@ -36,6 +35,4 @@ internal interface ApiService {
         @Query("lat") lat: String,
         @Query("lon") lon: String
     ): Response<OceanResponseFormat?>
-
-
 }

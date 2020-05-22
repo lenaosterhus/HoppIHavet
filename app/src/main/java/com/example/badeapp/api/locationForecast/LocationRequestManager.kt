@@ -1,6 +1,5 @@
 package com.example.badeapp.api.locationForecast
 
-import android.util.Log
 import com.example.badeapp.api.ApiService
 import com.example.badeapp.api.MIThrottler
 import com.example.badeapp.models.Badested
@@ -19,38 +18,32 @@ import retrofit2.http.Headers
 
 object LocationRequestManager {
 
-    private const val TAG = "LocationReqMngr"
+//    private const val TAG = "LocationReqMngr"
 
-    // lazy = only initialized once, use the same instance
     private val retrofitBuilder: Retrofit.Builder by lazy {
-        Log.d(TAG, "building LOCATION...")
+//        Log.d(TAG, "building Retrofit...")
         Retrofit.Builder()
             .baseUrl(BASE_URL_LOCATION)
             .addConverterFactory(GsonConverterFactory.create())
     }
 
-
     private val apiService: ApiService by lazy {
-        Log.d(TAG, "building LOCATION apiService")
+//        Log.d(TAG, "building apiService")
         retrofitBuilder
             .build()
             .create(ApiService::class.java)
     }
 
+
     @Headers("User-Agent: $USER_HEADER")
-    suspend fun request(
-        badested: Badested
-    ): List<LocationForecast>? {
-        Log.d(TAG, "$badested")
+    suspend fun request( badested: Badested) : List<LocationForecast>? {
+
         if (!MIThrottler.hasStopped()) {
-            Log.d(TAG, "request: API REQUEST location")
-            val response = apiService.getWeatherData(badested.lat, badested.lon)
+//            Log.d(TAG, "request: API REQUEST")
+            val response = apiService.getLocationData(badested.lat, badested.lon)
             MIThrottler.submitCode(response.code())
-            if (response.isSuccessful) {
-                val res = response.body()?.summarise(badested)
-                Log.d(TAG, "$res\n\n")
-                return res
-            }
+
+            if (response.isSuccessful) return response.body()?.summarise(badested)
         }
         return null
     }

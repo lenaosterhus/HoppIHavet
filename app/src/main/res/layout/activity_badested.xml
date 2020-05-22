@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
+    android:id="@+id/ScrollView_badested"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/himmel"
     android:backgroundTintMode="add"
-    android:scrollbarThumbVertical="@color/orange"
+    android:scrollbarThumbVertical="@color/sol"
     android:scrollbarSize="4dp"
     tools:context=".ui.BadestedActivity">
 
@@ -241,6 +242,7 @@
                 android:maxLines="8"
                 android:paddingBottom="5dp"
                 android:scrollbars="vertical"
+                android:scrollbarThumbVertical="@color/sol"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
                 app:layout_constraintLeft_toLeftOf="parent"
