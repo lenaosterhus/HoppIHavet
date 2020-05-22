@@ -9,10 +9,7 @@ import com.example.badeapp.models.Badested
 import com.example.badeapp.models.BadestedForecast
 import com.example.badeapp.models.alleBadesteder
 import com.example.badeapp.persistence.ForecastDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * This is the repository that handles the interactions to get the
@@ -30,14 +27,22 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private lateinit var job : Job
+    private var job : CompletableJob? = null
 
 
     fun updateForecasts() {
-//        Log.d(TAG, "updateForecasts: Setting isLoading to true")
         _isLoading.postValue(true)
 
-        job = CoroutineScope(Dispatchers.IO).launch {
+        // Only one thread can update at a time
+        synchronized(this) {
+            if (job?.isActive == true) {
+                return
+            }
+        }
+
+        job = Job()
+
+        CoroutineScope(Dispatchers.IO + job!!).launch {
 
             // 1) Check what ocean forecast and location forecasts needs to be updated
             val rawForecasts = forecastDao.getAllCurrentRaw()
@@ -48,8 +53,7 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
                     updateOceanData(it)
                     updateLocationData(it)
                 }
-//                Log.d(TAG,"Forecasts was empty")
-//                Log.d(TAG, "updateForecasts: Setting isLoading to false")
+
             } else {
                 rawForecasts.forEach {
 
@@ -58,19 +62,17 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
                     }
 
                     if (it.forecast?.isOceanForecastOutdated() != false) {
-//                        Log.d(TAG,"Ocean data outdated for  ${it.badested}")
                         updateOceanData(it.badested)
                     }
 
                     if (it.forecast?.isLocationForecastOutdated() != false) {
-//                        Log.d(TAG,"Location data outdated for  ${it.badested}")
                         updateLocationData(it.badested)
                     }
                 }
             }
-//            Log.d(TAG, "updateForecasts: Setting isLoading to false")
             _isLoading.postValue(false)
         }
+        job?.complete()
     }
 
     private suspend fun updateOceanData(badested: Badested) {
@@ -85,7 +87,6 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         }
 
         if (!newData.isNullOrEmpty()) {
-//            Log.d(TAG, "updateOceanData: updating DB for id: ${newData[0].badestedId}")
             forecastDao.newOceanForecast(newData)
         } else {
             Log.d(TAG, "newData was null!")
@@ -103,7 +104,6 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         }
 
         if (!newData.isNullOrEmpty()) {
-//            Log.d(TAG, "updateLocationData: updating DB for id: ${newData[0].badestedId}")
             forecastDao.newLocationForecast(newData)
         } else {
             Log.d(TAG, "newData was null!")
@@ -112,6 +112,6 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
     fun cancelRequests() {
         Log.d(TAG, "cancelRequests: called...")
-        job.cancel()
+        job?.cancel()
     }
 }
