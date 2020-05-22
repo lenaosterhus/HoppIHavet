@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName
 
 
 private const val TAG = "OCEAN-RESPONSE-FORMAT"
-private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
 
 internal data class OceanResponseFormat(
     @Expose @SerializedName("mox:forecastPoint") val forecastPoint: Point?,
@@ -20,23 +19,19 @@ internal data class OceanResponseFormat(
 
     fun summarise(badested: Badested): List<OceanForecast>? {
 
-
         val nextIssue: String = nextIssueTime?.timeInstant?.timePosition ?: inTheFutureFromNow(
             NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN
         ).toGmtIsoString()
 
         val issue = issueTime?.timeInstant?.timePosition ?: currentTime().toGmtIsoString()
 
-        val forecasts = forecast?.map { it ->
-            it.summariseForecast(badested, nextIssue,issue)
-        }?.filterNotNull()
+        val forecasts = forecast?.mapNotNull { it ->
+            it.summariseForecast(badested, nextIssue, issue)
+        }
 
-        if (forecasts.isNullOrEmpty())
-            return null
-
+        if (forecasts.isNullOrEmpty()) return null
 
         return forecasts
-
     }
 
     data class Point(
@@ -61,7 +56,7 @@ internal data class OceanResponseFormat(
     class Forecast(
         @Expose @SerializedName("metno:OceanForecast") val forecast: OceanForecastClass?
     ) {
-        // Nødvendig for å få god utskrift til logcat
+        // For logcat
         override fun toString(): String {
             return "\nForecast(forecast=$forecast)"
         }
@@ -77,7 +72,6 @@ internal data class OceanResponseFormat(
                     Log.e(TAG, "Failed to get 'from'  and 'to' for the ocean forecast")
                     return null
                 }
-
 
                 waterTempC == null -> {
                     Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast ${badested.name}, from: $from, to: $to")
@@ -96,18 +90,15 @@ internal data class OceanResponseFormat(
             val instance = to ?: from
             val newFrom = instance!!.parseAsGmtIsoDate()!!.subOneHour().toGmtIsoString()
 
-            //val newTo = from!!.parseAsGmtIsoDate()?.addOneHour()?.toGmtIsoString()!!
             return OceanForecast(badested.id, newFrom, to!!, nextIssue, waterTempC,issueTime)
         }
     }
 
     data class OceanForecastClass(
         @Expose @SerializedName("mox:seaTemperature") val seaTemperature: SeaTemperature,
-        @Expose @SerializedName("mox:significantTotalWaveHeight") val significantTotalWaveHeight: SignificantTotalWaveHeight,
         @Expose @SerializedName("mox:validTime") val validTime: ValidTime
     )
 
-    // uom = Cel
     data class SeaTemperature(
         @Expose @SerializedName("content") val content: String?,
         @Expose @SerializedName("uom") val uom: String?
@@ -117,7 +108,6 @@ internal data class OceanResponseFormat(
         @Expose @SerializedName("content") val content: String?
     )
 
-    // uom = m/s
     data class SeaCurrentSpeed(
         @Expose @SerializedName("content") val content: String?,
         @Expose @SerializedName("uom") val uom: String?

@@ -2,7 +2,6 @@ package com.example.badeapp.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.ProgressBar
@@ -21,8 +20,6 @@ import kotlinx.android.synthetic.main.activity_badested_list.*
  * Denne filen skal håndtere eventer, altså er det her vi observerer badestedenes
  * live data, og endrer på data etter behov.
  */
-
-private const val TAG = "BadestedListActivity"
 
 class BadestedListActivity : AppCompatActivity(),
     RecyclerAdapter.Interaction {
@@ -44,7 +41,6 @@ class BadestedListActivity : AppCompatActivity(),
 
         // Init recycler view
         recycler_view.apply {
-            Log.d(TAG, "Inflate RecyclerView")
             layoutManager = LinearLayoutManager(this@BadestedListActivity)
             recyclerAdapter = RecyclerAdapter(this@BadestedListActivity)
             adapter = recyclerAdapter
@@ -57,17 +53,12 @@ class BadestedListActivity : AppCompatActivity(),
 
         // Observing forecasts
         viewModel.forecasts.observe(this, Observer {
-            Log.d(TAG, "subscribeObservers: forecastDao.getAllCurrent() CHANGED")
-//            Log.d(TAG, "Submitting list $it")
             recyclerAdapter.submitList(it)
         })
 
         // Observing if we're halted by MI, and displaying toast
         viewModel.hasHalted.observe(this, Observer { hasHalted ->
-            Log.d(TAG, "subscribeObservers: hasHalted changed!")
-
             if (hasHalted) {
-                Log.d(TAG, "subscribeObservers: HAS HALTED")
                 Toast.makeText(
                     this@BadestedListActivity,
                     resources.getString(R.string.has_halted_error),
@@ -83,8 +74,6 @@ class BadestedListActivity : AppCompatActivity(),
     }
 
     private fun showProgressBar(visibility: Boolean) {
-        Log.d(TAG, "showProgressBar: called with visibility: $visibility...")
-
         progressBar.visibility = if (visibility) View.VISIBLE else View.INVISIBLE
     }
 
@@ -95,7 +84,6 @@ class BadestedListActivity : AppCompatActivity(),
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(queryString: String): Boolean {
-                Log.d(TAG, "onQueryTextSubmit: $queryString")
                 recyclerAdapter.filter.filter(queryString)
                 return false
             }
@@ -117,7 +105,6 @@ class BadestedListActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: called")
         viewModel.updateData()
     }
 

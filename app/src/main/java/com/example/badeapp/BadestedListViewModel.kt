@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
@@ -24,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private const val TAG = "BadestedListVM"
 
 class BadestedListViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -37,8 +35,8 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
         this.addSource(badestedForecastRepo.isLoading) { isLoading ->
             this.value = isLoading
             if (!isLoading) {
-                //If we are not loading any data (from DB) and we don't have internet, then
-                //We show a toast to the user.
+                // If we are not loading any data (from DB) and we don't have internet, then
+                // we show a toast to the user.
                 if (!isInternetAvailable(getApplication()))
                     networkConnectionToast()
             }
@@ -65,13 +63,11 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
 
 
     fun updateData() {
-        Log.d(TAG, "updateData: ...")
-        // Setter Location- og OceanForecast for alle badestedene som er utdatert
+        // Setting Location- og OceanForecast for all badested that are outdated
         badestedForecastRepo.updateForecasts()
     }
 
     private fun networkConnectionToast() {
-
         // If no data is present in DB, and we don't have any internet show a toast to the user.
         if (forecasts.value.isNullOrEmpty()) {
             Toast.makeText(
@@ -105,7 +101,7 @@ class BadestedListViewModel(application: Application) : AndroidViewModel(applica
         val connectivityManager = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                //take action when network connection is gained
+                // Take action when network connection is gained
                 updateData()
             }
         })

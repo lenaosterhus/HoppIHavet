@@ -18,17 +18,13 @@ import retrofit2.http.Headers
 
 object LocationRequestManager {
 
-//    private const val TAG = "LocationReqMngr"
-
     private val retrofitBuilder: Retrofit.Builder by lazy {
-//        Log.d(TAG, "building Retrofit...")
         Retrofit.Builder()
             .baseUrl(BASE_URL_LOCATION)
             .addConverterFactory(GsonConverterFactory.create())
     }
 
     private val apiService: ApiService by lazy {
-//        Log.d(TAG, "building apiService")
         retrofitBuilder
             .build()
             .create(ApiService::class.java)
@@ -39,7 +35,6 @@ object LocationRequestManager {
     suspend fun request( badested: Badested) : List<LocationForecast>? {
 
         if (!MIThrottler.hasStopped()) {
-//            Log.d(TAG, "request: API REQUEST")
             val response = apiService.getLocationData(badested.lat, badested.lon)
             MIThrottler.submitCode(response.code())
 

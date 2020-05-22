@@ -6,3 +6,5 @@ const val BASE_URL_LOCATION =
 const val BASE_URL_OCEAN =
     "https://in2000-apiproxy.ifi.uio.no/weatherapi/oceanforecast/0.9/"
 const val CONTENT_TYPE = "application/x-www-form-urlencoded"
+
+const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
