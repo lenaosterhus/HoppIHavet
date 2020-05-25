@@ -39,14 +39,14 @@
 
 
         <TextView
-            android:id="@+id/TextView_bilde_kilde"
+            android:id="@+id/TextView_image_source"
             android:layout_width="220dp"
             android:layout_height="18dp"
             android:layout_marginTop="7dp"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="7dp"
             android:gravity="end"
-            android:text="@string/bilde_kilde"
+            android:text="@string/image_source"
             android:textColor="@color/textColorLightGrey"
             android:textSize="13sp"
             android:textStyle="italic"
@@ -63,7 +63,6 @@
             android:layout_marginTop="40dp"
             android:layout_marginRight="15dp"
             android:layout_marginBottom="15dp"
-            android:contentDescription="@string/badestednavn"
             android:textColor="@color/textColor"
             android:textSize="22sp"
             android:textStyle="bold|italic"
@@ -82,9 +81,22 @@
             android:layout_marginRight="15dp"
             android:background="@drawable/badested_background_grey"
             android:padding="2dp"
+            android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/TextView_badested_name">
+
+            <TextView
+                android:id="@+id/TextView_badested_weather_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:accessibilityTraversalAfter="@id/TextView_badested_name"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/TextView_badested_air_temp_desc"
@@ -94,8 +106,10 @@
                 android:text="@string/temp_air"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
+                android:focusable="false"
+                android:accessibilityTraversalAfter="@id/TextView_badested_weather_desc"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/TextView_badested_weather_desc" />
 
             <TextView
                 android:id="@+id/TextView_badested_air_temp"
@@ -104,6 +118,7 @@
                 android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_air_temp_desc"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_air_temp_desc"
                 app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
@@ -116,6 +131,7 @@
                 android:text="@string/temp_water"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_air_temp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/TextView_badested_air_temp_desc" />
 
@@ -126,6 +142,7 @@
                 android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="16sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_water_temp"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_water_temp_desc"
                 app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
@@ -138,6 +155,7 @@
                 android:text="@string/precipitation"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_water_temp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/TextView_badested_water_temp_desc" />
 
@@ -148,6 +166,7 @@
                 android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_precipitation_desc"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_precipitation_desc"
                 app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
@@ -159,6 +178,7 @@
                 android:text="@string/wind"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_precipitation"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/TextView_badested_precipitation_desc" />
 
@@ -169,6 +189,7 @@
                 android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_wind_desc"
                 app:layout_constraintBottom_toBottomOf="@+id/TextView_badested_wind_desc"
                 app:layout_constraintLeft_toLeftOf="@id/barrier" />
 
@@ -179,6 +200,7 @@
                 android:layout_margin="5dp"
                 android:textColor="@color/textColor"
                 android:textSize="12sp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_wind"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/TextView_badested_wind_desc" />
@@ -190,6 +212,7 @@
                 android:layout_margin="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
+                android:accessibilityTraversalAfter="@id/TextView_badested_valid_to"
                 android:contentDescription="@string/symbol_for_weather"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -217,6 +240,7 @@
             android:paddingBottom="5dp"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
+            android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/weather_container">
@@ -239,10 +263,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:maxLines="8"
                 android:paddingBottom="5dp"
-                android:scrollbars="vertical"
-                android:scrollbarThumbVertical="@color/sol"
                 android:textColor="@color/textColor"
                 android:textSize="14sp"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -262,6 +283,7 @@
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
             android:visibility="gone"
+            android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_description">

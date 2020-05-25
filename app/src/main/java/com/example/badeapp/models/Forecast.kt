@@ -253,7 +253,7 @@ data class Forecast(
     }
     
     fun getValidToDescription() : String {
-        return "Varselet gjelder til kl. " + getHour(to)
+        return "Varselet gjelder til klokken " + getHour(to)
     }
 
     /**

@@ -1,23 +1,21 @@
 <resources>
     <string name="app_name">Hopp I Havet</string>
     <string name="badested">Badested</string>
-    <string name="symbol_for_air">Symbol for lufttemperatur</string>
-    <string name="symbol_for_water">Symbol for vanntemperatur</string>
+    <string name="symbol_for_air">i luften</string>
+    <string name="symbol_for_water">i vannet</string>
     <string name="symbol_for_weather">Symbol for vær</string>
     <string name="temp_placeholder">"    "</string>
-    <string name="badestednavn">Badestednavn</string>
     <string name="temp_air">Temperatur luft:</string>
     <string name="temp_water">Temperatur vann:</string>
     <string name="precipitation">Nedbør:</string>
     <string name="description_title">Beskrivelse:</string>
-    <string name="description_placeholder">Dette er en beskrivelse av et badested. Her kommer det masse nyttig informasjon om badestedet.\nKanskje må vi skrolle for å se alt?\n\n\nTittei</string>
     <string name="show_facilities">Vis fasiliteter</string>
     <string name="facilities_title">Fasiliteter:</string>
     <string name="show_map">Vis i kart</string>
     <string name="wind">Vind:</string>
     <string name="has_halted_error">Noe gikk galt. Prøv igjen om litt.</string>
     <string name="search">Søk</string>
-    <string name="bilde_kilde">Bilde hentet fra oslofjorden.com</string>
+    <string name="image_source">Bilde hentet fra oslofjorden.com</string>
 
     <string name="wic_1_desc">  Sol/klarvær</string>
     <string name="wic_2_desc">  Lettskyet</string>
