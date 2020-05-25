@@ -65,7 +65,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     }
 
     class RVElement
-    constructor( itemView: View, private val interaction: Interaction?) :
+    constructor (itemView: View, private val interaction: Interaction?) :
         RecyclerView.ViewHolder(itemView) {
 
         fun bind(forecast: BadestedForecast) {
