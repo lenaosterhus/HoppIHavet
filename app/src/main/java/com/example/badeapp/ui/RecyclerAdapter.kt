@@ -13,7 +13,6 @@ import com.example.badeapp.R
 import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.rv_element.view.*
 import java.util.*
-import kotlin.math.roundToInt
 
 private const val TAG = "RecyclerAdapter"
 
@@ -24,11 +23,9 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     var unFilteredList: List<BadestedForecast>? = null
 
     private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedForecast>() {
-
         override fun areItemsTheSame(oldItem: BadestedForecast, newItem: BadestedForecast): Boolean {
             return oldItem.badested == newItem.badested
         }
-
         override fun areContentsTheSame(
             oldItem: BadestedForecast,
             newItem: BadestedForecast
@@ -36,6 +33,7 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
             return oldItem.sameContentAs(newItem)
         }
     }
+
     private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -59,7 +57,6 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     }
 
     override fun getItemCount(): Int {
-        //return filteredBadestedList.size @TODO figure out
         return differ.currentList.size
     }
 

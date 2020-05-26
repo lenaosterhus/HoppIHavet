@@ -10,7 +10,8 @@ import java.util.*
 
 /**
  * This object makes sure we respect Meteorology Institute wishes not to spam their servers.
- * If they give certain response codes they want us to throttle or halt requests.
+ * If they give certain response codes they want us to throttle or halt requests. All repositories
+ * using their API check this singleton.
  *
  */
 object MIThrottler {
