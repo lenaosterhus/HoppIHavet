@@ -142,7 +142,7 @@ object IsoGmtConverter {
 }
 
 /**
- * This function takes a Date, and says if the time would be one where we would expect daylight.
+ * This function takes a Date, and says if the time we would expect daylight in Oslo.
  */
 fun Date.daylightInOslo(): Boolean {
 
@@ -152,7 +152,6 @@ fun Date.daylightInOslo(): Boolean {
     val min = c.get(Calendar.MINUTE) + ((c.get(Calendar.HOUR_OF_DAY) + 2) % 24) * 60
 
     when (month) {
-
         1 -> return 9 * 60 + 1 < min && min < 15 * 60 + 50
         2 -> return 7 * 60 + 53 < min && min < 17 * 60 + 8
         3 -> return 6 * 60 + 29 < min && min < 18 * 60 + 21
