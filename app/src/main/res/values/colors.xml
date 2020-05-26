@@ -2,6 +2,16 @@
 <resources>
     <color name="colorPrimary">#A6DCE1</color>
     <color name="colorPrimaryDark">#569ACC</color>
-    <color name="colorAccent">#F89625</color>
-    <color name="background">#37474F</color>
+
+    <color name="darkGrey">#37474F</color>
+    <color name="lightGreyBackground">#ECEFF1</color>
+    <color name="textColor">#000000</color>
+    <color name="textColorLight">#FFFFFF</color>
+    <color name="textColorLightGrey">#656464</color>
+    <color name="orange">#F89625</color>
+    <color name="sol">#F7DB17</color>
+    <color name="hav">#569ACC</color>
+    <color name="himmel">#B2E0E4</color>
+
+    <color name="wic_background">#FFFFFF</color>
 </resources>

@@ -10,23 +10,23 @@ import java.util.*
 
 /**
  * This object makes sure we respect Meteorology Institute wishes not to spam their servers.
- * If they give certain response codes they want us to throttle or halt requests.
+ * If they give certain response codes they want us to throttle or halt requests. All repositories
+ * using their API check this singleton.
  *
  */
 object MIThrottler {
-    val TAG = "MIThrottler"
 
+    private const val TAG = "MIThrottler"
 
-    private const val stoppTimeMin = 10L
+    const val stopTimeMin = 10L
     private var stopUntil: Date? = null
 
-    private val _hasHalted = MutableLiveData<Boolean>()
+    private val _hasHalted = MutableLiveData<Boolean>().also { it.postValue(false) }
     val hasHalted: LiveData<Boolean> = _hasHalted
-
 
     /**
      * This variable/function tells if the traffic has been requested to halt. This is used to
-     * determine if requests COULD happen.
+     * determine if requests CAN happen.
      */
     fun hasStopped(): Boolean {
         return _hasHalted.value ?: false
@@ -34,14 +34,18 @@ object MIThrottler {
 
 
     private fun halt() {
-        stopUntil = inTheFutureFromNow(stoppTimeMin)
-        _hasHalted.value = true
+        stopUntil = inTheFutureFromNow(stopTimeMin)
+        _hasHalted.postValue(true)
     }
 
-    fun tryToResume() {
+    fun canResume() : Boolean {
         stopUntil?.let {
-            _hasHalted.value = it.before(currentTime())
+            if (it.before(currentTime())) {
+                _hasHalted.postValue(false)
+                return true
+            }
         }
+        return false
     }
 
 
@@ -53,18 +57,12 @@ object MIThrottler {
         require(code in 0..599)
 
         when (code) {
-            200 -> return     //All good
-            203 -> halt()     //Plz slow down
-            429 -> {          //If we dont stop now, we are banned
-                halt()
-            }
+            200 -> return     // All good
+            203 -> halt()     // Plz slow down
+            429 -> halt()     // If we dont stop now, we are banned
             403 -> Log.e("MI-BAN-HAMMER!!", "We are banned from MI!")
-            //@TODO log if there was a 404, or any unknown response.
+            else -> Log.i(TAG,"Got response code $code, that MIThrotteler.kt does not understand.")
         }
-
-
     }
-
-
 }
 
