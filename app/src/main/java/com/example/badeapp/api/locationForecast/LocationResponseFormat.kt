@@ -4,17 +4,12 @@ package com.example.badeapp.api.locationForecast
 import android.util.Log
 import com.example.badeapp.models.Badested
 import com.example.badeapp.models.LocationForecast
-import com.example.badeapp.util.currentTime
-import com.example.badeapp.util.inTheFutureFromNow
-import com.example.badeapp.util.minBetween
-import com.example.badeapp.util.toGmtIsoString
+import com.example.badeapp.util.*
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-private const val TAG = "LFResponseFormat"
-private const val NEXT_UPDATE_WHEN_NO_NEXTISSUE_MIN = 20L
+private const val TAG = "LocationRespFormat"
 
-// // created = når data ble hentet ISO
 internal data class LocationResponseFormat(
     @Expose @SerializedName("product") val product: Product?,
     @Expose @SerializedName("created") val created: String?,
@@ -91,20 +86,16 @@ internal data class LocationResponseFormat(
 }
 
 // ----- TOP LEVEL -----
-// Container for data - classy = class i JSON
 internal data class Product(
     @Expose @SerializedName("time") val time: List<Time>?,
     @Expose @SerializedName("class") val classy: String?
 )
 
-// Container for metadata
 internal data class Meta(
     @Expose @SerializedName("model") val model: Model?
 )
 
 // ----- -----
-// Hoveddelen av Product:
-// datatype = "forcast", from & to = tidspunkt ISO, location = værdata
 internal data class Time(
     @Expose @SerializedName("datatype") val datatype: String?,
     @Expose @SerializedName("from") val from: String,
@@ -143,19 +134,11 @@ internal data class Time(
 
     fun durationMin(): Long {
         val diff = minBetween(from, to)
-        if (diff == null) {
-            Log.e(TAG, "Tidsintervall diff ikke funnet for:\n\tTo:   $to,\n\tFrom: $from\n")
-        } else if (diff < 0L) {
-            Log.e(TAG, "Tidsintervall diff mindre enn 0 for:\n\tTo:   $to,\n\tFrom: $from\n\tdiff: $diff\n"
-            )
-        }
         return diff!!
     }
 }
 
-// metadata for sporringen.
-// nextrun = VIKTIG
-// termin = Siste hele klokkeslett
+
 internal data class Model(
     @Expose @SerializedName("nextrun") val nextrun: String?,
     @Expose @SerializedName("name") val name: String?,
@@ -256,7 +239,6 @@ internal data class Location(
     }
 }
 
-// id er optional
 internal data class Temperature(
     @Expose @SerializedName("unit") val unit: String?,
     @Expose @SerializedName("id") val id: String?,
@@ -273,36 +255,49 @@ internal data class WindSpeed(
     @Expose @SerializedName("id") val id: String?
 )
 
-// id = Irrelevant, gis i enten percent eller eights
-internal data class Cloudiness(
+internal data class Precipitation(
+    @Expose @SerializedName("unit") val unit: String?,
+    @Expose @SerializedName("maxvalue") val maxvalue: String?,
+    @Expose @SerializedName("value") val value: Double?,
+    @Expose @SerializedName("minvalue") val minvalue: String?
+)
 
+internal data class Symbol(
+    @Expose @SerializedName("id") val id: String?,
+    @Expose @SerializedName("number") val number: Int?
+)
+
+internal data class WindDirection(
+    @Expose @SerializedName("deg") val deg: String?,
+    @Expose @SerializedName("name") val name: String?,
+    @Expose @SerializedName("id") val id: String?
+)
+
+
+// ----- FORELOPIG IRRELEVANT -----
+
+internal data class Cloudiness(
     @Expose @SerializedName("id") val id: String?,
     @Expose @SerializedName("percent") val percent: String?,
     @Expose @SerializedName("eights") val eights: Int?
 )
 
-
-// ----- FORELOPIG IRRELEVANT -----
-// id = Irrelevant, unit = Celcius?
 internal data class DewpointTemperature(
     @Expose @SerializedName("value") val value: String?,
     @Expose @SerializedName("id") val id: String?,
     @Expose @SerializedName("unit") val unit: String?
 )
 
-// id = Irrelevant,
 internal data class Fog(
     @Expose @SerializedName("percent") val percent: String?,
     @Expose @SerializedName("id") val id: String?
 )
 
-// id = Irrelevant
 internal data class HighClouds(
     @Expose @SerializedName("id") val id: String?,
     @Expose @SerializedName("percent") val percent: String?
 )
 
-// unit = %
 internal data class Humidity(
     @Expose @SerializedName("value") val value: String?,
     @Expose @SerializedName("unit") val unit: String?
@@ -318,34 +313,15 @@ internal data class MediumClouds(
     @Expose @SerializedName("id") val id: String?
 )
 
-internal data class Precipitation(
-    @Expose @SerializedName("unit") val unit: String?,
-    @Expose @SerializedName("maxvalue") val maxvalue: String?,
-    @Expose @SerializedName("value") val value: Double?,
-    @Expose @SerializedName("minvalue") val minvalue: String?
-)
-
 internal data class Pressure(
     @Expose @SerializedName("unit") val unit: String?,
     @Expose @SerializedName("id") val id: String?,
     @Expose @SerializedName("value") val value: String?
 )
 
-// id = "cloud", "sun" etc., number = id fra WeatherIcon API
-internal data class Symbol(
-    @Expose @SerializedName("id") val id: String?,
-    @Expose @SerializedName("number") val number: Int?
-)
-
 internal data class TemperatureProbability(
     @Expose @SerializedName("value") val value: String?,
     @Expose @SerializedName("unit") val unit: String?
-)
-
-internal data class WindDirection(
-    @Expose @SerializedName("deg") val deg: String?,
-    @Expose @SerializedName("name") val name: String?,
-    @Expose @SerializedName("id") val id: String?
 )
 
 internal data class WindGust(

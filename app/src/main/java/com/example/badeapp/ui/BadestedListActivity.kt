@@ -1,28 +1,33 @@
 package com.example.badeapp.ui
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.badeapp.BadestedListViewModel
 import com.example.badeapp.R
 import com.example.badeapp.models.BadestedForecast
+import com.example.badeapp.util.inTheFutureFromNow
+import com.example.badeapp.util.isInternetAvailable
+import com.example.badeapp.util.parseAsGmtIsoDate
+import com.example.badeapp.viewModels.BadestedListViewModel
 import kotlinx.android.synthetic.main.activity_badested_list.*
 
 /**
  * Denne filen skal håndtere eventer, altså er det her vi observerer badestedenes
  * live data, og endrer på data etter behov.
  */
-
-private const val TAG = "BadestedListActivity"
 
 class BadestedListActivity : AppCompatActivity(),
     RecyclerAdapter.Interaction {
@@ -44,7 +49,6 @@ class BadestedListActivity : AppCompatActivity(),
 
         // Init recycler view
         recycler_view.apply {
-            Log.d(TAG, "Inflate RecyclerView")
             layoutManager = LinearLayoutManager(this@BadestedListActivity)
             recyclerAdapter = RecyclerAdapter(this@BadestedListActivity)
             adapter = recyclerAdapter
@@ -57,17 +61,12 @@ class BadestedListActivity : AppCompatActivity(),
 
         // Observing forecasts
         viewModel.forecasts.observe(this, Observer {
-            Log.d(TAG, "subscribeObservers: forecastDao.getAllCurrent() CHANGED")
-//            Log.d(TAG, "Submitting list $it")
             recyclerAdapter.submitList(it)
         })
 
         // Observing if we're halted by MI, and displaying toast
         viewModel.hasHalted.observe(this, Observer { hasHalted ->
-            Log.d(TAG, "subscribeObservers: hasHalted changed!")
-
             if (hasHalted) {
-                Log.d(TAG, "subscribeObservers: HAS HALTED")
                 Toast.makeText(
                     this@BadestedListActivity,
                     resources.getString(R.string.has_halted_error),
@@ -77,15 +76,59 @@ class BadestedListActivity : AppCompatActivity(),
         })
 
         // Observing if we are loading data from database or API
-        viewModel.isLoading.observe(this, Observer {
-            showProgressBar(it)
+        viewModel.isLoading.observe(this, Observer {isLoading ->
+            showProgressBar(isLoading)
+            if (!isLoading) {
+                // If we are not loading any data (from DB) and we don't have internet, then
+                // we show a toast to the user.
+                if (!isInternetAvailable(this))
+                    networkConnectionToast()
+            }
         })
     }
 
     private fun showProgressBar(visibility: Boolean) {
-        Log.d(TAG, "showProgressBar: called with visibility: $visibility...")
-
         progressBar.visibility = if (visibility) View.VISIBLE else View.INVISIBLE
+    }
+
+    private fun networkConnectionToast() {
+        // If no data is present in DB, and we don't have any internet show a toast to the user.
+        if (viewModel.forecasts.value.isNullOrEmpty()) {
+            Toast.makeText(
+                this,
+                resources.getString(R.string.no_internet_toast),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        // If data is more then 3h outdated, and we don't have any internet show a toast to the user.
+        if (viewModel.forecasts.value?.any {
+                it.forecast?.createdLocation?.parseAsGmtIsoDate()!!
+                    .before(inTheFutureFromNow(-60 * 3))
+            } == true) {
+            Toast.makeText(
+                this,
+                resources.getString(R.string.outdated_info_toast),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        // Now we add a observer to network change, that tries to update once a network
+        // connection is active. We can only do this in later versions of android sdk.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            addNetworkObserverToUpdateOnAvailable()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun addNetworkObserverToUpdateOnAvailable() {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                // Take action when network connection is gained
+                viewModel.updateData()
+            }
+        })
     }
 
     // Search bar
@@ -95,7 +138,6 @@ class BadestedListActivity : AppCompatActivity(),
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(queryString: String): Boolean {
-                Log.d(TAG, "onQueryTextSubmit: $queryString")
                 recyclerAdapter.filter.filter(queryString)
                 return false
             }
@@ -117,7 +159,6 @@ class BadestedListActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: called")
         viewModel.updateData()
     }
 
