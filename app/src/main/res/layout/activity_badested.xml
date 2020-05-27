@@ -33,22 +33,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <TextView
-            android:id="@+id/TextView_image_source"
-            android:layout_width="220dp"
-            android:layout_height="18dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginBottom="7dp"
-            android:gravity="end"
-            android:text="@string/image_source"
-            android:textColor="@color/textColorLightGrey"
-            android:textSize="13sp"
-            android:textStyle="italic"
-            app:layout_constraintBottom_toTopOf="@+id/TextView_badested_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ImageView_badested_image" />
-
         <TextView
             android:id="@+id/TextView_badested_name"
             android:layout_width="match_parent"
@@ -56,10 +40,11 @@
             android:textColor="@color/textColor"
             android:textSize="22sp"
             android:textStyle="bold|italic"
+            android:layout_marginTop="15dp"
             app:layout_constraintBottom_toTopOf="@+id/weather_container"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/TextView_image_source" />
+            app:layout_constraintTop_toBottomOf="@id/ImageView_badested_image" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/weather_container"
@@ -314,7 +299,6 @@
             android:textColor="@color/textColor"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/Button_badested_show_on_map"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintHorizontal_weight="1"
@@ -336,12 +320,23 @@
             android:textColor="@color/textColor"
             android:textSize="15sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/Button_badested_facilities"
             app:layout_constraintTop_toBottomOf="@+id/container_facilities" />
+
+        <TextView
+            android:id="@+id/TextView_image_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/image_source"
+            android:textColor="@color/textColorLightGrey"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Button_badested_facilities" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
