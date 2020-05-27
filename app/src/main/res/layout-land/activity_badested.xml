@@ -16,6 +16,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="15dp" >
 
         <!-- ConstraintLayout for the white space -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +32,7 @@
                 android:id="@+id/ImageView_badested_image"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:maxHeight="200dp"
+                android:maxHeight="300dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/badested"
                 android:scaleType="centerCrop"
@@ -350,5 +351,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </ScrollView>

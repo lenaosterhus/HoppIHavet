@@ -20,7 +20,7 @@
             android:id="@+id/ImageView_element_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:maxHeight="100dp"
+            android:maxHeight="200dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/badested"
             android:scaleType="centerCrop"
