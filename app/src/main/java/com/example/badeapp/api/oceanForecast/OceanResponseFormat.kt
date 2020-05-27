@@ -78,10 +78,8 @@ internal data class OceanResponseFormat(
                 }
 
                 from != to && to != null -> {
-                    /**
-                     * The ocean forecast api looks like it only shows the data for a instance.
-                     * So we expect from == to.
-                     */
+                     // The ocean forecast api looks like it only shows the data for a instance.
+                     // So we expect from == to.
                     Log.e(TAG, "'from' != 'to'    $from != $to")
                     return OceanForecast(badested.id, from!!, to, nextIssue, waterTempC,issueTime)
                 }

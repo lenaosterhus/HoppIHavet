@@ -25,8 +25,8 @@ import com.example.badeapp.viewModels.BadestedListViewModel
 import kotlinx.android.synthetic.main.activity_badested_list.*
 
 /**
- * Denne filen skal håndtere eventer, altså er det her vi observerer badestedenes
- * live data, og endrer på data etter behov.
+ * This class handles events: This is where we observe LiveData from the viewModel
+ * and update the UI when needed.
  */
 
 class BadestedListActivity : AppCompatActivity(),
