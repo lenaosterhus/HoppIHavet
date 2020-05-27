@@ -19,7 +19,6 @@ import kotlinx.coroutines.*
 
 private const val TAG = "BadestedForecastRepo"
 
-
 class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
     val forecasts: LiveData<List<BadestedForecast>> = forecastDao.getAllCurrent()
@@ -57,10 +56,6 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
             } else {
                 rawForecasts.forEach {
 
-                    if (it.forecast == null){
-                        Log.d(TAG,"Forecast was null for ${it.badested}")
-                    }
-
                     if (it.forecast?.isOceanForecastOutdated() != false) {
                         updateOceanData(it.badested)
                     }
@@ -80,7 +75,7 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         val newData = try {
             OceanRequestManager.request(badested)
         } catch (ex: Exception) {
-            //The updating of data failed, now this can have several reasons,
+            // The updating of data failed, now this can have several reasons,
             // like no internet connection, bad response from the server etc..
             Log.e(TAG,"Exception when getting ocean data: ${ex.message}")
             null
@@ -89,7 +84,7 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         if (!newData.isNullOrEmpty()) {
             forecastDao.newOceanForecast(newData)
         } else {
-            Log.d(TAG, "newData was null!")
+            Log.d(TAG, "newData for Ocean was null!")
         }
     }
 
@@ -106,7 +101,7 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
         if (!newData.isNullOrEmpty()) {
             forecastDao.newLocationForecast(newData)
         } else {
-            Log.d(TAG, "newData was null!")
+            Log.d(TAG, "newData for Location was null!")
         }
     }
 

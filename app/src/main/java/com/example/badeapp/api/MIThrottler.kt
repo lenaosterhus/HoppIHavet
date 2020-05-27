@@ -48,7 +48,6 @@ object MIThrottler {
         return false
     }
 
-
     /**
      * When doing request we can get two relevant codes. 203 = reduce traffic, and 429 = halt
      * traffic. This function handles these two response codes.

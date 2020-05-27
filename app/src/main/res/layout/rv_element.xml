@@ -56,6 +56,7 @@
                 android:textSize="14sp"
                 android:textStyle="italic"
                 android:layout_marginStart="10dp"
+                android:accessibilityTraversalAfter="@id/TextView_element_name"
                 app:layout_constraintBaseline_toBaselineOf="@id/TextView_element_name"
                 app:layout_constraintLeft_toRightOf="@id/TextView_element_name" />
 
@@ -67,6 +68,7 @@
                 android:text="@string/temp_placeholder"
                 android:textColor="@color/textColor"
                 android:textSize="20sp"
+                android:accessibilityTraversalAfter="@id/TextView_element_place"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/TextView_element_name" />
 
@@ -78,6 +80,7 @@
                 android:background="@drawable/symbol_air_foreground"
                 android:baselineAlignBottom="true"
                 android:contentDescription="@string/symbol_for_air"
+                android:accessibilityTraversalAfter="@id/TextView_element_air_temp"
                 app:layout_constraintStart_toEndOf="@+id/TextView_element_air_temp"
                 app:layout_constraintTop_toBottomOf="@id/TextView_element_name" />
 
@@ -90,6 +93,7 @@
                 android:text="@string/temp_placeholder"
                 android:textColor="@color/textColor"
                 android:textSize="20sp"
+                android:accessibilityTraversalAfter="@id/ImageView_element_symbol_air"
                 app:layout_constraintStart_toEndOf="@+id/ImageView_element_symbol_air"
                 app:layout_constraintTop_toBottomOf="@+id/TextView_element_name" />
 
@@ -101,6 +105,7 @@
                 android:layout_marginStart="1dp"
                 android:background="@drawable/symbol_water_foreground"
                 android:contentDescription="@string/symbol_for_water"
+                android:accessibilityTraversalAfter="@id/TextView_element_water_temp"
                 app:layout_constraintStart_toEndOf="@+id/TextView_element_water_temp"
                 app:layout_constraintTop_toBottomOf="@+id/TextView_element_name" />
 
@@ -113,6 +118,7 @@
             android:layout_height="63dp"
             android:layout_marginTop="10dp"
             android:contentDescription="@string/symbol_for_weather"
+            android:accessibilityTraversalAfter="@id/ImageView_element_symbol_water"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ImageView_element_image" />

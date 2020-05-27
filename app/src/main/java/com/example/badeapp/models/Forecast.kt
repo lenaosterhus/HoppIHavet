@@ -1,23 +1,14 @@
 package com.example.badeapp.models
 
-/*
-badestedForecast
- */
-
-
 import android.os.Parcelable
-import android.util.Log
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
 import com.example.badeapp.util.getHour
-import com.example.badeapp.util.liesBetweneInclusive
 import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
 import kotlin.math.roundToInt
 
-private const val TAG = "DEBUG-Forecast"
 
 @Parcelize
 @Entity(
@@ -39,8 +30,6 @@ data class Forecast(
     val createdLocation : String?,
     val createdOcean : String?
 ) : Parcelable {
-
-
 
 
     /**
@@ -137,7 +126,7 @@ data class Forecast(
                 49 -> return R.mipmap.wic_night_49 //LightSnow
                 50 -> return R.mipmap.wic_night_50 //HeavySnow
 
-                //Polar (midnight sun/constant dark) values
+                // Polar (midnight sun/constant dark) values
                 101 -> return R.mipmap.wic_night_101 //Sun (polar)
                 102 -> return R.mipmap.wic_night_102 //LightCloud
                 103 -> return R.mipmap.wic_night_103 //PartlyCloud
@@ -160,10 +149,7 @@ data class Forecast(
                 145 -> return R.mipmap.wic_night_145 //HeavySnowSun
             }
         }
-
-        //Log.w(TAG,"The given symbol $symbol is not mapped to a image!")
         return null
-
     }
 
     /**
@@ -214,7 +200,6 @@ data class Forecast(
             50 -> return R.string.wic_50_desc //HeavySnow
         }
 
-        Log.w(TAG,"The given symbol $symbol is not mapped to a description!")
         return null
     }
 
@@ -245,7 +230,6 @@ data class Forecast(
                 "NW" -> "nordvest"
 
                 else ->  {
-                    Log.e(TAG, "getWindDescription: not found: $windDirection")
                     return windSpeedName + ", " + windSpeedMps?.toInt().toString() + " m/s"
                 }
             }
@@ -269,7 +253,7 @@ data class Forecast(
     }
     
     fun getValidToDescription() : String {
-        return "Varselet gjelder til kl. " + getHour(to)
+        return "Varselet gjelder til klokken " + getHour(to)
     }
 
     /**
@@ -312,34 +296,4 @@ data class Forecast(
         return nextIssueOcean != null && nextIssueOcean.isNotBlank()
                 && waterTempC != null
     }
-}
-
-/**
- * --------------------------------------------------------------------------------------
- * The following methods are used for testing.
- */
-// Takes a list of Forecasts and returns the one representing now, if that would be applicable
-fun List<Forecast>.getCurrentForecast(): Forecast? {
-    val now = currentTime()
-    return this.find { hour ->
-        now.liesBetweneInclusive(
-            hour.from.parseAsGmtIsoDate()!!,
-            hour.to.parseAsGmtIsoDate()!!
-        )
-    }
-}
-
-// Takes a list of Forecast and lets us find the current Air Temp (if present)
-fun List<Forecast>.getCurrentAirTempC(): Double? {
-    return this.getCurrentForecast()?.airTempC
-}
-
-// Takes a list of Forecast and lets us find the current Symbol (if present)
-fun List<Forecast>.getCurrentIcon(): Int? {
-    return this.getCurrentForecast()?.getIcon()
-}
-
-// Takes a list of Forecast and lets us find the current Water Temp (if present)
-fun List<Forecast>.getCurrentWaterTempC(): Double? {
-    return this.getCurrentForecast()?.waterTempC
 }

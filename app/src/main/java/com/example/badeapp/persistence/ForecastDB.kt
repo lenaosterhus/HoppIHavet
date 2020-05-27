@@ -1,7 +1,6 @@
 package com.example.badeapp.persistence
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -16,7 +15,6 @@ import kotlinx.coroutines.launch
 
 
 private const val DATABASE_NAME = "Forecasts.db"
-private const val TAG = "ForecastDB"
 
 // Annotates class to be a Room Database with a table (entity)
 @Database(
@@ -30,13 +28,15 @@ abstract class ForecastDB : RoomDatabase() {
 
     abstract fun forecastDao(): ForecastDao
 
+    // Singleton prevents multiple instances of database opening at the same time.
     companion object {
-        // Singleton prevents multiple instances of database opening at the same time.
+
         @Volatile
         private var INSTANCE: ForecastDB? = null
 
         fun getDatabase(context: Context): ForecastDB {
             val tempInstance = INSTANCE
+
             if (tempInstance != null) {
                 return tempInstance
             }
@@ -53,7 +53,6 @@ abstract class ForecastDB : RoomDatabase() {
                             // badesteder are inserted.
                             CoroutineScope(Dispatchers.IO).launch {
                                 val database = getDatabase(context)
-                                Log.d(TAG, "onCreate: Adding all badesteder to DB")
                                 database.forecastDao().addAllBadesteder(alleBadesteder)
                             }
                         }

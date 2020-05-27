@@ -4,6 +4,8 @@ import androidx.room.TypeConverter
 import java.text.SimpleDateFormat
 import java.util.*
 
+const val dateFormatStringIso = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+
 fun getHour(date: String) : String? {
     return date.parseAsGmtIsoDate()?.toHourString()
 }
@@ -15,7 +17,7 @@ fun getHour(date: String) : String? {
  */
 
 fun minBetween(from: String, toDate: Date): Long? {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     val fromDate = dateFormat.parse(from) ?: return null
@@ -23,7 +25,7 @@ fun minBetween(from: String, toDate: Date): Long? {
 }
 
 fun minBetween(fromDate: Date, to: String): Long? {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     val toDate = dateFormat.parse(to) ?: return null
@@ -31,7 +33,7 @@ fun minBetween(fromDate: Date, to: String): Long? {
 }
 
 fun minBetween(from: String, to: String): Long? {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
 
@@ -67,7 +69,7 @@ fun currentTime(): Date {
  * Extends date objects to return string representations of gmt iso time.
  */
 fun Date.toGmtIsoString(): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     return dateFormat.format(this)
@@ -82,21 +84,21 @@ fun Date.toHourString(): String {
 
 
 fun String.parseAsGmtIsoDate(): Date? {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
-    try {
-        return dateFormat.parse(this)
+    return try {
+        dateFormat.parse(this)
     } catch (e: Exception) {
-        return null
+        null
     }
 }
 
 /**
- * Returns true if the given date lies betwene (inclusive) before and after.
+ * Returns true if the given date lies between (inclusive) before and after.
  * @return before <= it <= after
  */
-fun Date.liesBetweneInclusive(before: Date, after: Date): Boolean {
+fun Date.liesBetweenInclusive(before: Date, after: Date): Boolean {
     val low = before.time == this.time || this.after(before)
     val high = after.time == this.time || this.before(after)
     return low && high
