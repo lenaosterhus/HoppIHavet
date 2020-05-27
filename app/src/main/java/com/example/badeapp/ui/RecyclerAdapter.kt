@@ -20,11 +20,9 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     var unFilteredList: List<BadestedForecast>? = null
 
     private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedForecast>() {
-
         override fun areItemsTheSame(oldItem: BadestedForecast, newItem: BadestedForecast): Boolean {
             return oldItem.badested == newItem.badested
         }
-
         override fun areContentsTheSame(
             oldItem: BadestedForecast,
             newItem: BadestedForecast
