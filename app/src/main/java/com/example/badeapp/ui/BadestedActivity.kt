@@ -3,16 +3,12 @@ package com.example.badeapp.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.badeapp.R
 import com.example.badeapp.models.BadestedForecast
 import kotlinx.android.synthetic.main.activity_badested.*
 
-
-private const val TAG = "BadestedActivity"
 
 class BadestedActivity : AppCompatActivity() {
 
@@ -24,15 +20,12 @@ class BadestedActivity : AppCompatActivity() {
 
         if (intent.hasExtra("badestedForecast")) {
             val badestedForecast = intent.getParcelableExtra<BadestedForecast>("badestedForecast")
-            Log.d(TAG, "onCreate: $badestedForecast")
             badestedInView = badestedForecast!!
         }
         setView()
     }
 
     private fun setView() {
-
-        Log.d(TAG,badestedInView.name)
 
         ImageView_badested_image.setImageResource(badestedInView.image)
 
@@ -49,16 +42,6 @@ class BadestedActivity : AppCompatActivity() {
 
         // Setting properties for the description TextView
         TextView_badested_description.text = badestedInView.info
-        TextView_badested_description.movementMethod = ScrollingMovementMethod()
-        ScrollView_badested.setOnTouchListener { _, _ ->
-            TextView_badested_description.parent.requestDisallowInterceptTouchEvent(false)
-            false
-        }
-        TextView_badested_description.setOnTouchListener { _, _ ->
-            TextView_badested_description.parent.requestDisallowInterceptTouchEvent(true)
-            false
-        }
-
         TextView_badested_facilities.text = badestedInView.facilities
 
         /*
@@ -75,9 +58,12 @@ class BadestedActivity : AppCompatActivity() {
         val iconDescription = badestedInView.getIconDescription()
 
         if (iconDescription != null) {
-            Log.d(TAG, "setView: iconDescription = ${resources.getString(iconDescription)}")
+            val weatherDescription = resources.getString(iconDescription)
+            TextView_badested_weather_desc.text = weatherDescription
+
+            val symbolDescription = "Symbol: " + resources.getString(iconDescription)
             ImageView_badested_symbol.contentDescription =
-                resources.getString(iconDescription)
+                symbolDescription
         }
 
         /*
