@@ -15,7 +15,7 @@
     <string name="wind">Vind:</string>
     <string name="has_halted_error">Noe gikk galt. Prøv igjen om litt.</string>
     <string name="search">Søk</string>
-    <string name="image_source">Bilde hentet fra oslofjorden.com</string>
+    <string name="source">Bilde og beskrivelse fra oslofjorden.com, ikoner og værdata fra Meterologisk Institutt</string>
 
     <string name="wic_1_desc">  Sol/klarvær</string>
     <string name="wic_2_desc">  Lettskyet</string>
