@@ -303,11 +303,6 @@ val Taajebukta = Badested(
     R.drawable.badebilder_taajebukta
 )
 
-//    val Katten:          Badested("59.855599", "10.782492")
-//    val NordstrandBad:   Badested()
-//    val Haaoybukta:      Badested("Håøya er den største av øyene i Indre Oslofjord, og ligger nordvest for Drøbak og Oscarsborg festning. Det er lov å telte inntil to døgn av gangen på øyas nordside. Søndre Håøya er naturreservat.\n" + "Et havørnpar hekker på sørøstre Håøya. Vi ber deg om ta ekstra hensyn i dette området. Havørn er svært sårbar for forstyrrelser i hekkeperioden. Dette er første gang på over 125 år at et havørnpar hekker ved Oslofjorden.\n" + "Søndre Håøya er naturreservat.\n" + "Alle planter er fredet i naturreservatet. Det er ikke tillatt å plukke blomster eller bryte greiner. Det er heller ikke lov å fjerne nedfall eller ved. Bær og matsopp kan du plukke på hele øyen. Også i naturreservatet.\n" + "På midtre og nordre Håøya har vi geiter som beitedyr fra mai til desember. Ta hensyn til beitedyra og hold hunden i bånd.")
-//    val Bekkelagsbadet:  Badested("Bekkelagsbadet er en park som ligger på Søndre Bekkelaget. Parken består av badebrygge, stupetårn og et større grøntområde med sandvolleyballbane, parkour og flere andre aktiviteter.")
-
 
 // Sortert etter nærhet til Oslo Sentrum
 val alleBadesteder = listOf(
