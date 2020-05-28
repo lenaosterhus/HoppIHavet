@@ -16,7 +16,7 @@
     <string name="has_halted_error">Noe gikk galt. Prøv igjen om litt.</string>
     <string name="search">Søk på badested eller område</string>
     <string name="search_no_result">Vi fant dessverre ingen badesteder eller områder som passer med det du søkte på.\n\nSjekk at navnet er riktig stavet i søkefeltet.</string>
-    <string name="source">Bilde og beskrivelse fra oslofjorden.com, ikoner og værdata fra Meterologisk Institutt</string>
+    <string name="source">Bilde og beskrivelse fra oslofjorden.com og Oslo Kommune, ikoner og værdata fra Meterologisk Institutt</string>
 
     <string name="wic_1_desc">  Sol</string>
     <string name="wic_2_desc">  Lettskyet</string>
