@@ -1,10 +1,12 @@
 package com.example.badeapp.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +20,10 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
     var unFilteredList: List<BadestedForecast>? = null
+
+    val noSearchResult = MutableLiveData<Boolean>().apply {
+        value = false
+    }
 
     private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BadestedForecast>() {
         override fun areItemsTheSame(oldItem: BadestedForecast, newItem: BadestedForecast): Boolean {
@@ -136,6 +142,9 @@ class RecyclerAdapter(private val interaction: Interaction? = null) :
                         name.contains(charSearch.toUpperCase(Locale.ROOT)) || place.contains(charSearch.toUpperCase(Locale.ROOT))
                     }
                 }
+
+                noSearchResult.postValue(filteredBadestedList.isNullOrEmpty())
+
                 val results = FilterResults()
                 results.values = filteredBadestedList
                 results.count = filteredBadestedList?.size ?: 0

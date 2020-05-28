@@ -11,6 +11,8 @@
     tools:context=".ui.BadestedListActivity">
 
     <ProgressBar
+        android:id="@+id/progress_bar"
+        android:visibility="visible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Widget.AppCompat.ProgressBar"
@@ -18,9 +20,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:id="@+id/progress_bar"
-        android:visibility="visible"
         />
+
+    <TextView
+        android:id="@+id/TextView_badestedList_noResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="50dp"
+        android:gravity="center"
+        android:text="@string/search_no_result"
+        android:textSize="16sp"
+        android:textColor="@color/textColor"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

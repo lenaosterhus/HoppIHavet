@@ -14,10 +14,11 @@
     <string name="show_map">Vis i kart</string>
     <string name="wind">Vind:</string>
     <string name="has_halted_error">Noe gikk galt. Prøv igjen om litt.</string>
-    <string name="search">Søk</string>
-    <string name="image_source">Bilde hentet fra oslofjorden.com</string>
+    <string name="search">Søk på badested eller område</string>
+    <string name="search_no_result">Vi fant dessverre ingen badesteder eller områder som passer med det du søkte på.\n\nSjekk at navnet er riktig stavet i søkefeltet.</string>
+    <string name="source">Bilde og beskrivelse fra oslofjorden.com, ikoner og værdata fra Meterologisk Institutt</string>
 
-    <string name="wic_1_desc">  Sol/klarvær</string>
+    <string name="wic_1_desc">  Sol</string>
     <string name="wic_2_desc">  Lettskyet</string>
     <string name="wic_3_desc">  Delvis skyet</string>
     <string name="wic_4_desc">  Skyet</string>
@@ -62,4 +63,5 @@
 
     <string name="no_internet_toast">"Sjekk at du har internett."</string>
     <string name="outdated_info_toast">"Værmeldingene kan være utdatert."</string>
+    <string name="current_weather">Været denne timen:</string>
 </resources>
