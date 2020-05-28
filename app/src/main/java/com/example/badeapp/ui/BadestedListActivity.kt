@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -85,6 +86,11 @@ class BadestedListActivity : AppCompatActivity(),
                     networkConnectionToast()
             }
         })
+
+        // Observing if we are getting results from the search or not
+        recyclerAdapter.noSearchResult.observe(this, Observer { noResult ->
+            showNoSearchResult(noResult)
+        })
     }
 
     private fun showProgressBar(visibility: Boolean) {
@@ -135,6 +141,7 @@ class BadestedListActivity : AppCompatActivity(),
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_menu, menu)
         searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
+        searchView.queryHint = resources.getString(R.string.search)
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(queryString: String): Boolean {
@@ -149,6 +156,14 @@ class BadestedListActivity : AppCompatActivity(),
         })
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun showNoSearchResult(noResult: Boolean) {
+        if (noResult) {
+            findViewById<TextView>(R.id.TextView_badestedList_noResult).visibility = View.VISIBLE
+        } else {
+            findViewById<TextView>(R.id.TextView_badestedList_noResult).visibility = View.INVISIBLE
+        }
     }
 
     override fun onItemSelected(position: Int, item: BadestedForecast) {

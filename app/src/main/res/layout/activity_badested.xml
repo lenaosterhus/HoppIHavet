@@ -15,7 +15,7 @@
     <!-- Extra ConstrainLayout is necessary for scrolling all the way down -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content">
 
         <!-- ConstraintLayout for the white space -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -66,16 +66,28 @@
                 app:layout_constraintTop_toBottomOf="@id/TextView_badested_name">
 
                 <TextView
-                    android:id="@+id/TextView_badested_weather_desc"
+                    android:id="@+id/TextView_badested_weather_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:textColor="@color/textColor"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:text="@string/current_weather"
                     android:accessibilityTraversalAfter="@id/TextView_badested_name"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/TextView_badested_weather_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp"
+                    android:accessibilityTraversalAfter="@id/TextView_badested_weather_container"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/TextView_badested_weather_container" />
 
                 <TextView
                     android:id="@+id/TextView_badested_air_temp_desc"

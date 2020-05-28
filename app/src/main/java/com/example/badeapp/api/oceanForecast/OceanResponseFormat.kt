@@ -73,10 +73,6 @@ internal data class OceanResponseFormat(
                     return null
                 }
 
-                waterTempC == null -> {
-                    Log.e(TAG, "Failed to get 'waterTempC' from ocean forecast ${badested.name}, from: $from, to: $to")
-                }
-
                 from != to && to != null -> {
                      // The ocean forecast api looks like it only shows the data for a instance.
                      // So we expect from == to.
