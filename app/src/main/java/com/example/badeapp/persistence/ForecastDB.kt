@@ -49,7 +49,7 @@ abstract class ForecastDB : RoomDatabase() {
                     object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            //On the creation of the DB for the first time, all the
+                            // On the creation of the DB for the first time, all the
                             // badesteder are inserted.
                             CoroutineScope(Dispatchers.IO).launch {
                                 val database = getDatabase(context)

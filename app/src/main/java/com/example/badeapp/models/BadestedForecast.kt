@@ -5,8 +5,6 @@ import androidx.room.DatabaseView
 import androidx.room.Embedded
 import kotlinx.android.parcel.Parcelize
 
-private const val TAG = "BadestedForecast"
-
 @Parcelize
 @DatabaseView(
     "SELECT * FROM Badested LEFT JOIN Forecast on Badested.id = Forecast.badestedId WHERE  DATETIME('now','+5 minutes')  BETWEEN DATETIME([from]) AND DATETIME([to])"

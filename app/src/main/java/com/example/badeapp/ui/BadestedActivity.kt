@@ -19,7 +19,8 @@ class BadestedActivity : AppCompatActivity() {
         setContentView(R.layout.activity_badested)
 
         if (intent.hasExtra("badestedForecast")) {
-            val badestedForecast = intent.getParcelableExtra<BadestedForecast>("badestedForecast")
+            val badestedForecast =
+                intent.getParcelableExtra<BadestedForecast>("badestedForecast")
             badestedInView = badestedForecast!!
         }
         setView()
