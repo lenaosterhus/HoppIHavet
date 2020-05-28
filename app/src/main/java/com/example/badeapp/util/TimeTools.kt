@@ -17,7 +17,10 @@ fun getHour(date: String) : String? {
  */
 
 fun minBetween(from: String, toDate: Date): Long? {
-    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(
+        dateFormatStringIso,
+        Locale("no", "NO")
+    ).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     val fromDate = dateFormat.parse(from) ?: return null
@@ -25,7 +28,10 @@ fun minBetween(from: String, toDate: Date): Long? {
 }
 
 fun minBetween(fromDate: Date, to: String): Long? {
-    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(
+        dateFormatStringIso,
+        Locale("no", "NO")
+    ).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     val toDate = dateFormat.parse(to) ?: return null
@@ -33,7 +39,10 @@ fun minBetween(fromDate: Date, to: String): Long? {
 }
 
 fun minBetween(from: String, to: String): Long? {
-    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(
+        dateFormatStringIso,
+        Locale("no", "NO")
+    ).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
 
@@ -69,14 +78,20 @@ fun currentTime(): Date {
  * Extends date objects to return string representations of gmt iso time.
  */
 fun Date.toGmtIsoString(): String {
-    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(
+        dateFormatStringIso,
+        Locale("no", "NO")
+    ).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     return dateFormat.format(this)
 }
 
 fun Date.toHourString(): String {
-    val dateFormat = SimpleDateFormat("HH:mm", Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(
+        "HH:mm",
+        Locale("no", "NO")
+    ).also {
         it.timeZone = TimeZone.getTimeZone("Europe/Oslo")
     }
     return dateFormat.format(this)
@@ -84,7 +99,10 @@ fun Date.toHourString(): String {
 
 
 fun String.parseAsGmtIsoDate(): Date? {
-    val dateFormat = SimpleDateFormat(dateFormatStringIso, Locale("no", "NO")).also {
+    val dateFormat = SimpleDateFormat(
+        dateFormatStringIso,
+        Locale("no", "NO")
+    ).also {
         it.timeZone = TimeZone.getTimeZone("GMT")
     }
     return try {
@@ -120,29 +138,6 @@ fun Date.subOneHour(): Date {
     }.time
 }
 
-
-
-// -----------------------------------------------------
-// Converter used by Room, to convert Date -> Iso String
-// and also back into Date.
-//
-
-object IsoGmtConverter {
-
-    @TypeConverter
-    @JvmStatic
-    fun toDate(value: String?): Date? {
-        return value?.parseAsGmtIsoDate()
-    }
-
-    @TypeConverter
-    @JvmStatic
-    fun toString(value: Date?): String? {
-        return value?.toGmtIsoString()
-    }
-
-}
-
 /**
  * This function takes a Date, and says if the time we would expect daylight in Oslo.
  */
@@ -168,5 +163,28 @@ fun Date.daylightInOslo(): Boolean {
         12 -> return 9 * 60 + 10 < min && min < 15 * 60 + 14
     }
     return true
+}
+
+
+/**
+ * ----------------------------------------------------------------------------------
+ * Converter used by Room, to convert Date -> Iso String
+ * and also back into Date.
+ */
+
+object IsoGmtConverter {
+
+    @TypeConverter
+    @JvmStatic
+    fun toDate(value: String?): Date? {
+        return value?.parseAsGmtIsoDate()
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toString(value: Date?): String? {
+        return value?.toGmtIsoString()
+    }
+
 }
 

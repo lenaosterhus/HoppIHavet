@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import com.example.badeapp.R
 import com.example.badeapp.util.currentTime
+import com.example.badeapp.util.daylightInOslo
 import com.example.badeapp.util.getHour
 import com.example.badeapp.util.parseAsGmtIsoDate
 import kotlinx.android.parcel.Parcelize
@@ -36,9 +37,10 @@ data class Forecast(
      * Returns the resource id of the icon that best summarises the Forecast
      */
     fun getIcon(): Int? {
-        val isDay = true //@TODO figure out if it is daytime aka is the sun up?
 
-        if (isDay) {
+        val isDay = from.parseAsGmtIsoDate()?.daylightInOslo()
+
+        if (isDay != false) {
             when (symbol) {
                 1 -> return R.mipmap.wic_day_1 //Sun
                 2 -> return R.mipmap.wic_day_2 //LightCloud
@@ -199,7 +201,6 @@ data class Forecast(
             49 -> return R.string.wic_49_desc //LightSnow
             50 -> return R.string.wic_50_desc //HeavySnow
         }
-
         return null
     }
 

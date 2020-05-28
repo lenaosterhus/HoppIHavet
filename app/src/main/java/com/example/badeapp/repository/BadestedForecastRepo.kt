@@ -43,11 +43,11 @@ class BadestedForecastRepo(private val forecastDao: ForecastDao) {
 
         CoroutineScope(Dispatchers.IO + job!!).launch {
 
-            // 1) Check what ocean forecast and location forecasts needs to be updated
+            // Check what ocean forecast and location forecasts needs to be updated
             val rawForecasts = forecastDao.getAllCurrentRaw()
 
             if (rawForecasts.isNullOrEmpty()) {
-                // Then no data is stored at all. We need to update all badesteder
+                // Then no data is stored at all --> We need to update all badesteder
                 alleBadesteder.forEach {
                     updateOceanData(it)
                     updateLocationData(it)
